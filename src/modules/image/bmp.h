@@ -1,9 +1,13 @@
 #pragma once
 
 #include "general/module.h"
-#include "general/utils.h"
 
-enum BMPModuleSupportedAlgorithms {
+//supported algorithms for the bmp files
+#include <general/image_algorithms.h>
+
+using BGRPixel = utils::pixels::BGRPixel;
+
+enum class BMPModuleSupportedAlgorithms {
 	//the classic one = the last bit of each pixel is changed to represent a bit of the data
 	SEQUENTIAL, 
 	//divide the image data matrix in 8x8 submatrixes and randomize using a given password 
@@ -20,137 +24,80 @@ struct BMPModuleOptions {
 	BMPModuleSupportedAlgorithms algorithm = BMPModuleSupportedAlgorithms::SEQUENTIAL;
 };
 
-namespace {
-	//structure format of a bmp file taken from(only the metadata part)
-	//http://www.ece.ualberta.ca/~elliott/ee552/studentAppNotes/2003_w/misc/bmp_file_format/bmp_file_format.htm
-	#pragma pack(push, 1)
-	struct BMPMetaStruct {
-		//generic file header
-		uint16_t signature;
-		uint32_t file_size;
-		uint32_t reserved;
-		uint32_t data_offset;
-		//image info header
-		uint32_t size;
-		uint32_t width;
-		uint32_t height;
-		uint16_t planes;
-		uint16_t bits_per_pixel;
-		uint32_t compression;
-		uint32_t image_size;
-		uint32_t x_pixels_per_meter;
-		uint32_t y_pixels_per_meter;
-		uint32_t colors_used;
-		uint32_t important_colors;
-	};
-	#pragma pack(pop)
-	
-	//BMP images store pixel information backwards(no idea why, should research)
-	struct BGRPixel {
-		uint8_t blue = 255;
-		uint8_t green = 255;
-		uint8_t red = 255;
-	};
-}
+//structure format of a bmp file taken from(only the metadata part)
+//http://www.ece.ualberta.ca/~elliott/ee552/studentAppNotes/2003_w/misc/bmp_file_format/bmp_file_format.htm
+//need those pragma pack/push because the stack doesn't like not being aligned(cant place 2 bytes, then 4 bytes, its not neat)
+#pragma pack(push, 1)
+struct BMPMetaStruct {
+	//generic file header
+	uint16_t signature;
+	uint32_t file_size;
+	uint32_t reserved;
+	uint32_t data_offset;
+	//image info header
+	uint32_t size;
+	uint32_t width;
+	uint32_t height;
+	uint16_t planes;
+	uint16_t bits_per_pixel;
+	uint32_t compression;
+	uint32_t image_size;
+	uint32_t x_pixels_per_meter;
+	uint32_t y_pixels_per_meter;
+	uint32_t colors_used;
+	uint32_t important_colors;
+};
+#pragma pack(pop)
 
-
-#include <iostream>
-class BMPModule : public Module {
-private:
+class BMPModule : protected Module {
+protected:
+	std::ifstream* bmp_stream = nullptr;
 	//structure responsible for holding the bmp metadata
 	BMPMetaStruct cover_image_metadata;
 	//2d array of the raw pixels of the cover image
 	BGRPixel** cover_image_data = nullptr;
+
+	error_code read_cover_metadata();
+	error_code read_cover_data();
+public:
+	BMPModule(const char* bmp_file_path);
+	~BMPModule();
+
+	const BMPMetaStruct& get_metadata() const;
+
+	error_code write_bmp(const char* output_path = "output.bmp");
+};
+
+class BMPEncoderModule : public BMPModule {
+private:
+	std::ifstream* secret_stream = nullptr;
 	//pointer to the raw bytes of the secret data
 	uint8_t* secret_data = nullptr;
+	uint32_t secret_data_size = 0;
+public:
+	BMPEncoderModule(const char* cover_file_path, const char* secret_file_path);
+	BMPEncoderModule(const char* cover_file_path, const char* secret_file_path, const BMPModuleOptions& steg_options);
+	
+	~BMPEncoderModule();
+	
+	error_code launch_steganos(const BMPModuleOptions& steg_options = BMPModuleOptions());
+};
 
-	void read_cover_info() {
-		cover_stream->read((char*)&cover_image_metadata, sizeof(BMPMetaStruct));
+class BMPDecoderModule : protected BMPModule {
+private:
+	//pointer to the secret data
+	uint8_t* secret_data = new uint8_t[4];
+	//number of bytes that the secret data holds
+	uint32_t secret_data_size = 0;
 
-		std::cout << "BMP Image data is found beginning at " << cover_image_metadata.data_offset << std::endl;
-		if (sizeof(BMPMetaStruct) > cover_image_metadata.data_offset) {
-			std::cout << "BMP file is invalid(broken data offset header)" << std::endl;
-			exit(-1);
-		}
-		
+	error_code write_secret(const char* output_path = "hidden") const;
 
-		size_t bytes_until_data = cover_image_metadata.data_offset - sizeof(BMPMetaStruct);
-		std::cout << "Ignoring " << bytes_until_data << " bytes to get to the actual image data" << std::endl;
-		//really probably shouldn't do this and better research the bmp subvariants and their specific headers
-		cover_stream->ignore(bytes_until_data);
-
-		uint32_t padded_width = cover_image_metadata.width;
-		if (cover_image_metadata.width % 4 != 0)
-			padded_width += (4 - cover_image_metadata.width % 4);
-
-		//alocating space for the rows of pixels
-		cover_image_data = new BGRPixel* [cover_image_metadata.height];
-		
-		//BMP images store data bottom-up : the bottom line is stored as the first in the byte stream
-		for (int32_t line_index = cover_image_metadata.height; line_index >= 0; line_index--) {
-			//a line of pixels is called a scan line in a BMP file
-			BGRPixel* scan_line_pixels = new BGRPixel[padded_width];
-			cover_stream->read(reinterpret_cast<char*>(scan_line_pixels), padded_width * sizeof(BGRPixel));
-			
-			cover_image_data[line_index] = scan_line_pixels;
-		}
-	}
-
-	int32_t sequential_handler(const BMPModuleOptions& steg_options) {
-
-		return 0;
-	}
-
-	int32_t personal_scramble_handler(const BMPModuleOptions& steg_options) {
-		
-		return 0;
-	}
+	error_code sequential_handler(const BMPModuleOptions& steg_options);
 
 public:
-	BMPModule(const char* cover_file_path, const char* secret_file_path) {
-		TRY(load_cover(cover_file_path));
-		TRY(load_secret(secret_file_path));
+	BMPDecoderModule(const char* embedded_path);
+	BMPDecoderModule(const char* embedded_path, const BMPModuleOptions steg_options);
+	~BMPDecoderModule();
 
-		read_cover_info();
-	}
-	BMPModule(const char* cover_file_path, const char* secret_file_path, const BMPModuleOptions& steg_options) {
-		BMPModule(cover_file_path, secret_file_path);
-
-		launch_steganos(steg_options);
-	}
-
-	inline const uint32_t get_cover_width() const {
-		return cover_image_metadata.width;
-	}
-	inline const uint32_t get_cover_height() const {
-		return cover_image_metadata.height;
-	}
-
-	int32_t launch_steganos(const BMPModuleOptions& steg_options) {
-		if (steg_options.compress_secret)
-			utils::compress_data(secret_data);
-
-		switch (steg_options.algorithm)
-		{
-			case BMPModuleSupportedAlgorithms::SEQUENTIAL:
-				return sequential_handler(steg_options);
-			case BMPModuleSupportedAlgorithms::PERSONAL_SCRAMBLE:
-				return personal_scramble_handler(steg_options);
-			default:
-				std::cout << "I have no idea what u want me to do, this shouldnt happen(oh yes, invalid algorithm given, but how?)\n";
-				break;
-		}
-
-		return -1;
-	}
-
-	~BMPModule() {
-		//deleting the allocated memory for each line of pixels of the cover image
-		for (uint32_t line_index = 0; line_index < cover_image_metadata.height; line_index++) {
-			delete[] cover_image_data[line_index];
-		}
-
-		//i should also do this but it breaks?
-		//delete[] cover_image_data;
-	}
+	error_code launch_steganos(const BMPModuleOptions& steg_options = BMPModuleOptions());
 };
