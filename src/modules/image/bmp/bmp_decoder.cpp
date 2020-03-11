@@ -30,6 +30,21 @@ error_code BMPDecoderModule::sequential_handler(const BMPModuleOptions& steg_opt
 	return error_code::NONE;
 }
 
+error_code BMPDecoderModule::personal_scramble_handler(const BMPModuleOptions& steg_options) {
+	TRY(personal_scramble_decode(
+		utils::pixels::types::BGR,
+		cover_image_metadata.height,
+		get_padded_width(),
+		cover_image_data,
+		secret_data_size,
+		secret_data
+	));
+
+	//TRY(write_secret());
+
+	return error_code::NONE;
+}
+
 BMPDecoderModule::BMPDecoderModule(const char* embedded_path) : BMPModule(embedded_path) {
 	//do nothing if no options are given, just load the bmp into memory
 }
@@ -41,14 +56,13 @@ BMPDecoderModule::~BMPDecoderModule() {
 	delete[] secret_data;
 }
 
-error_code BMPDecoderModule::launch_steganos() {
-	return launch_steganos(BMPModuleOptions());
-}
 
 error_code BMPDecoderModule::launch_steganos(const BMPModuleOptions& steg_options) {
 	switch (steg_options.algorithm) {
 	case BMPModuleSupportedAlgorithms::SEQUENTIAL:
 		return sequential_handler(steg_options);
+	case BMPModuleSupportedAlgorithms::PERSONAL_SCRAMBLE:
+		return personal_scramble_handler(steg_options);
 	default:
 		break;
 	}

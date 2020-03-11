@@ -49,7 +49,7 @@ struct BMPMetaStruct {
 };
 #pragma pack(pop)
 
-class BMPModule : public Module {
+class BMPModule {
 protected:
 	std::ifstream* bmp_stream = nullptr;
 	//structure responsible for holding the bmp metadata
@@ -83,6 +83,7 @@ private:
 	uint32_t secret_data_size = 0;
 
 	error_code simple_sequential_embed_handler();
+	error_code personal_scramble_embed_handler();
 
 public:
 	BMPEncoderModule(const char* cover_file_path);
@@ -93,7 +94,6 @@ public:
 	
 	error_code load_secret(const char* secret_file_path);
 
-	error_code launch_steganos() override;
 	error_code launch_steganos(const BMPModuleOptions& steg_options = BMPModuleOptions());
 };
 
@@ -104,15 +104,15 @@ private:
 	//number of bytes that the secret data holds
 	uint32_t secret_data_size = 0;
 
-	error_code write_secret(const char* output_path = "hidden") const;
+	error_code write_secret(const char* output_path = "hidden.bin") const;
 
 	error_code sequential_handler(const BMPModuleOptions& steg_options);
+	error_code personal_scramble_handler(const BMPModuleOptions& steg_options);
 
 public:
 	BMPDecoderModule(const char* embedded_path);
 	BMPDecoderModule(const char* embedded_path, const BMPModuleOptions steg_options);
 	~BMPDecoderModule();
 
-	error_code launch_steganos() override;
 	error_code launch_steganos(const BMPModuleOptions& steg_options = BMPModuleOptions());
 };

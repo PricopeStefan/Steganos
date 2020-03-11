@@ -8,23 +8,37 @@
 	#include <crtdbg.h>
 #endif
 
+error_code encode_run_handler(/* command line args */) {
+	const char* cover_picture = "D:\\Projects\\Steganos\\test_data\\images\\marbles.bmp";
+	const char* secret_message = "D:\\Projects\\Steganos\\test_data\\images\\sails.bmp";
 
-int main() {
+	BMPEncoderModule steg_module(cover_picture, secret_message);
+	BMPModuleOptions options;
+	options.algorithm = BMPModuleSupportedAlgorithms::PERSONAL_SCRAMBLE;
+
+	TRY(steg_module.launch_steganos(options));
+	printf("Width = %u; Height = %u\n", steg_module.get_metadata().width, steg_module.get_metadata().height);
+
+	return error_code::NONE;
+}
+
+error_code decode_run_handler(/* cmdl args */) {
+	BMPDecoderModule desteg_module("D:\\Projects\\Steganos\\out\\build\\x64-Debug\\output.bmp");
+	BMPModuleOptions options;
+	options.algorithm = BMPModuleSupportedAlgorithms::PERSONAL_SCRAMBLE;
+
+	TRY(desteg_module.launch_steganos(options));
+
+	return error_code::NONE;
+}
+
+int main(int argc, char *argv[]) {
 	{
-		const char* cover_picture = "D:\\Facultate\\Licenta\\test_data\\images\\marbles.bmp";
-		const char* secret_message = "D:\\Facultate\\Licenta\\test_data\\images\\sails.bmp";
-		//const char* secret_message = "D:\\Facultate\\Licenta\\test_data\\secrets\\simple_message.txt";
-		
-		auto best_suited_module = utils::modules::module_picker(cover_picture);
-		best_suited_module->launch_steganos();
-		/*BMPEncoderModule steg_module(cover_picture, secret_message);
-		steg_module.launch_steganos();
-		printf("Width = %u; Height = %u\n", steg_module.get_metadata().width, steg_module.get_metadata().height);
+		/* check if -d option is in argv. if its not try and encode*/
+		encode_run_handler();
 
 
-		BMPDecoderModule desteg_module("D:\\Facultate\\Licenta\\out\\build\\x64-Debug\\output.bmp");
-		desteg_module.launch_steganos();*/
-
+		decode_run_handler();
 	}
 	
 	_CrtDumpMemoryLeaks();

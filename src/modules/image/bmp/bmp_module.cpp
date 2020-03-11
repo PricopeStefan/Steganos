@@ -46,7 +46,7 @@ error_code BMPModule::read_cover_data() {
 
 
 BMPModule::BMPModule(const char* bmp_file_path) {
-	TRY(load_stream(bmp_file_path, bmp_stream));
+	TRY(utils::load_stream(bmp_file_path, bmp_stream));
 
 	TRY(read_cover_metadata());
 	TRY(read_cover_data());

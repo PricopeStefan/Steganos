@@ -1,5 +1,23 @@
 #include <general/utils.h>
 
+error_code utils::load_stream(const char* file_path, std::ifstream*& stream, std::ios_base::openmode stream_options) {
+	if (stream != nullptr) {
+		//stream is already open
+		return error_code::STREAM_ERROR;
+	}
+
+	stream = new std::ifstream(file_path, stream_options);
+	if (stream->is_open()) {
+		return error_code::NONE;
+	}
+
+	//the opening of the stream failed, deleting it
+	delete stream;
+	stream = nullptr;
+
+	return error_code::STREAM_ERROR;
+}
+
 error_code utils::read_byte_stream(std::ifstream* stream, uint8_t*& byte_stream, uint32_t& stream_size) {
 	stream->seekg(0, std::ios::end);
 	std::streamsize file_size = stream->tellg();
@@ -13,7 +31,7 @@ error_code utils::read_byte_stream(std::ifstream* stream, uint8_t*& byte_stream,
 		byte_stream[1] = ((uint8_t*)&stream_size)[1];
 		byte_stream[2] = ((uint8_t*)&stream_size)[2];
 		byte_stream[3] = ((uint8_t*)&stream_size)[3];
-		printf("Writing bytes %02x %02x %02x %02x\n", byte_stream[0], byte_stream[1], byte_stream[2], byte_stream[3]);
+		printf("The first 4 bytes %02x %02x %02x %02x\n", byte_stream[0], byte_stream[1], byte_stream[2], byte_stream[3]);
 		//succesfully read all the secret file bytes
 		return error_code::NONE;
 
@@ -21,6 +39,7 @@ error_code utils::read_byte_stream(std::ifstream* stream, uint8_t*& byte_stream,
 		//to write all the secret data into the cover file or not
 	}
 
+	delete byte_stream;
 	stream_size = 0;
 	return error_code::STREAM_ERROR;
 }

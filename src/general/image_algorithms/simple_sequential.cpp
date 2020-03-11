@@ -3,7 +3,7 @@
 using BGRPixel = utils::pixels::BGRPixel;
 using RGBPixel = utils::pixels::RGBPixel;
 
-error_code simple_sequential_embed(uint64_t image_data_size,
+error_code simple_sequential_embed(int64_t image_data_size,
 	uint8_t*& image_data,
 	uint32_t byte_stream_size,
 	uint8_t*& byte_stream)
@@ -50,7 +50,7 @@ error_code simple_sequential_embed(uint64_t image_data_size,
 
 
 
-error_code simple_sequential_decode(uint64_t image_data_size,
+error_code simple_sequential_decode(int64_t image_data_size,
 	uint8_t*& image_data,
 	uint32_t& secret_data_size,
 	uint8_t*& secret_data)
@@ -73,6 +73,7 @@ error_code simple_sequential_decode(uint64_t image_data_size,
 	secret_data_size -= 4;
 
 	secret_data = new uint8_t[secret_data_size];
+	uint8_t secret_byte = 0;
 
 	for (uint32_t secret_data_index = 0; secret_data_index < secret_data_size; secret_data_index++) {
 		uint8_t secret_byte = utils::read_byte_from_lsbs(image_data + image_data_index, image_data_size - image_data_index);

@@ -5,11 +5,11 @@ BMPEncoderModule::BMPEncoderModule(const char* cover_file_path) : BMPModule(cove
 	printf("Created new BMPEncoderModule\n");
 }
 BMPEncoderModule::BMPEncoderModule(const char* cover_file_path, const char* secret_file_path) : BMPModule(cover_file_path) {
-	TRY(load_stream(secret_file_path, secret_stream));
+	TRY(utils::load_stream(secret_file_path, secret_stream));
 	TRY(utils::read_byte_stream(secret_stream, secret_data, secret_data_size));
 }
 BMPEncoderModule::BMPEncoderModule(const char* cover_file_path, const char* secret_file_path, const BMPModuleOptions& steg_options) : BMPModule(cover_file_path) {
-	TRY(load_stream(secret_file_path, secret_stream));
+	TRY(utils::load_stream(secret_file_path, secret_stream));
 	TRY(utils::read_byte_stream(secret_stream, secret_data, secret_data_size));
 
 	launch_steganos(steg_options);
@@ -36,15 +36,25 @@ error_code BMPEncoderModule::simple_sequential_embed_handler() {
 	return error_code::NONE;
 };
 
+error_code BMPEncoderModule::personal_scramble_embed_handler() {
+	//try writing the raw bytes of the secret file
+	TRY(personal_scramble_embed(
+		utils::pixels::types::BGR,
+		cover_image_metadata.height,
+		get_padded_width(),
+		cover_image_data,
+		secret_data_size,
+		secret_data
+	));
+
+	return error_code::NONE;
+};
+
 error_code BMPEncoderModule::load_secret(const char* secret_file_path) {
-	TRY(load_stream(secret_file_path, secret_stream));
+	TRY(utils::load_stream(secret_file_path, secret_stream));
 	TRY(utils::read_byte_stream(secret_stream, secret_data, secret_data_size));
 
 	return error_code::NONE;
-}
-
-error_code BMPEncoderModule::launch_steganos() {
-	return launch_steganos(BMPModuleOptions());
 }
 
 error_code BMPEncoderModule::launch_steganos(const BMPModuleOptions& steg_options) {
@@ -57,12 +67,7 @@ error_code BMPEncoderModule::launch_steganos(const BMPModuleOptions& steg_option
 			TRY(simple_sequential_embed_handler());
 			break;
 		case BMPModuleSupportedAlgorithms::PERSONAL_SCRAMBLE:
-			TRY(personal_scramble_embed(
-					sizeof(BGRPixel) * get_padded_width() * cover_image_metadata.height,
-					cover_image_data, 
-					secret_data_size,
-					secret_data
-			));
+			TRY(personal_scramble_embed_handler());
 			break;
 		default:
 			std::cout << "Algorithm not yet implemented, its on my TO DO\n";

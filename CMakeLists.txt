@@ -9,7 +9,6 @@ add_executable (
 	Steganos
 	${PROJECT_SOURCE_DIR}/src/general/main.cpp
 	${PROJECT_SOURCE_DIR}/src/general/utils/byte_utils.cpp
-	${PROJECT_SOURCE_DIR}/src/general/utils/module_utils.cpp
 	${PROJECT_SOURCE_DIR}/src/general/image_algorithms/simple_sequential.cpp
 	${PROJECT_SOURCE_DIR}/src/general/image_algorithms/personal_scramble.cpp
 )
