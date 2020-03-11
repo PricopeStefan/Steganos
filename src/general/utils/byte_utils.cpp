@@ -1,4 +1,4 @@
-#include "utils.h"
+#include <general/utils.h>
 
 error_code utils::read_byte_stream(std::ifstream* stream, uint8_t*& byte_stream, uint32_t& stream_size) {
 	stream->seekg(0, std::ios::end);
@@ -33,4 +33,16 @@ void utils::setLSB(uint8_t& value, const bool& bit) {
 	if (bit)
 		value |= 1;
 	else value &= 0xFE;
+}
+
+uint8_t utils::read_byte_from_lsbs(uint8_t* byte_stream, uint64_t byte_stream_size) {
+	if (byte_stream_size < 8)
+		return 0;
+
+	uint8_t byte = 0;
+	for (short index = 0; index < 8; index++) {
+		byte |= (byte_stream[index] % 2) << index;
+	}
+
+	return byte;
 }

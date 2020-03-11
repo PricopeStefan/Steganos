@@ -1,6 +1,6 @@
 #pragma once
 
-#include "general/module.h"
+#include "general/utils.h"
 
 //supported algorithms for the bmp files
 #include <general/image_algorithms.h>
@@ -49,13 +49,14 @@ struct BMPMetaStruct {
 };
 #pragma pack(pop)
 
-class BMPModule : protected Module {
+class BMPModule : public Module {
 protected:
 	std::ifstream* bmp_stream = nullptr;
 	//structure responsible for holding the bmp metadata
 	BMPMetaStruct cover_image_metadata;
 	//2d array of the raw pixels of the cover image
-	BGRPixel** cover_image_data = nullptr;
+	//BGRPixel** cover_image_data = nullptr;
+	uint8_t* cover_image_data = nullptr;
 
 	error_code read_cover_metadata();
 	error_code read_cover_data();
@@ -64,6 +65,12 @@ public:
 	~BMPModule();
 
 	const BMPMetaStruct& get_metadata() const;
+	uint32_t get_padded_width() const {
+		if (cover_image_metadata.width % 4 == 0)
+			return cover_image_metadata.width;
+		
+		return cover_image_metadata.width + (4 - cover_image_metadata.width % 4);
+	}
 
 	error_code write_bmp(const char* output_path = "output.bmp");
 };
@@ -74,19 +81,26 @@ private:
 	//pointer to the raw bytes of the secret data
 	uint8_t* secret_data = nullptr;
 	uint32_t secret_data_size = 0;
+
+	error_code simple_sequential_embed_handler();
+
 public:
+	BMPEncoderModule(const char* cover_file_path);
 	BMPEncoderModule(const char* cover_file_path, const char* secret_file_path);
 	BMPEncoderModule(const char* cover_file_path, const char* secret_file_path, const BMPModuleOptions& steg_options);
 	
 	~BMPEncoderModule();
 	
+	error_code load_secret(const char* secret_file_path);
+
+	error_code launch_steganos() override;
 	error_code launch_steganos(const BMPModuleOptions& steg_options = BMPModuleOptions());
 };
 
-class BMPDecoderModule : protected BMPModule {
+class BMPDecoderModule : public BMPModule {
 private:
 	//pointer to the secret data
-	uint8_t* secret_data = new uint8_t[4];
+	uint8_t* secret_data = nullptr;
 	//number of bytes that the secret data holds
 	uint32_t secret_data_size = 0;
 
@@ -99,5 +113,6 @@ public:
 	BMPDecoderModule(const char* embedded_path, const BMPModuleOptions steg_options);
 	~BMPDecoderModule();
 
+	error_code launch_steganos() override;
 	error_code launch_steganos(const BMPModuleOptions& steg_options = BMPModuleOptions());
 };

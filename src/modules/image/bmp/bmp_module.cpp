@@ -27,21 +27,19 @@ error_code BMPModule::read_cover_metadata() {
 
 error_code BMPModule::read_cover_data() {
 	//alocating space for the rows of pixels
-	cover_image_data = new BGRPixel * [cover_image_metadata.height];
+	cover_image_data = new uint8_t[sizeof(BGRPixel) * get_padded_width() * cover_image_metadata.height];
 
-	uint32_t padded_width = cover_image_metadata.width;
-	if (cover_image_metadata.width % 4 != 0)
-		padded_width += (4 - cover_image_metadata.width % 4);
-
+	//TO DO: add checks if stream failed to read
+	bmp_stream->read(reinterpret_cast<char*>(cover_image_data), sizeof(BGRPixel) * get_padded_width() * cover_image_metadata.height);
+	
 	//BMP images store data bottom-up : the bottom line is stored as the first in the byte stream
-	for (int64_t line_index = cover_image_metadata.height - 1; line_index >= 0; line_index--) {
-		//a line of pixels is called a scan line in a BMP file
-		BGRPixel* scan_line_pixels = new BGRPixel[padded_width];
-		//TO DO: add checks if stream failed to read
-		bmp_stream->read(reinterpret_cast<char*>(scan_line_pixels), padded_width * sizeof(BGRPixel));
+	//for (int64_t line_index = cover_image_metadata.height - 1; line_index >= 0; line_index--) {
+	//	//a line of pixels is called a scan line in a BMP file
+	//	BGRPixel* scan_line_pixels = new BGRPixel[padded_width];
+	//	bmp_stream->read(reinterpret_cast<char*>(scan_line_pixels), padded_width * sizeof(BGRPixel));
 
-		cover_image_data[line_index] = scan_line_pixels;
-	}
+	//	cover_image_data[line_index] = scan_line_pixels;
+	//}
 
 	return error_code::NONE;
 }
@@ -55,11 +53,7 @@ BMPModule::BMPModule(const char* bmp_file_path) {
 }
 
 BMPModule::~BMPModule() {
-	//deleting the allocated memory for each line of pixels of the cover image
-	for (uint32_t line_index = 0; line_index < cover_image_metadata.height; line_index++) {
-		delete[] cover_image_data[line_index];
-	}
-
+	//deleting the allocated memory for the pixels of the cover image
 	delete[] cover_image_data;
 
 	if (bmp_stream != nullptr)
@@ -74,20 +68,18 @@ const BMPMetaStruct& BMPModule::get_metadata() const {
 
 error_code BMPModule::write_bmp(const char* output_path) {
 	//to do : add error codes returns if something failed
-	uint32_t padded_width = cover_image_metadata.width;
-	if (cover_image_metadata.width % 4 != 0)
-		padded_width += (4 - cover_image_metadata.width % 4);
 
 	std::ofstream embedded_stream(output_path, std::ios_base::binary);
 	//TO DO : check if writes succedded
 	embedded_stream.write(reinterpret_cast<char*>(&cover_image_metadata), sizeof(BMPMetaStruct));
 
-	for (int64_t line_index = cover_image_metadata.height - 1; line_index >= 0; line_index--) {
-		BGRPixel* scan_line_pixels = cover_image_data[line_index];
-		embedded_stream.write(reinterpret_cast<char*>(scan_line_pixels), padded_width * sizeof(BGRPixel));
-	}
+	//for (int64_t line_index = cover_image_metadata.height - 1; line_index >= 0; line_index--) {
+	//	BGRPixel* scan_line_pixels = cover_image_data[line_index];
+	//	embedded_stream.write(reinterpret_cast<char*>(scan_line_pixels), padded_width * sizeof(BGRPixel));
+	//}
+	embedded_stream.write(reinterpret_cast<char*>(cover_image_data), sizeof(BGRPixel) * get_padded_width() * cover_image_metadata.height);
+
 
 	embedded_stream.close();
-
 	return error_code::NONE;
 }

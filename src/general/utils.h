@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 
+
 enum class error_code {
 	MISC_ERROR = -1,
 	NONE = 0,
@@ -13,6 +14,42 @@ enum class error_code {
 	INSUFFICIENT_COVER_SPACE = 5
 };
 
+
+
+#define TRY(X) cool_assert((X), __FILE__, __LINE__);
+
+inline void cool_assert(error_code code, const char* file, int line) {
+	if (code != error_code::NONE) {
+		printf("[Assert error]Message = %d in file %s at line %d\n", code, file, line);
+		exit(static_cast<int>(code));
+	}
+}
+
+class Module {
+protected:
+	error_code load_stream(const char* file_path, std::ifstream*& stream, std::ios_base::openmode stream_options = std::ios_base::binary) {
+		if (stream != nullptr) {
+			//stream is already open
+			return error_code::STREAM_ERROR;
+		}
+
+		stream = new std::ifstream(file_path, stream_options);
+		if (stream->is_open()) {
+			return error_code::NONE;
+		}
+
+		//the opening of the stream failed, deleting it
+		delete stream;
+		stream = nullptr;
+
+		return error_code::STREAM_ERROR;
+	}
+
+public:
+	virtual error_code launch_steganos() = 0;
+};
+
+
 namespace utils {
 	//given a pointer to a stream opened in binary mode and a pointer for a byte array,
 	//reads the byte array and returns how many bytes were read
@@ -21,6 +58,12 @@ namespace utils {
 	int32_t compress_data(uint8_t*& data_bytes);
 
 	void setLSB(uint8_t& value, const bool& bit);
+
+	uint8_t read_byte_from_lsbs(uint8_t* byte_stream, uint64_t byte_stream_size);
+
+	namespace modules {
+		Module* module_picker(const char* cover_file_path, bool for_embedding = true);
+	}
 
 	namespace pixels {
 		//pixels types used in the internal storage of the image data of different file formats
