@@ -1,42 +1,44 @@
 %Abstract - small description of the paper
 \begin{abstract}
-Steganography is the combination between the 2 Greek words : steganós (which means concealed) and graphia(which means writing) \cite{steganography-origin} and has been a method that humanity has used to hide information for more than 2 millenniums \cite{steganography-history}.
-This paper presents both existing and new ways of embedding computer files and data into different digital multimedia formats as covert as possible and allowing the encoded information to be retrieved at a later time without any losses.
+Steganography is the science of concealing a piece of information within another piece of information without affecting the latter in a noticeable way and therefore alerting any intruders of the existence of the former. 
+This paper presents both existing and new ways of embedding computer files and data into different digital multimedia formats as covert as possible while still allowing the encoded information to be retrieved at a later time without any significant losses.
 \end{abstract}
 
 \section[Introduction to computer Steganography]{Introduction}
 
-%\begin{figure}[H]
-%    \centering
-%    \includegraphics[]{pics/bmp_scan_line}
-%    \caption{How BMP works}
-%    \label{simulationfigure}
-%\end{figure}
+\setlength\columnsep{20pt}
+\begin{multicols*}{2}
+The practice of hiding and securing information and messages between different parties has played a major part alongside human history, especially during times of war when it was vital that the enemy didn't intercept the strategies and even if they did, they would have no idea what to do with them and would have to dedicate a lot of time, money and personnel to decode the communications. Two of the most famous manifestations of this practice are cryptography and steganography\cite{steganography-history}.
 
-\begin{multicols}{2}
+Trying to differentiate between cryptography and steganography is not difficult, the only thing they have in common is their end goal - making sure that a piece of information sent from one place to another is secured and that only the right recipient will be able to read and understand the received information. But the methods they use and the time it takes to reach that goal are very different. 
 
-%introduction section
-\subsection{Subsection Heading Here}
-%subsection text
-\end{multicols}
+Cryptography chooses to focus on altering the information itself, encrypting it using a key only known by the receiver and sender\footnote{This is only true in symmetric cryptography and is a gross oversimplification of cryptography as a science, but it is just meant to get a point across and help differentiate between the 2.}, making it harder for any possible meddlers to  alter the meaning of the message or even just understand it. Steganography is more concerned on hiding the fact that there even is any information being transmitted usually by embedding it in something else (hereby referred to as a cover), thus if any interlopers were to actually look at the cover, they wouldn't even be aware of the fact that it contained secrets.
+
+In other words, both methods are meant to be used over an open and unsafe environment, and while cryptography tries to hide the contents of the message but not the fact that there is a message being sent, steganography tries to hide the communication altogether. The main advantage of these 2 methods is that they are not exclusive, they can be used together for maximum safety of the information.\footnote{The speed of encoding/decoding the information is greatly decreased when these 2 are combined which is the reason that nobody merges them, preferring to juse use encryption to keep the information safe.}
+
+Given the evolution of the Internet and computers in general in the last 5 decades, there was a need for keeping the communications secure over all the networks, especially in the last 2 decades when computers became common household items. Thus, cryptography really got to shine and thousands of algorithms for encrypting the information were conceived and the very few remarkable ones are still being used\footnote{The reason cryptography is in the spotlight is because it is much faster, mathematically proven, and it hides all the data without leaving anything in plain sight(like steganography does with the cover)}.  But that doesn't mean steganography was left behind, quite on the contrary, researchers developed plenty of new algorithms for hiding information using digital files as cover.
+
+Theoretically all types of digital files could be used as cover  - shared libraries and executables can be edited to include the hidden data and then recompiled/rebuilt, text files and documents could be modified to enclose the information in secret places/paragraphs and multimedia such as images, music and video files can be changed to carry the digital data into their metadata, pixels, audio frequencies, motion vectors and many more. This paper will focus on the latter category of files and will attempt to explain different algorithms that can be used for implementing steganography using multimedia files as our cover.
+\end{multicols*}
 
 
 \begin{thebibliography}{9}
-\bibitem{steganography-origin}
-Merriam-Webster dictionary.
-\\\texttt{https://www.merriam-webster.com/dictionary/steganography}
-
 \bibitem{steganography-history}
 Petitcolas FAP, Anderson RJ and Kuhn MG.
 \textit{Information Hiding - A Survey}.
 Proceedings of the IEEE, special issue on protection of multimedia content, 1999.
+
+\bibitem{steganography-origin}
+Merriam-Webster dictionary.
+\\\texttt{https://www.merriam-webster.com/dictionary/steganography}
+
 % http://www.creangel.com/papers/steganografia.pdf
 \bibitem{seeing-the-unseen} 
 Johnson Neil and Jajodia Susil.
 \textit{Exploring Steganography : Seeing the Unseen}. 
 Los Alamitos, IEEE Computer Society, 1998.
 
-%http://www.academia.edu/download/54323461/EN_-_Image_Steganography_Overview.pdf
+%https://s3.amazonaws.com/academia.edu.documents/54323461/EN_-_Image_Steganography_Overview.pdf?response-content-disposition=inline%3B%20filename%3DAN_OVERVIEW_OF_IMAGE_STEGANOGRAPHY.pdf&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWOWYYGZ2Y53UL3A%2F20200314%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200314T121426Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=0f0ee508658c5b05b4a96fe13c9b9608648d5d049ffc8b565d6204468afa1c21
 \bibitem{overview-image-steganography} 
 T. Morkel, J.H.P. Eloff and M.S. Olivier. 
 \textit{An overview of image steganography}.
