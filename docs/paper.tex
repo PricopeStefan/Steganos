@@ -1,32 +1,47 @@
-\documentclass{article}
+\documentclass[notitlepage]{report}
 \usepackage{graphicx, multicol, float}
 \usepackage[margin=1in]{geometry}
+\usepackage{titling}
+
+
 
 \begin{document}
+
+\pretitle{\begin{center}\Huge\bfseries\vspace*{5em}}
+\posttitle{\par\end{center}\vskip 0.5em}
+\postdate{\end{center}\vspace*{7em}}
 
 \title{Steganography in digital media}
 
 \author{
 	Pricope Stefan-Cristian\\
-	\texttt{pricopestefancristian@gmail.com}
+	\texttt{psir2384@scs.ubbcluj.ro}
   	\and
   	Suciu Mihai\\
   	\texttt{mihai-suciu@cs.ubbcluj.ro}
 }
 \date{\vspace{-5ex}}
 \maketitle
+\thispagestyle{empty}
 
+%Abstract - small description of the paper
+\begin{abstract}
+Steganography is the science of concealing a piece of information within another piece of information without affecting the latter in a noticeable way and therefore alerting any intruders of the existence of the former. 
+This paper presents both existing and new ways of embedding computer files and data into different digital multimedia formats as covert as possible while still allowing the encoded information to be retrieved at a later time without any significant losses.
+\end{abstract}
 
 
 %Aici vine cuprinsu
-
+\tableofcontents{}
 
 %Aici incep capitolele
 \input{chapters/introduction.tex}
 
+\input{chapters/images.tex}
+\input{chapters/audio.tex}
+\input{chapters/video.tex}
 
-
-\section{Conclusion}
+\chapter{Conclusion}
 %\begin{figure}[H]
 %    \centering
 %    \includegraphics[]{pics/bmp_scan_line}
@@ -36,5 +51,35 @@
 
 %Conclusion
 
+\chapter{Bibliography}
+\begin{thebibliography}{9}
+\bibitem{steganography-history}
+Petitcolas FAP, Anderson RJ and Kuhn MG.
+\textit{Information Hiding - A Survey}.
+Proceedings of the IEEE, special issue on protection of multimedia content, 1999.
+
+\bibitem{steganography-origin}
+Merriam-Webster dictionary.
+\\\texttt{https://www.merriam-webster.com/dictionary/steganography}
+
+% http://www.creangel.com/papers/steganografia.pdf
+\bibitem{seeing-the-unseen} 
+Johnson Neil and Jajodia Susil.
+\textit{Exploring Steganography : Seeing the Unseen}. 
+Los Alamitos, IEEE Computer Society, 1998.
+
+%
+\bibitem{overview-image-steganography} 
+T. Morkel, J.H.P. Eloff and M.S. Olivier. 
+\textit{An overview of image steganography}.
+University of Pretoria, ICSA Research Group, 2005.
+
+%http://honeyman.org/u/provos/papers/practical.pdf
+\bibitem{hide-and-seek} 
+Niels Provos and Peter Honeyman.
+\textit{Hide and Seek: An Introduction to Steganography}.
+University of Michigan, IEEE Computer Society, 2003
+
+\end{thebibliography}
 
 \end{document}
