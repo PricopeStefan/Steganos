@@ -25,11 +25,13 @@ error_code personal_scramble_embed(utils::pixels::types pixel_type,
 	uint32_t width,
 	uint8_t*& image_data,
 	uint32_t byte_stream_size,
-	uint8_t*& byte_stream);
+	uint8_t*& byte_stream,
+	std::string password);
 
 error_code personal_scramble_decode(utils::pixels::types pixel_type,
 	uint32_t height,
 	uint32_t width,
 	uint8_t*& image_data,
 	uint32_t& byte_stream_size,
-	uint8_t*& byte_stream);
+	uint8_t*& byte_stream,
+	std::string password);

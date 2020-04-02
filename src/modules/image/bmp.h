@@ -20,6 +20,9 @@ enum class BMPModuleSupportedAlgorithms {
 
 //use a map instead of a struct?
 struct BMPModuleOptions {
+	bool encrypt_secret = false;
+	std::string password = "fasf";
+
 	bool compress_secret = false; //bool indicating whether to compress the secret data or not
 	BMPModuleSupportedAlgorithms algorithm = BMPModuleSupportedAlgorithms::SEQUENTIAL;
 };
@@ -82,8 +85,8 @@ private:
 	uint8_t* secret_data = nullptr;
 	uint32_t secret_data_size = 0;
 
-	error_code simple_sequential_embed_handler();
-	error_code personal_scramble_embed_handler();
+	error_code simple_sequential_embed_handler(const BMPModuleOptions& steg_options);
+	error_code personal_scramble_embed_handler(const BMPModuleOptions& steg_options);
 
 public:
 	BMPEncoderModule(const char* cover_file_path);

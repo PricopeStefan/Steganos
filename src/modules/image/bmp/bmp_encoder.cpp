@@ -24,7 +24,7 @@ BMPEncoderModule::~BMPEncoderModule() {
 		delete secret_stream;
 }
 
-error_code BMPEncoderModule::simple_sequential_embed_handler() {
+error_code BMPEncoderModule::simple_sequential_embed_handler(const BMPModuleOptions& steg_options) {
 	//try writing the raw bytes of the secret file
 	TRY(simple_sequential_embed(
 		sizeof(BGRPixel) * get_padded_width() * cover_image_metadata.height - 32,
@@ -36,7 +36,8 @@ error_code BMPEncoderModule::simple_sequential_embed_handler() {
 	return error_code::NONE;
 };
 
-error_code BMPEncoderModule::personal_scramble_embed_handler() {
+error_code BMPEncoderModule::personal_scramble_embed_handler(const BMPModuleOptions& steg_options) {
+	printf("Secret data size = %llu\n", (uint64_t)secret_data_size);
 	//try writing the raw bytes of the secret file
 	TRY(personal_scramble_embed(
 		utils::pixels::types::BGR,
@@ -44,7 +45,8 @@ error_code BMPEncoderModule::personal_scramble_embed_handler() {
 		get_padded_width(),
 		cover_image_data,
 		secret_data_size,
-		secret_data
+		secret_data,
+		steg_options.password
 	));
 
 	return error_code::NONE;
@@ -64,10 +66,10 @@ error_code BMPEncoderModule::launch_steganos(const BMPModuleOptions& steg_option
 	switch (steg_options.algorithm)
 	{
 		case BMPModuleSupportedAlgorithms::SEQUENTIAL:
-			TRY(simple_sequential_embed_handler());
+			TRY(simple_sequential_embed_handler(steg_options));
 			break;
 		case BMPModuleSupportedAlgorithms::PERSONAL_SCRAMBLE:
-			TRY(personal_scramble_embed_handler());
+			TRY(personal_scramble_embed_handler(steg_options));
 			break;
 		default:
 			std::cout << "Algorithm not yet implemented, its on my TO DO\n";

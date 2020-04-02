@@ -43,11 +43,11 @@ namespace utils {
 		//pixels types used in the internal storage of the image data of different file formats
 		enum class types {
 			//BGR is the type of pixel used by the BMP file format - 24 bits/pixel
-			BGR,
+			BGR = 3,
 			//RGB is the normal type of pixel used by JPEG, PNG etc. - 24 bits/pixel
-			RGB,
+			RGB = 3,
 			//RGBA is common in PNG file format, 3 normal color channels + alpha/opacity channel - 32 bits/pixel
-			RGBA
+			RGBA = 4
 		};
 
 

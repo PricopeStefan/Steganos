@@ -10,7 +10,7 @@
 
 error_code encode_run_handler(/* command line args */) {
 	const char* cover_picture = "D:\\Projects\\Steganos\\test_data\\images\\marbles.bmp";
-	const char* secret_message = "D:\\Projects\\Steganos\\test_data\\images\\sails.bmp";
+	const char* secret_message = "D:\\Projects\\Steganos\\test_data\\secrets\\orar.xlsx";
 
 	BMPEncoderModule steg_module(cover_picture, secret_message);
 	BMPModuleOptions options;

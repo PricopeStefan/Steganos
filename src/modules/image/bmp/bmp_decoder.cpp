@@ -11,7 +11,7 @@ error_code BMPDecoderModule::write_secret(const char* output_path) const {
 	}
 
 	//TO DO : check if writes succedded
-	embedded_stream.write(reinterpret_cast<char*>(secret_data), secret_data_size);
+	embedded_stream.write(reinterpret_cast<char*>(secret_data), secret_data_size - 4); // - 4 because we added 4 bytes for the stream length
 	embedded_stream.close();
 
 	return error_code::NONE;
@@ -37,10 +37,11 @@ error_code BMPDecoderModule::personal_scramble_handler(const BMPModuleOptions& s
 		get_padded_width(),
 		cover_image_data,
 		secret_data_size,
-		secret_data
+		secret_data,
+		steg_options.password
 	));
 
-	//TRY(write_secret());
+	TRY(write_secret("remade.xlsx"));
 
 	return error_code::NONE;
 }
@@ -59,13 +60,11 @@ BMPDecoderModule::~BMPDecoderModule() {
 
 error_code BMPDecoderModule::launch_steganos(const BMPModuleOptions& steg_options) {
 	switch (steg_options.algorithm) {
-	case BMPModuleSupportedAlgorithms::SEQUENTIAL:
-		return sequential_handler(steg_options);
-	case BMPModuleSupportedAlgorithms::PERSONAL_SCRAMBLE:
-		return personal_scramble_handler(steg_options);
-	default:
-		break;
+		case BMPModuleSupportedAlgorithms::SEQUENTIAL:
+			return sequential_handler(steg_options);
+		case BMPModuleSupportedAlgorithms::PERSONAL_SCRAMBLE:
+			return personal_scramble_handler(steg_options);
+		default:
+			return error_code::MISC_ERROR;
 	}
-
-	return error_code::NONE;
 }
