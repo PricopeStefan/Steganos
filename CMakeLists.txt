@@ -10,11 +10,13 @@ add_executable (
 	Steganos
 	${PROJECT_SOURCE_DIR}/src/general/main.cpp
 	${PROJECT_SOURCE_DIR}/src/general/utils/byte_utils.cpp
-	${PROJECT_SOURCE_DIR}/src/general/image_algorithms/simple_sequential.cpp
-	${PROJECT_SOURCE_DIR}/src/general/image_algorithms/personal_scramble.cpp
 )
 
 
 
 add_subdirectory(src/modules/image)
-target_link_libraries(Steganos IMAGE_MODULES)
+target_link_libraries(Steganos IMAGE_MODULE)
+
+if (WIN32)
+	target_link_libraries(Steganos wsock32 ws2_32)
+endif()

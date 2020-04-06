@@ -7,9 +7,10 @@ using RGBPixel = utils::pixels::RGBPixel;
 
 //sequential encoding and decoding function prototypes for an image data byte stream
 error_code simple_sequential_embed(int64_t image_data_size,
-	uint8_t*& image_data,
+	uint8_t* image_data,
 	uint32_t byte_stream_size,
-	uint8_t*& byte_stream
+	uint8_t* byte_stream,
+	uint64_t& successful_written_bytes
 );
 
 error_code simple_sequential_decode(int64_t image_data_size,

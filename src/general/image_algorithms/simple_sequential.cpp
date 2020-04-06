@@ -4,9 +4,10 @@ using BGRPixel = utils::pixels::BGRPixel;
 using RGBPixel = utils::pixels::RGBPixel;
 
 error_code simple_sequential_embed(int64_t image_data_size,
-	uint8_t*& image_data,
+	uint8_t* image_data,
 	uint32_t byte_stream_size,
-	uint8_t*& byte_stream)
+	uint8_t* byte_stream,
+	uint64_t& successful_written_bytes)
 
 {
 	uint32_t secret_data_byte_index = 0;
@@ -23,6 +24,7 @@ error_code simple_sequential_embed(int64_t image_data_size,
 
 		if (bit_index == 8) {
 			secret_data_byte_index++;
+			successful_written_bytes++;
 			//check to see if done with the writing of the secret data
 			if (secret_data_byte_index == byte_stream_size)
 				return 0u; //no bits left to write, return 0

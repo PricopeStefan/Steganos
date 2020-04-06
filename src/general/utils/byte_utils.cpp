@@ -31,7 +31,7 @@ error_code utils::read_byte_stream(std::ifstream* stream, uint8_t*& byte_stream,
 		byte_stream[1] = ((uint8_t*)&stream_size)[1];
 		byte_stream[2] = ((uint8_t*)&stream_size)[2];
 		byte_stream[3] = ((uint8_t*)&stream_size)[3];
-		printf("The first 4 bytes %02x %02x %02x %02x\n", byte_stream[0], byte_stream[1], byte_stream[2], byte_stream[3]);
+		printf("The first 4 bytes are %02x %02x %02x %02x\n", byte_stream[0], byte_stream[1], byte_stream[2], byte_stream[3]);
 		//succesfully read all the secret file bytes
 		return error_code::NONE;
 

@@ -70,6 +70,9 @@ error_code BMPModule::write_bmp(const char* output_path) {
 	//to do : add error codes returns if something failed
 
 	std::ofstream embedded_stream(output_path, std::ios_base::binary);
+	if (!embedded_stream.is_open())
+		return error_code::STREAM_ERROR;
+
 	//TO DO : check if writes succedded
 	embedded_stream.write(reinterpret_cast<char*>(&cover_image_metadata), sizeof(BMPMetaStruct));
 

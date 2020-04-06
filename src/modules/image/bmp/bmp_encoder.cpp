@@ -25,13 +25,21 @@ BMPEncoderModule::~BMPEncoderModule() {
 }
 
 error_code BMPEncoderModule::simple_sequential_embed_handler(const BMPModuleOptions& steg_options) {
+	uint64_t successful_written_bytes = 0;
+
 	//try writing the raw bytes of the secret file
 	TRY(simple_sequential_embed(
 		sizeof(BGRPixel) * get_padded_width() * cover_image_metadata.height - 32,
 		cover_image_data,
 		secret_data_size,
-		secret_data
+		secret_data,
+		successful_written_bytes
 	));
+
+	if (successful_written_bytes == 0) {
+		printf("There was an error while writing to the file\n");
+		return error_code::COVER_FILE_ERROR;
+	}
 
 	return error_code::NONE;
 };

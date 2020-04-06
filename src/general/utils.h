@@ -63,5 +63,12 @@ namespace utils {
 			uint8_t green = 0;
 			uint8_t blue = 0;
 		};
+
+		struct RGBAPixel {
+			uint8_t red = 0;
+			uint8_t green = 0;
+			uint8_t blue = 0;
+			uint8_t alpha = 0;
+		};
 	}
 }
