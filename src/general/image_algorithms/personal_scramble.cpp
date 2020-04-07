@@ -123,7 +123,8 @@ error_code decode_metadata(utils::pixels::types pixel_type, uint32_t width, uint
 		}
 	}
 	
-	printf("[PersonalScramble]Secret stream size is %u\n", byte_stream_size);
+
+	printf("[PersonalScramble][LittleEndianSize] %u\n", byte_stream_size);
 
 	return error_code::NONE;
 }

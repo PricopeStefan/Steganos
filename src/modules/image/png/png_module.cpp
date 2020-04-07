@@ -1,11 +1,28 @@
 #include <modules/image/png.h>
 
-#include <WinSock2.h>
+#if _WIN32
+	#include <WinSock2.h>
+#endif
 
 PNGModule::PNGModule(const char* png_file_path) {
+	this->png_file_path = png_file_path;
 	TRY(utils::load_stream(png_file_path, png_stream));
 
 	TRY(read_cover_data());
+
+	auto metadata = get_metadata();
+	std::vector<uint8_t> image_data_as_vector; //the raw pixels
+	unsigned error = lodepng::decode(image_data_as_vector, metadata.width, metadata.height, png_file_path);
+	if (error) {
+		printf("couldn't decode file\n");
+		return;
+	}
+
+	image_size = image_data_as_vector.size();
+	image_data = new uint8_t[image_size];
+	memcpy_s(image_data, image_size, &image_data_as_vector[0], image_size);
+	//we now have our image data as a raw byte stream in memory
+
 }
 
 PNGModule::~PNGModule() {
@@ -16,6 +33,9 @@ PNGModule::~PNGModule() {
 
 	if (png_stream != nullptr)
 		delete png_stream;
+
+	if (image_data != nullptr)
+		delete[] image_data;
 }
 
 void PNGModule::convert_chunk_type_to_string(char(&buf)[4], uint32_t uval) const
@@ -103,6 +123,4 @@ const PNGMetadataStruct PNGModule::get_metadata() const {
 
 	return metadata;
 }
-
-
 

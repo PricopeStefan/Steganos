@@ -68,64 +68,22 @@ uint32_t PNGEncoderModule::crc(uint8_t* buf, int32_t len) {
 }
 
 error_code PNGEncoderModule::simple_sequential_embed_handler(const PNGModuleOptions& steg_options) {
-	PNGMetadataStruct metadata = get_metadata();
-	uint64_t bytes_written_so_far = 0, successful_written_bytes = 0;
+	error_code sequential_result = simple_sequential_embed(
+		image_size,
+		image_data,
+		secret_data_size,
+		secret_data,
+		0
+	);
 
-	//try writing the raw bytes of the secret file
-	for (PNGChunkStruct& png_chunk : png_chunks) {
-		char bytes[4];
-		convert_chunk_type_to_string(bytes, png_chunk.type);
-		if (strncmp(bytes, "IDAT", 4) != 0)
-			continue;
-
-		uint8_t pixel_size = 0;
-		if (metadata.color_type == 0x06) { //pixel type is rgba
-			pixel_size = 4;
-		}
-		else if (metadata.color_type == 0x02) {
-			pixel_size = 3;
-		}
-
-		uint32_t how_many_bytes_to_write = 0;
-		if (png_chunk.length > (secret_data_size - bytes_written_so_far))
-			how_many_bytes_to_write = secret_data_size - bytes_written_so_far;
-		else
-			how_many_bytes_to_write = png_chunk.length / 8;
-		
-		error_code sequential_result = simple_sequential_embed(
-			png_chunk.length - 6, // - 2 bytes at the beginning for the flags - 4 bytes at the end for the check value
-			png_chunk.data + 2,
-			how_many_bytes_to_write,
-			secret_data + bytes_written_so_far,
-			successful_written_bytes
-		);
-
-		uint8_t* copy_of_fields_for_crc = new uint8_t[(size_t)png_chunk.length + 4];
-		for (uint8_t i = 0; i < 4; i++) //to compute the new crc, we need the chunk type and chunk data
-			copy_of_fields_for_crc[i] = bytes[i];
-		memcpy_s(copy_of_fields_for_crc + 4, png_chunk.length, png_chunk.data, png_chunk.length);
-		png_chunk.crc = crc(copy_of_fields_for_crc, png_chunk.length + 4);
-		delete[] copy_of_fields_for_crc;
-
-		if (sequential_result == error_code::NONE)
-			return error_code::NONE;
-		else if (sequential_result != error_code::INSUFFICIENT_COVER_SPACE) {
-			printf("Got big error while doing sequential error\n");
-			exit(-1);
-		}
-			
-		bytes_written_so_far += successful_written_bytes;
-
-	}
-
-	return error_code::MISC_ERROR;
-};
-
-error_code PNGEncoderModule::personal_scramble_embed_handler(const PNGModuleOptions& steg_options) {
-	printf("Secret data size = %llu\n", (uint64_t)secret_data_size);
+	auto metadata = get_metadata();
+	std::vector<uint8_t> image_copy(image_data, image_data + image_size);
+	unsigned error = lodepng::encode(steg_options.output_filename + ".png", image_copy, metadata.width, metadata.height);
+	if (error)
+		return error_code::STREAM_ERROR;
 
 	return error_code::NONE;
-};
+}
 
 
 error_code PNGEncoderModule::launch_steganos(const PNGModuleOptions& steg_options) {
@@ -137,16 +95,10 @@ error_code PNGEncoderModule::launch_steganos(const PNGModuleOptions& steg_option
 	case PNGModuleSupportedAlgorithms::SEQUENTIAL:
 		TRY(simple_sequential_embed_handler(steg_options));
 		break;
-	case PNGModuleSupportedAlgorithms::PERSONAL_SCRAMBLE:
-		TRY(personal_scramble_embed_handler(steg_options));
-		break;
 	default:
 		std::cout << "Algorithm not yet implemented, its on my TO DO\n";
 		return error_code::MISC_ERROR;
 	}
-
-
-	TRY(write_png());
 
 	return error_code::NONE;
 }

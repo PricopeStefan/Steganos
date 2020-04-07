@@ -2,6 +2,7 @@
 #include "general/utils.h"
 //supported algorithms for the bmp files
 #include <general/image_algorithms.h>
+#include "png/lodepng.h"
 
 #include <vector>
 
@@ -12,15 +13,15 @@ using RGBAPixel = utils::pixels::RGBAPixel;
 
 enum class PNGModuleSupportedAlgorithms {
 	//the classic one = the last bit of each pixel is changed to represent a bit of the data
-	SEQUENTIAL,
-	//divide the image data matrix in 8x8 submatrixes and randomize using a given password 
-	//the order of the writing of the secret data - generate a random permutation containing numbers 1-64
-	//and write the data bits following that permutation
-	PERSONAL_SCRAMBLE,
+	SEQUENTIAL
+	//because PNG is an interlaced format, the scramble algorithm is not really viable because
+	//the order of the pixels does not accurately represent the data in order(insane to iterate over all the pixels)
 	//TO DO : add more algorithms(extract only red, blue or green channels)
 };
 
 struct PNGModuleOptions {
+	std::string output_filename = "output";
+
 	bool encrypt_secret = false;
 	std::string password = "png_password";
 
@@ -58,8 +59,11 @@ struct PNGMetadataStruct {
 
 class PNGModule {
 protected:
+	std::string png_file_path = "";
 	std::ifstream * png_stream = nullptr;
 	std::vector<PNGChunkStruct> png_chunks;
+	uint8_t* image_data = nullptr;
+	int64_t image_size = 0;
 
 	error_code read_cover_data();
 
@@ -79,14 +83,13 @@ public:
 
 class PNGEncoderModule : public PNGModule {
 private:
+	std::string cover_file_path = "";
 	std::ifstream* secret_stream = nullptr;
 	//pointer to the raw bytes of the secret data
 	uint8_t* secret_data = nullptr;
 	uint32_t secret_data_size = 0;
 
 	error_code simple_sequential_embed_handler(const PNGModuleOptions& steg_options);
-	error_code personal_scramble_embed_handler(const PNGModuleOptions& steg_options);
-
 
 	uint32_t crc_table[256];
 	void make_crc_table();
@@ -103,3 +106,24 @@ public:
 
 	error_code launch_steganos(const PNGModuleOptions& steg_options = PNGModuleOptions());
 };
+
+
+class PNGDecoderModule : public PNGModule {
+private:
+	//pointer to the secret data
+	uint8_t* secret_data = nullptr;
+	//number of bytes that the secret data holds
+	uint32_t secret_data_size = 0;
+
+	error_code write_secret(const char* output_path = "hidden.bin") const;
+
+	error_code sequential_handler(const PNGModuleOptions& steg_options);
+
+public:
+	PNGDecoderModule(const char* embedded_path);
+	PNGDecoderModule(const char* embedded_path, const PNGModuleOptions steg_options);
+	~PNGDecoderModule();
+
+	error_code launch_steganos(const PNGModuleOptions& steg_options = PNGModuleOptions());
+};
+
