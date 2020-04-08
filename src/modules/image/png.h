@@ -1,8 +1,8 @@
 #pragma once
-#include "general/utils.h"
+#include <general/utils.h>
 //supported algorithms for the bmp files
 #include <general/image_algorithms.h>
-#include "png/lodepng.h"
+#include <external/lodepng/lodepng.h>
 
 #include <vector>
 

@@ -11,7 +11,7 @@ add_library(
 add_library(
 	PNG_MODULE OBJECT
 	"png.h"
-	"png/lodepng.cpp"
+	"../../external/lodepng/lodepng.cpp"
 	"png/png_module.cpp"
 	"png/png_encoder.cpp"
 	"png/png_decoder.cpp"
