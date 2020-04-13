@@ -478,4 +478,5 @@ MigrationBackup/
 # End of https://www.gitignore.io/api/c,c++,cmake,windows,visualstudio,visualstudiocode
 
 out/
+test_data/secrets/orar.xlsx
 CMakeSettings.json

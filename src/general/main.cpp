@@ -1,7 +1,8 @@
 #include <iostream>
 
 #include "modules/image/all.h"
-#include <external/cxxopts/cxxopts.hpp>
+#include <modules/audio/wav.h>
+//#include <external/cxxopts/cxxopts.hpp>
 
 #ifdef _WIN32
 	#define _CRTDBG_MAP_ALLOC
@@ -22,7 +23,6 @@ error_code encode_run_handler(/* command line args */) {
 
 	return error_code::NONE;
 }
-
 error_code decode_run_handler(/* cmdl args */) {
 	BMPDecoderModule desteg_module("D:\\Projects\\Steganos\\out\\build\\x64-Debug\\output.bmp");
 	BMPModuleOptions options;
@@ -33,60 +33,65 @@ error_code decode_run_handler(/* cmdl args */) {
 	return error_code::NONE;
 }
 
-void parse(int argc, char* argv[]) {
-	try {
-		cxxopts::Options options("Steganos", "Simple steganography project created as a part of my bachelor's thesis");
-
-		options.allow_unrecognised_options()
-			.add_options("General")
-			("h,help", "Prints this help message")
-			("o,output", "Name of the output file", cxxopts::value<std::string>(), "BIN")
-			("v,verbose", "Verbose output", cxxopts::value<bool>()->default_value("false"))
-			("a,action", "Steganos action.", cxxopts::value<std::string>()->default_value("encode"), "<encode/decode>")
-			("m,method", "The method to be used when encoding/decoding the message", cxxopts::value<std::string>())
-			;
-
-		options.add_options("Encoding")
-			("cf", "The file to be used as a cover for the secret message", cxxopts::value<std::string>(), "FILE")
-			("sf", "The secret file which will be embedded into the cover file", cxxopts::value<std::string>(), "FILE")
-			;
-
-		options.add_options("Decoding")
-			("if", "The file to be used when decoding", cxxopts::value<std::string>(), "FILE")
-			;
-
-		auto result = options.parse(argc, argv);
-
-		if (result.count("help") || result.arguments().size() == 0)
-		{
-			std::cout << options.help() << std::endl;
-			exit(0);
-		}
-	}
-	catch (const cxxopts::OptionException& e)
-	{
-		std::cout << "error parsing options: " << e.what() << std::endl;
-		exit(1);
-	}
-
-}
+//void parse(int argc, char* argv[]) {
+//	try {
+//		cxxopts::Options options("Steganos", "Simple steganography project created as a part of my bachelor's thesis");
+//
+//		options.allow_unrecognised_options()
+//			.add_options("General")
+//			("h,help", "Prints this help message")
+//			("o,output", "Name of the output file", cxxopts::value<std::string>(), "BIN")
+//			("v,verbose", "Verbose output", cxxopts::value<bool>()->default_value("false"))
+//			("a,action", "Steganos action.", cxxopts::value<std::string>()->default_value("encode"), "<encode/decode>")
+//			("m,method", "The method to be used when encoding/decoding the message", cxxopts::value<std::string>())
+//			;
+//
+//		options.add_options("Encoding")
+//			("cf", "The file to be used as a cover for the secret message", cxxopts::value<std::string>(), "FILE")
+//			("sf", "The secret file which will be embedded into the cover file", cxxopts::value<std::string>(), "FILE")
+//			;
+//
+//		options.add_options("Decoding")
+//			("if", "The file to be used when decoding", cxxopts::value<std::string>(), "FILE")
+//			;
+//
+//		auto result = options.parse(argc, argv);
+//
+//		if (result.count("help") || result.arguments().size() == 0)
+//		{
+//			std::cout << options.help() << std::endl;
+//			exit(0);
+//		}
+//	}
+//	catch (const cxxopts::OptionException& e)
+//	{
+//		std::cout << "error parsing options: " << e.what() << std::endl;
+//		exit(1);
+//	}
+//
+//}
 
 int main(int argc, char *argv[]) {
 	{
-		parse(argc, argv);
+
+		WAVEncoderModule wav_module("D:\\Projects\\Steganos\\test_data\\audio\\Gavotte_en_rondeau_54.wav", "D:\\Projects\\Steganos\\test_data\\secrets\\orar.xlsx");
+		wav_module.launch_steganos();
+
+
+
+		//parse(argc, argv);
 		/* check if -d option is in argv. if its not try and encode*/
 		//encode_run_handler();
 		//decode_run_handler();
+		//PNGEncoderModule encoder("D:\\Projects\\Steganos\\test_data\\images\\star_field.png", "D:\\Projects\\Steganos\\test_data\\secrets\\orar.xlsx");
+		//auto metadata = encoder.get_metadata();
+		//printf("Width = %u ; Height = %u; Bit Depth = %d; Color Type = %d; Compression = %d; Filter = %d\n", metadata.width, metadata.height, (int)metadata.bit_depth, (int)metadata.color_type, (int)metadata.compression_method, (int)metadata.filter_method);
+		//PNGModuleOptions options;
+		//options.algorithm = PNGModuleSupportedAlgorithms::SEQUENTIAL;
+		//encoder.launch_steganos(options);
 
-		PNGEncoderModule encoder("D:\\Projects\\Steganos\\test_data\\images\\star_field.png", "D:\\Projects\\Steganos\\test_data\\secrets\\orar.xlsx");
-		auto metadata = encoder.get_metadata();
-		printf("Width = %u ; Height = %u; Bit Depth = %d; Color Type = %d; Compression = %d; Filter = %d\n", metadata.width, metadata.height, (int)metadata.bit_depth, (int)metadata.color_type, (int)metadata.compression_method, (int)metadata.filter_method);
-		PNGModuleOptions options;
-		options.algorithm = PNGModuleSupportedAlgorithms::SEQUENTIAL;
-		encoder.launch_steganos(options);
-
-		PNGDecoderModule decoder("output.png");
-		decoder.launch_steganos(options);
+		//PNGDecoderModule decoder("output.png");
+		//decoder.launch_steganos(options);
 	}
 	
 	_CrtDumpMemoryLeaks();

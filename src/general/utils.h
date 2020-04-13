@@ -35,6 +35,8 @@ namespace utils {
 	int32_t compress_data(uint8_t*& data_bytes);
 
 	void setLSB(uint8_t& value, const bool& bit);
+	void setLSB(uint16_t& value, const bool& bit);
+	void setLSB(uint32_t& value, const bool& bit);
 
 	uint8_t read_byte_from_lsbs(uint8_t* byte_stream, uint64_t byte_stream_size);
 

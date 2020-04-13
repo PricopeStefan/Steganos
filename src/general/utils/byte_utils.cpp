@@ -53,6 +53,16 @@ void utils::setLSB(uint8_t& value, const bool& bit) {
 		value |= 1;
 	else value &= 0xFE;
 }
+void utils::setLSB(uint16_t& value, const bool& bit) {
+	if (bit)
+		value |= 1;
+	else value &= 0xFFFE;
+}
+void utils::setLSB(uint32_t& value, const bool& bit) {
+	if (bit)
+		value |= 1;
+	else value &= 0xFFFFFFFE;
+}
 
 uint8_t utils::read_byte_from_lsbs(uint8_t* byte_stream, uint64_t byte_stream_size) {
 	if (byte_stream_size < 8)

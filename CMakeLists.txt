@@ -15,7 +15,8 @@ add_executable (
 
 
 add_subdirectory(src/modules/image)
-target_link_libraries(Steganos IMAGE_MODULE)
+add_subdirectory(src/modules/audio)
+target_link_libraries(Steganos IMAGE_MODULE AUDIO_MODULE)
 
 if (WIN32)
 	target_link_libraries(Steganos wsock32 ws2_32)

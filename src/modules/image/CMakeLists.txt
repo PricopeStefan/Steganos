@@ -19,8 +19,8 @@ add_library(
 
 add_library(
 	IMAGE_ALGORITHMS OBJECT
-	${PROJECT_SOURCE_DIR}/src/general/image_algorithms/simple_sequential.cpp
-	${PROJECT_SOURCE_DIR}/src/general/image_algorithms/personal_scramble.cpp
+	${PROJECT_SOURCE_DIR}/src/general/algorithms/simple_sequential.cpp
+	${PROJECT_SOURCE_DIR}/src/general/algorithms/personal_scramble.cpp
 )
 
 add_library(

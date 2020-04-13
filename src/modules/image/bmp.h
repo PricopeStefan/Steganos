@@ -14,7 +14,7 @@ enum class BMPModuleSupportedAlgorithms {
 	//the order of the writing of the secret data - generate a random permutation containing numbers 1-64
 	//and write the data bits following that permutation
 	PERSONAL_SCRAMBLE, 
-	//TO DO : add more algorithms
+	//TO DO : add more algorithms(metadata enconding at least)
 };
 
 

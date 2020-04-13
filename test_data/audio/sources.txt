@@ -1,0 +1,10 @@
+CantinaBand60.wav from https://www2.cs.uic.edu/~i101/SoundFiles/
+Gavotte_en_rondeau_54 from http://www.music.helsinki.fi/tmt/opetus/uusmedia/esim/index-e.html
+
+
+
+
+Original = https://voca.ro/dRmUWMOqKRa
+Embedded a msg bit every 4 samples = https://voca.ro/ecvusdTMU0Z - 2/2 people succesfully identified this as the modified stream
+Embedded a msg bit every 8 samples = https://voca.ro/bP2cWO222Zj
+
