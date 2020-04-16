@@ -27,26 +27,8 @@ With all of this information in mind, we can now procede to discussing the diffe
 
 \end{multicols*}
 
-
-\section{General and particular algorithms in image steganography}
-\subsection{Least Significant Bit (LSB)}
-\setlength\columnsep{20pt}
-\begin{multicols*}{2}
-Least Significant Bit or LSB is by far the most used method when talking about any type of steganography. Given that the smallest unit a computer can understand and process is usually a byte, altering only the least significant bit will not change the transmitted information in a noticeable way to any external parties. It is much easier to showcase what a byte contains and what the LSB change implies and how it works. A byte contains 8 bits, so this means that the values a byte can take range anywhere from 0 to 255 (inclusive)\footnote{This is the case for unsigned bytes, but given that we are talking about a method that only deals with the least significant bit, we can safely ignore the most significant bit, also known as the sign bit.}. Let's assume that we have an array of 4 random values in consecutive memory : 217, 127, 100, 62 (all values are in decimal), each stored on exactly one byte, and that we want to hide our grade in Numerical Analysis from our parents (in this case a 3) using a LSB substitution. The process would be something like this :
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=4.5cm,keepaspectratio]{pics/how_lsb_works}
-    \caption{How the Least Significant Bit change works}
-    \label{LSB}
-\end{figure}
-
-As we can see from Figure 2.3, we have succesfully altered the least significant bit of the first 3 bytes of the stream in order to hide our grade : 217 became 216 when we changed the last bit from 1 to 0, 127 was unchanged because it already had the last bit set, and the third byte became 101 after toggling the final bit. Furthermore, the rest of the stream (the fourth byte, 62) was not affected because we already hid the entirety of our secret message. While this is great because we only hide exactly as much as we need and not a byte more, we have a high risk of corrupting the hidden message in case our cover image gets compressed or loses even a single byte when sent over a network. Basically, we are trading data redundancy in order to get simplicity and efficiency.
-\end{multicols*}
-
-\subsection{Metadata encoding}
-test2
-\subsection{Unused bytes}
+\section{Additional techniques used in image stenography}
+\subsection{Image sub-block scrambling}
 
 \section{BitMap Picture (BMP)}
 
