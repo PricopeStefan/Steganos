@@ -50,9 +50,35 @@ The carrier capacity appears initially to be the same, but it is very important 
 so in most cases, the scrambled MMS will be smaller than the sequential MMS. However it is very important to note that this decrease in size comes with a great increase in data security and message safety.
 
 This paper also introduces a new type of scrambling algorithm created by the authors that only works on lossless image formats that do not use any kind of interlacing when rendering the picture. It relies on scrambling the secret message into the image sub-blocks in a specific order that can only be deduced by having the right passkey. More information on this method is presented in chapter 3.2.1 after the introduction of image basics.
-\end{multicols*}
+
 
 \section{Metadata encoding}
+The word metadata was formed from combining the word "data" with the prefix "meta-" and is used to describe a special type of data that has information about other data\cite{metadata-origin}. In simpler terms, it means "data about data" and it keeps the same meaning in the digital world. It is much easier to visualize and understand the concept of metadata using a simple example : let's take a picture stored on a computer.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=2.3cm,keepaspectratio]{pics/goose_file}
+    \caption{A simple image file}
+    \label{Goose Image File}
+\end{figure}
+
+As noted in the introductory chapter, every file can be seen as a byte stream. However it is very important to keep in mind that those bytes don't represent only the image data, the pixels seen on the screen, they are much more. They also contain information about the camera used to take the photo, the location where it was taken, when the file was created, when it was modified, etc. All of the aforementioned information forms the metadata. It varies from file format to file format where they store this information in the byte stream, how many bytes are allocated for each piece of information or if it even has any effects on the actual file data. Most of the time metadata fields are only parsed by the renderer software and are mostly hidden to the user, but there are a few ways of viewing the information: 
+\begin{itemize}
+  \item using a hex editor to view the raw bytes of the file and then mapping those bytes to the publicly available file format specifier - an international approved paper which specifies the meaning of the bytes in the file binary stream
+  \item using the operating system to view more properties about the file, not just the actual data interpreted and displayed to the end user
+  \item using a third party tool which already knows the mapping and meaning of each sequence of bytes in the file binary stream and can succesfully parse the metadata
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=8cm,keepaspectratio]{pics/exiftool_file_metadata}
+    \caption{Example of using a tool to read file metadata}
+    \label{Goose Image File Metadata using Exiftool}
+\end{figure}
+
+The focus of this sub-chapter will be on the metadata fields that don't necessarily have any important effect on the data representation and theoretically could be altered, such as any comments from the author or any contact information. In the case of an image, changing important metadata fields such as the width or height of the picture are not very covert methods of embedding any information at all, proving that not all fields are equally important.
 
 \section{Unused space embedding}
+sdfasfasd
+
+\end{multicols*}
