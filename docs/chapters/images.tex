@@ -23,15 +23,22 @@ Computers are programmed to do operations in a clear sequential way and this rul
     \label{Pixel Creation}
 \end{figure}
 
-With all of this information in mind, we can now procede to discussing the different steganography methods possible when working with images as cover.
+It is important to note that most of these developments have been done in a time where the maximum storage was extremely limited and not very fast, very different from what it is today. In order to save some space they looked into different compression algorithms to apply to the byte streams and today they fall into two distinict categories: the lossless algorithms are the ones that compress all the original information without destroying any of it, while on the other hand there are the lossy algorithms which are able to identify which information is useless and delete it accordingly. This concept also applies to file formats and we will see in later chapters more concrete examples. 
+
+With all of this information in mind, we can now procede to discussing the most commonly .
+
+\section{BitMap Picture (BMP)} \label{BMP_Explained_Chapter}
+
+The BMP file format, also known as the device independent bitmap file format(DIB), bitmap image file or just bitmap, is a lossless\footnote{It is true that the format specification standards supports compression but further research reveals that to this day it only supports lossless types of compression, such as Huffman or Run Length Encoding compression algorithms.} image file format originally designed by Microsoft back in 1986 in order to store two-dimensional digital images on their Windows operating system. Over the years it has developed plenty of variations and extensions that were based on the original specification but this paper chooses to focus only on the most common available ones.
+
+
+
+
+
+\subsection{Image sub-block scrambling using the BMP format}
+
+\section{Portable Network Graphics (PNG)} \label{PNG_Explained_Chapter}
+
+\section{Joint Photographic Experts Group (JPEG)} \label{JPEG_Explained_Chapter}
 
 \end{multicols*}
-
-\section{Additional techniques used in image stenography}
-\subsection{Image sub-block scrambling}
-
-\section{BitMap Picture (BMP)}
-
-\section{Portable Network Graphics (PNG)}
-
-\section{Joint Photographic Experts Group (JPEG)}
