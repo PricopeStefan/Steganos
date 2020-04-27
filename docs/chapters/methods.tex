@@ -92,7 +92,7 @@ In the end it is important to note that metadata secret encoding is the most tri
     \label{MetadataMessageExample}
 \end{figure}
 
-\section{Unused space embedding}
+\section{Unused space embedding} \label{Unused_Space_Chapter}
 Usually most file formats and even internationally approved and used protocols such as the TCP/IP have unused bits or bytes in their composition, either for future proofing the format in the form of reserved space or simply to serve as padding space mainly present to help the associated parsers. 
 
 One well known example of this is found in the BMP file format which appears only in the cases where the width of the image is not a multiple of 4. The standards specify that in this situation there needs to be added the right amount of bytes to fill so that the width will be divisible by 4. So if an image has a resolution of 1920x1080 (the width is the first number), there won't be a need for any padding bytes because 

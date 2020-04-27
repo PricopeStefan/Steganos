@@ -4,7 +4,7 @@
 \section{Introduction}
 
 \setlength\columnsep{20pt}
-\begin{multicols*}{2}
+\begin{multicols}{2}
 An image is a two-dimensional representation depicting any possible subject conceivable by human imagination, captured using an optical device (such as a camera or a telescope) or a natural object (human eyes). The image can then be rendered and displayed for other people to see either manually (by painting, carving etc.) or automatically (by using a computer). In this chapter we will focus on images captured using digital optical devices that are rendered automatically. The correct term for them is digital images, but throughout the rest of the paper they will be reffered to as images for convenience.
 
 \begin{figure}[H]
@@ -25,15 +25,61 @@ Computers are programmed to do operations in a clear sequential way and this rul
 
 It is important to note that most of these developments have been done in a time where the maximum storage was extremely limited and not very fast, very different from what it is today. In order to save some space they looked into different compression algorithms to apply to the byte streams and today they fall into two distinict categories: the lossless algorithms are the ones that compress all the original information without destroying any of it, while on the other hand there are the lossy algorithms which are able to identify which information is useless and delete it accordingly. This concept also applies to file formats and we will see in later chapters more concrete examples. 
 
-With all of this information in mind, we can now procede to discussing the most commonly .
+With all of this information in mind, we can now procede to discussing the most commonly formats commonly used in today's.
 
 \section{BitMap Picture (BMP)} \label{BMP_Explained_Chapter}
 
-The BMP file format, also known as the device independent bitmap file format(DIB), bitmap image file or just bitmap, is a lossless\footnote{It is true that the format specification standards supports compression but further research reveals that to this day it only supports lossless types of compression, such as Huffman or Run Length Encoding compression algorithms.} image file format originally designed by Microsoft back in 1986 in order to store two-dimensional digital images on their Windows operating system. Over the years it has developed plenty of variations and extensions that were based on the original specification but this paper chooses to focus only on the most common available ones.
+The BMP file format, also known as the device independent bitmap file format(DIB), bitmap image file or just bitmap, is a lossless\footnote{It is true that the format specification standards supports compression but further research reveals that currently it only supports lossless types of compression, such as the Huffman or Run Length Encoding algorithms.} image file format originally designed by Microsoft back in 1986 in order to store two-dimensional digital images on their Windows operating system. Over the years it has developed plenty of variations and extensions that were based on the original specification but this paper will focus only on the most common available ones, no extended versions that are looking to improve the format since they do not add anything interesting or new to the way the format stores the data thus affecting the steganography algorithms.
 
+As with almost every file format, the final BMP byte stream can be seen as a result of the merge between the BMP header which contains metadata about the file and the BMP data which is the actual pixel information. As we can see from table \ref{BMP_Header_Table}, the BMP header stores a lot of important information about the image that is useful for any rendering software while making sure to allocate enough memory to be able to display the picture on the screen and other essential steps. It is also important to note that all the structures seen in the BMP header use the little-endian format for representation and are usually more troublesome on the systems that have the default set as big-endian.
+\end{multicols}
 
+ \begin{center}
+	\begin{tabular}{|l|l|l|l|}
+		\hline
+		\textbf{Information} & \textbf{Size} & \textbf{Offset} & \textbf{Description} \\ \hline
+		Signature & 2 bytes & 0x00 & Two chars, 'B' and 'M' \\ \hline
+		File size & 4 bytes & 0x02 & Total file size in bytes \\ \hline
+		Reserved & 4 bytes & 0x06 & Unused space \\ \hline
+		Data offset & 4 bytes & 0x0A & Offset to get to the actual BMP data \\ \hline
+		Size & 4 bytes & 0x0E & Size of the left header information \\ \hline
+		Width & 4 bytes & 0x12 & Horizontal size of the image \\ \hline
+		Height & 4 bytes & 0x16 & Vertical size of the image \\ \hline
+		Planes & 2 bytes & 0x1A & Amount of image planes \\ \hline
+		Bits Per Pixel & 2 bytes & 0x1C & How many bits are used to represent each pixel \\ \hline
+		Compression & 4 bytes & 0x1E & Indicates the type of compression used \\ \hline
+		Image size & 4 bytes & 0x22 & The size of the compressed image, can be 0 \\ \hline
+		X pixels per Meter & 4 bytes & 0x26 & Horizontal resolution in pixels/meter \\ \hline
+		Y pixels Per Meter & 4 bytes & 0x2A & Vertical resolution in pixels/meter \\ \hline
+		Colors Used & 4 bytes & 0x2E & \begin{tabular}[c]{@{}l@{}}Number of actually used colors\\ (based on Bits Per Pixel)\end{tabular} \\ \hline
+		Important Colors & 4 bytes & 0x32 & Number of important colors (usually all) \\ \hline
+	\end{tabular}
+	\label{BMP_Header_Table}
+ \end{center}
 
+\begin{multicols*}{2}
+Analyzing the obligatory BMP header fields we realise that most of them are useless for any steganographic purposes mainly because they can't be altered without having major consequences on the renderer software but there are still a few interesting ones left:
+\begin{itemize}
+  \item The 4 bytes that are reserved and unused could be very well put to use by using the methods presented in chapter \ref{Unused_Space_Chapter}, so we can use either this space to send parts of a message over multiple BMP files, or we can store the secret message size in these 4 bytes and write the secret after the actual image data has ended.
+  \item Data offset could be useful because some renderers use this field to indicate the offset of the actual image data and just skip any other irelevant metadata information, allowing us to hide information in those fields.
+  \item The width and the height of the image usually are altered to hide bottom parts of the image that may contain hidden information or by masking the result of the merge of two images and just showing the top one. Let's take for example this image of the sun that is obviously missing a part for demonstration purposes.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=4cm,keepaspectratio]{pics/height_modification_steganography_cut}
+    \caption{Sun that is clearly missing something}
+    \label{Sun_Missing_Part}
+\end{figure}
+
+However were we to increase by trial and error the height of the image to see if there is any more bytes to render, we would notice that there really is a message hidden with those bytes that some steganalysis softwares would detect but any renderer software such as the Windows Media Viewer would always miss.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=4cm,keepaspectratio]{pics/height_modification_steganography_original}
+    \caption{Complete sun with the hidden message}
+    \label{Sun_Original}
+\end{figure}
+\end{itemize}
 
 \subsection{Image sub-block scrambling using the BMP format}
 
