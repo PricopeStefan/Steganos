@@ -1,3 +1,0 @@
-
-//TO DO : create simple GUI for the app using the QT5 library
-//research how it should be integrated and create simple designs
