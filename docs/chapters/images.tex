@@ -23,6 +23,8 @@ Computers are programmed to do operations in a clear sequential way and this rul
     \label{Pixel Creation}
 \end{figure}
 
+By merging multiple pixels over a two-dimensional space, they will eventually start to resemble an image that can be stored on a disk as a byte stream and can be rendered anytime by parsing the aforementioned stream. Each pixel can be represented as a point in that space with coordinates that are part of the unsigned integer domain. An entire row of pixels, i.e. pixels that have the same ordinate value, is sometimes also referred to as a scanline because in the earlier days of modern computing, computers would be given the width of the image and based on that value they would read a precise amount of bytes and render it on the screen before moving on to the next scanline, repeating this process until there would be no more information.
+
 It is important to note that most of these developments have been done in a time where the maximum storage was extremely limited and not very fast, very different from what it is today. In order to save some space they looked into different compression algorithms to apply to the byte streams and today they fall into two distinict categories: the lossless algorithms are the ones that compress all the original information without destroying any of it, while on the other hand there are the lossy algorithms which are able to identify which information is useless and delete it accordingly. This concept also applies to file formats and we will see in later chapters more concrete examples. 
 
 With all of this information in mind, we can now procede to discussing the most commonly formats commonly used in today's.
@@ -67,22 +69,36 @@ Analyzing the obligatory BMP header fields we realise that most of them are usel
 \begin{figure}[H]
     \centering
     \includegraphics[width=4cm,keepaspectratio]{pics/height_modification_steganography_cut}
-    \caption{Sun that is clearly missing something}
+    \caption{Incomplete sun image}
     \label{Sun_Missing_Part}
 \end{figure}
 
-However were we to increase by trial and error the height of the image to see if there is any more bytes to render, we would notice that there really is a message hidden with those bytes that some steganalysis softwares would detect but any renderer software such as the Windows Media Viewer would always miss.
+However if we adjust by trial and error the height of the image to see if there is any more bytes to render, we would notice that there really is a message hidden with those bytes that some steganalysis softwares would detect but any renderer software such as the Windows Media Viewer would always miss. In other words, we have tricked the software to not display more scanlines than we wanted it to display, even though the information is there, not corrupted in any way.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=4cm,keepaspectratio]{pics/height_modification_steganography_original}
-    \caption{Complete sun with the hidden message}
+    \caption{Complete sun including the hidden message}
     \label{Sun_Original}
 \end{figure}
 \end{itemize}
 
-\subsection{Image sub-block scrambling using the BMP format}
+Moving on from the metadata block of the BMP format to the actual data byte stream, we find additional interesting information about how the pixel data is actually stored. Most images use the Red, Green and Blue also known as RGB values to compose the final pixel color, but for an unknown reason the creators of the bitmap format decided to store the information in the reverse order in the data stream as Blue, Green, Red or BGR. However this is not the only change they made from the other common image formats available at the time: rather than storing the scanlines from a top to down order, BMP decided to store them bottom-up.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=7cm,keepaspectratio]{pics/assembling_bmp_image}
+    \caption{How the BMP image is rendered}
+    \label{bmp_how_to_render}
+\end{figure}
+
+This behaviour can be noticed in figures \ref{Sun_Missing_Part} and \ref{Sun_Original} where the top part is cropped in order to hide a message and we can now understand why it is only that part that can be made redundant in the steganography process: because the last bytes of the image data binary stream are actually responsible for the rendering of the top section of the picture. Seeing and understanding how the carrier format works is the first and most important step in embedding messages in a covert way.
+
+\subsection{Image sub-block scrambling using the BMP format}
+agadagddddddddddddddddddddddddddddddddddd
+dddddddddddddddddd
+
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
 \section{Portable Network Graphics (PNG)} \label{PNG_Explained_Chapter}
 
 \section{Joint Photographic Experts Group (JPEG)} \label{JPEG_Explained_Chapter}
