@@ -1,0 +1,51 @@
+\begin{thebibliography}{15}
+\bibitem{steganography-history}
+Petitcolas FAP, Anderson RJ and Kuhn MG.
+\textit{Information Hiding - A Survey}.
+Proceedings of the IEEE, special issue on protection of multimedia content, 1999.
+
+
+\bibitem{steganography-origin}
+Merriam-Webster dictionary.
+\\\texttt{https://www.merriam-webster.com/dictionary/steganography}
+
+\bibitem{metadata-origin}
+Merriam-Webster dictionary.
+\\\texttt{https://www.merriam-webster.com/dictionary/metadata}
+
+\bibitem{RFC3514}
+S. Bellovin
+\textit{The Security Flag in the IPv4 Header}. 
+\\\texttt{https://tools.ietf.org/html/rfc3514}
+AT\&T Labs Research, 1 April 2003
+
+\bibitem{practical_data_hiding_tcp_ip} 
+Johnson Neil and Jajodia Susil..
+\textit{Exploring Steganography : Seeing the Unseen}. 
+Los Alamitos, IEEE Computer Society, 1998.
+
+% http://www.creangel.com/papers/steganografia.pdf
+\bibitem{seeing-the-unseen} 
+Kamran Ahsan, Deepa Kundur.
+\textit{Practical Data Hiding in TCP/IP}. 
+Workshop on Multimedia Security at ACM Multimedia, 2002.
+
+%
+\bibitem{overview-image-steganography} 
+T. Morkel, J.H.P. Eloff and M.S. Olivier. 
+\textit{An overview of image steganography}.
+University of Pretoria, ICSA Research Group, 2005.
+
+%http://honeyman.org/u/provos/papers/practical.pdf
+\bibitem{hide-and-seek} 
+Niels Provos and Peter Honeyman.
+\textit{Hide and Seek: An Introduction to Steganography}.
+University of Michigan, IEEE Computer Society, 2003
+
+%https://users.ece.cmu.edu/~adrian/487-s06/westfeld-pfitzmann-ihw99.pdf
+\bibitem{attack-on-steganography} 
+Andreas Westfeld and Andreas Pfitzmann.
+\textit{Attacks on Steganographic Systems}.
+International workshop on information hiding, 1999
+
+\end{thebibliography}
