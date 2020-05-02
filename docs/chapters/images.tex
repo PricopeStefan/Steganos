@@ -59,7 +59,7 @@ As with almost every file format, the final BMP byte stream can be seen as a res
 	\label{BMP_Header_Table}
  \end{center}
 
-\begin{multicols*}{2}
+\begin{multicols}{2}
 Analyzing the obligatory BMP header fields we realise that most of them are useless for any steganographic purposes mainly because they can't be altered without having major consequences on the renderer software but there are still a few interesting ones left:
 \begin{itemize}
   \item The 4 bytes that are reserved and unused could be very well put to use by using the methods presented in chapter \ref{Unused_Space_Chapter}, so we can use either this space to send parts of a message over multiple BMP files, or we can store the secret message size in these 4 bytes and write the secret after the actual image data has ended.
@@ -95,12 +95,91 @@ Moving on from the metadata block of the BMP format to the actual data byte stre
 This behaviour can be noticed in figures \ref{Sun_Missing_Part} and \ref{Sun_Original} where the top part is cropped in order to hide a message and we can now understand why it is only that part that can be made redundant in the steganography process: because the last bytes of the image data binary stream are actually responsible for the rendering of the top section of the picture. Seeing and understanding how the carrier format works is the first and most important step in embedding messages in a covert way.
 
 \subsection{Image sub-block scrambling using the BMP format}
-agadagddddddddddddddddddddddddddddddddddd
-dddddddddddddddddd
+Sub-block scrambling is a type of scrambling algorithm, like those introduced in chapter \ref{scrambling_chapter}, that can be applied to images stored in the BMP format. It was created by the author of this thesis based on the idea of the JPEG format and the algorithm it uses during compression that is applied only on sub-blocks of 8x8 size. We mentioned in chapter \ref{scrambling_chapter} that most scrambling algorithms have \[ MMS \leq [CDS \ / \ 8] \ bytes \] but the target was to design and implement an algorithm which can make use of all the bytes available in the cover, and we ended up with this method which has 
+\begin{equation} \label{eq:1}
+MMS = [CDS \ / \ 8] \ bytes
+\end{equation}
+ making it similar in storage capacity to a sequential algorithm. That performance was achieved following a simple procedure:
+\begin{itemize}
+  \item Separate the image into multiple blocks of BLOCK\_SIZE (this is a global constant value which is usually equal to 8 but can be higher or lower). It doesn't matter if the width or height of the image are not a multiple of BLOCK\_SIZE, the algorithm also works with non-square blocks.
+  \item The algorithm needs a password to work with in order to use it as a seed when generating a permutation. Each block calls a helper method to obtain the given permutation for itself based on its own width and height. That permutation is the order in which the data will be written.
+  \item The first block is reserved for writing the metadata about the message(such as the length of the secret) and the other blocks are for writing the actual contents of the message.
+\end{itemize}
 
-dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+\end{multicols}
+
+\definecolor{lightergray}{rgb}{0.92,0.92,0.92}
+\lstset{escapeinside={<@}{@>},
+		frame=single,
+		xleftmargin=-25.4pt,
+	      xrightmargin=-25.4pt
+}
+
+\begin{lstlisting}[backgroundcolor = \color{lightergray},language=Python,caption={Pseudocode of the scramble algorithm},captionpos=b]
+ global constant BLOCK_SIZE;
+
+ procedure embed_subblock(secret, subblock, random_engine)
+   #Generate a permutation from 0 to subblock.width * subblock.height
+   #using the random_engine given. That permutation will be the order
+   #used when writing the secret data into the subblock data.
+   writing_order<@$\gets$@>random_permutation(0,subblock.width*subblock.height,random_engine); 
+
+   for each byte_index in writing_order do
+     #Getting the absolute index of the subblock rows and 
+     #columns where we need to write the secret information.
+     subblock_row<@$\gets$@>subblock.starting_line_index+byte_index/subblock.width;
+     subblock_column<@$\gets$@>subblock.starting_column_index+byte_index%subblock.width;
+     set_least_significant_bit(subblock.data[subblock_row][subblock_column],secret);
+
+     #We move to the next bit of the secret information
+     advance_to_next_secret_bit(secret);
+		
+ procedure pseudo_scramble(cover, secret, password)
+   #Creating a new pseudo-random engine with a given seed.
+   random_engine<@$\gets$@>new pseudo_random_engine(password);
+
+   for each subblock of cover with subblock.size<@$\leq$@>BLOCK_SIZE
+     if subblock = cover.first_subblock
+       #Used for hiding the size of the secret into 
+       #the first subblock of the cover in an order
+       #given by the pseudo-random engine random_engine.
+       embed_subblock(secret.size,subblock,random_engine);
+     else
+       #If it's not the first subblock of the cover, 
+       #write the actual secret into the subblock.
+       embed_subblock(secret.iterator,subblock,random_engine);
+
+\end{lstlisting}
+
+\begin{multicols*}{2}
+It is much easier to explain the algorithm using a simple example, so let's begin with the image represented in figure \ref{scramble_example_original_image}. It is BMP image with a resolution of 10x6 pixels (10 pixels wide, 6 pixels tall). Furthermore, let's also create the parameters needed by the algorithm in order to embed a message:
+\begin{itemize}
+  \item The secret message we want to hide in the cover file is "Hello World", no quotes.
+  \item Given the aforementioned message, we can calculate its size: 5 characters for the word "Hello", 5 characters for "world" and 1 character for the space inbetween. Total message length is 11 characters or 11 bytes using the ASCII standard. 
+  \item The password used for generating the seed is "super\_secret\_key", no quotes.
+  \item The BLOCK\_SIZE used in splitting the original image is equal to 4.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=7cm,keepaspectratio]{pics/bmp_scrambling/original_image}
+    \caption{Original BMP cover image}
+    \label{scramble_example_original_image}
+\end{figure}
+
+Knowing all of this information we can already know if the cover file is going to be able to hold the secret message based on the formula \ref{eq:1}. We know that the BMP format uses 3 bytes for storing each pixel and that our image is 10 pixels wide and 6 pixels tall, so we have that 
+\\$CDS=3*10*6=180\ bytes \overset{(\ref{eq:1})}{ \implies }\\ \overset{(\ref{eq:1})}{ \implies } MMS=[180/8]=22\ bytes$
+
+Since our total message length is smaller than $MMS$, we know that we will not be running out of cover space during the embedding process. After making these verifications, we can begin by initializing our pseudo-random engine based on the given password meant to be used as a seed and we can also start splitting the original image into sub-blocks, ending up with a result similar to figure \ref{scramble_example_subblocks}. Since neither the width or height of the image are multiples of the BLOCK\_SIZE constant, we have several smaller blocks (to be more precise, blocks 3, 4, 5 and 6) that are still going to be used for embedding purposes. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=7cm,keepaspectratio]{pics/bmp_scrambling/image_broken_subblocks}
+    \caption{Sub-blocks of the original image}
+    \label{scramble_example_subblocks}
+\end{figure}
+
 \section{Portable Network Graphics (PNG)} \label{PNG_Explained_Chapter}
 
 \section{Joint Photographic Experts Group (JPEG)} \label{JPEG_Explained_Chapter}
-
 \end{multicols*}
