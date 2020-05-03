@@ -115,7 +115,7 @@ MMS = [CDS \ / \ 8] \ bytes
 	      xrightmargin=-25.4pt
 }
 
-\begin{lstlisting}[backgroundcolor = \color{lightergray},language=Python,caption={Pseudocode of the scramble algorithm},captionpos=b]
+\begin{lstlisting}[backgroundcolor = \color{lightergray},language=Python,caption={Pseudocode of the scramble algorithm},captionpos=b,label=lst:scramble_pseudocode]
  global constant BLOCK_SIZE;
 
  procedure embed_subblock(secret, subblock, random_engine)
@@ -179,7 +179,110 @@ Since our total message length is smaller than $MMS$, we know that we will not b
     \label{scramble_example_subblocks}
 \end{figure}
 
+We can now begin the actual embedding process. From the pseudocode presented in listing \ref{lst:scramble_pseudocode} we see that the first step is to embed metadata about the secret message, more specifically its length represented as an unsigned integer on 32 bits. But before we can do that, we must ask the pseudo-random engine to generate a permutation between 0 and $subblock.width * subblock.height$, excluding the last value. For this example specifically, we know that
+\[ subblock.width * subblock.height = 4 * 4 = 16 \]
+and let's assume that the engine returns us the following permutation: 
+\[(5,10,12,3,0,15,4,9,14,13,8,2,7,1,6,11) \]
+With this order known and with the fact that each BMP pixel is represented on 3 bytes giving us 3 least significant bits for embedding purposes in mind, the process of embedding the message length (11 or 0x0000000B) into the first subblock goes as follows:
+\begin{enumerate}
+  \item 5th pixel is the first one, all LSBs are set to 0.
+  \item 10th pixel, all 3 LSBs are set to 0.
+  \item 12th pixel, all 3 LSBs are set to 0.
+  \item 3rd pixel, all 3 LSBs are set to 0.
+  \item 0th pixel, all 3 LSBs are set to 0.
+  \item 15th pixel, all 3 LSBs are set to 0.
+  \item 4th pixel, all 3 LSBs are set to 0.
+  \item 9th pixel, all 3 LSBs are set to 0.
+  \item 14th pixel, all 3 LSBs are set to 0.
+  \item 13th pixel has the Blue channel LSB set to 0, Green channel LSB set to 1, Red channel LSB set to 0.
+  \item 8th pixel has the Blue channel LSB set to 1, Green channel LSB set to 1, Red channel is unchanged.
+  \item The rest of the pixels are unchanged.
+\end{enumerate}
+
+A visual representation of the order based on the given permutation can be found in figure \ref{scramble_example_first_block}. We can also notice that we managed to embed 4 bytes of information into a simple block of 4x4 pixels, or 48 bytes of total data, and we still have 2 bytes of free space based on \ref{eq:1}(one bit available in 8th pixel and 3 bits in pixels 2,7,1,6,11).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm,keepaspectratio]{pics/bmp_scrambling/first_block_marked}
+    \caption{Order of writing into the first block}
+    \label{scramble_example_first_block}
+\end{figure}
+
+After embedding the metadata, we can begin hiding the actual message data into the subblock bytes. The sub-block size is 4*4 pixels total, which means 48 bytes in total space, resulting in exactly 6 bytes we will be able to write into this subblock (and every other block which uses 3 bytes to store a pixel and has 16 pixels in total). We start by converting our secret message in binary and we end up with something like this:
+\begin{enumerate}
+\item H = 01001000
+\item e = 01100101
+\item l = 01101100
+\item l = 01101100
+\item o = 01101111
+\item (space) = 00100000 
+\item w = 01110111 
+\item o = 01101111 
+\item r = 01110010 
+\item l = 01101100 
+\item d = 01100100
+\end{enumerate}
+By knowing we have 6 bytes available in the first sub-block we will be able to hide the string "Hello ", which is impressive because it is already more than half of our total message in an image that is only 4 pixels wide and 4 pixels tall. Before starting the actual embedding process, we must again use the pseudo-random engine to generate a new permutation ranging from 0 to the total amount of pixels in the block. Again for the sake of our example, let's assume that we get this permutation:
+\[(10,4,12,6,1,15,9,3,0,8,13,5,2,14,7,11)\]
+Using the binary conversion of our message, we begin by taking 3 bits each time from the binary stream and embedding them into each channel of a pixel in the order given by the permutation. We can see what bits we have written into which pixels in figure \ref{scramble_example_second_block} (the first bit is the one written into the Blue channel of the pixel, the middle one is the Green channel and the last bit is encoded into the Red channel).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=6cm,keepaspectratio]{pics/bmp_scrambling/second_block_marked}
+    \caption{Order of writing the actual message into the second block}
+    \label{scramble_example_second_block}
+\end{figure}
+
+In the case of the third block the situation is slightly different because the width of the block is not equal to BLOCK\_SIZE but this change does not change the behaviour of the algorithm at all. In this case we have a block that is 2 pixels wide and 4 pixels tall, ending up with a total of total 24 bytes needed for storage that can accomodate 3 bytes of secret information, or in our case the letters 'w', 'o' and 'r'. In this case we generate a permutation from 0 to 8, excluding the last value:
+\[(3,6,0,1,4,7,2,5)\]
+By going through the same process as with the previous block we get the result that can be seen in figure \ref{scramble_example_third_block}. This leaves us with the target of hiding only two more characters: 'l' and 'd' in block number 4 which is identical to block 3 in size but was rotated by 90 degrees. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=5cm,keepaspectratio]{pics/bmp_scrambling/third_block_marked}
+    \caption{Order of writing into the third block}
+    \label{scramble_example_third_block}
+\end{figure}
+
+For the last time we generate a permutation using the engine in the same interval as above and we obtain:
+\[(5,3,0,7,4,2,6,1)\]
+And by going again through the steps described above we manage to hide the last two remaining characters and we still have a byte free in the sub-block. The remaining blocks of the image remain unchanged and theoretically could be used for hiding other messages, but there are a few issues that can arise with this, the main one being message separation and identification, how each message is divided etc.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm,keepaspectratio]{pics/bmp_scrambling/fourth_block_marked}
+    \caption{Writing the actual message into the fourth block}
+\end{figure}
+
+After the algorithm finishes and the modified cover image is saved, there is absolutely no difference to the human eye between the two pictures. This is the power of Least Significant Bit insertion when using digital images as the carrier format. The only difference between the two files is at a bit level, making it one of the safest and most covert ways of sending secrets over an untrusted environment.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm,keepaspectratio]{pics/bmp_scrambling/original_image}
+    \caption{The original image}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm,keepaspectratio]{pics/bmp_scrambling/altered_image}
+    \caption{The altered image containing the message "Hello world"}
+\end{figure}
+
+Like any other steganography algorithm, this method also has advantages and disadvantages. The main benefits of this algorithm are:
+\begin{itemize}
+  \item \textbf{Security}. Choosing a BLOCK\_SIZE of only 8, each normal sized block will have a total of 64 pixels and there would be $64! = 1.2688693e+89$ ways available (just for a single block) for the algorithm to write the secret information. Given the fact that each block has its own permutation generated specifically for it based on a pseudo-random engine makes it very hard for any intruders to try and retrieve the secret message without having access to the key. Increasing the size of the BLOCK\_SIZE only strengthens the overall security of the method while still keeping the same message capacity.
+ \item \textbf{Efficiency}. The algorithm is extremely fast because it performs very few demanding operations and it is taking advantage of bit-wise operations. Furthermore, there is also the option of adding parallelization because there are no conflicts whatsoever between the parties involved, thus ending in an even more efficiency increase for the entire operation. There could be a small issue regarding the generation of the permutations based on a key in a multi-threaded environment because it may be prone to some implementation language issues with the pseudo-random engine.
+\end{itemize}
+However there are quite a few issues with this algorithm, issues that can render the method useless and make it obsolete in a faster than normal timeframe:
+\begin{itemize}
+  \item \textbf{No data redundancy}. There is absolutely no mechanism in place in order to prevent the loss of data. Most communication environments nowadays usually compress the files before sending them over the wire and that compression may be lossless, but in most cases it is lossy. And even by sending the file in a way that it will not be compressed, there is also the slight change of altering and a small change in a single bit can and it will make the whole secret message corrupted without any method of recovery.
+  \item \textbf{Detection via pattern identification}. Working only within small sub-blocks of BLOCK\_SIZE means that we also limit the attack surface of any outside parties and allow them to focus on finding any details that can help them identify the key that was used when encoding the secret. For example, it is possible that an attacker will want to focus on the second block of the cover file and try to search for common extensions in the secret embedded file headers. If the intruder finds there is an order to the bytes of the block which produce that header that means that he is much closer to identifying the seed of the pseudo-random engine because he knows the second permutation generated by that seed and based on that information he may be able to deduct further permutations.
+  \item \textbf{Limited market}. This algorithm was designed with file formats that are lossless, i.e. bitmaps that store the entire information of the image. While theoretically it could be used for PNGs as well, we will see in later chapters that PNG uses a mechanism called interlacing which makes it harder to work or even identify the sub-blocks of the image. Most modern online platforms have also moved away from BMP since they are far too big in size and the same image quality could be achieved by using other formats that have a much much smaller size, ending up in almost making the entire BMP format obsolete.
+\end{itemize}
+In the end, it is important to note that similar work has been done by a few researchers, the closest one being the work done by Hussein Al-Bahadili\cite{secure_block_permutation} in his paper where he chose to focus on scrambling the contents of the secret message using a similar password and seed generation technique before writing it to the carrier file. But while the 2 methods are similar in their goal, the way they reach that goal are different.
+
+
 \section{Portable Network Graphics (PNG)} \label{PNG_Explained_Chapter}
 
-\section{Joint Photographic Experts Group (JPEG)} \label{JPEG_Explained_Chapter}
+
 \end{multicols*}

@@ -1,0 +1,25 @@
+\begin{thebibliography}{1}
+
+\bibitem{secure_block_permutation}
+H.~Al-Bahadili.
+\newblock A secure block permutation image steganography algorithm.
+\newblock {\em International Journal on Cryptography and Information Security},
+  3:11--122, 09 2013.
+
+\bibitem{stroustrup_2018}
+Bjarne Stroustrup.
+\newblock {\em The C programming language}.
+\newblock Addison-Wesley, 2018.
+
+\bibitem{cmake}
+Cmake documentation.
+
+\bibitem{jarro2783_2020}
+jarro2783.
+\newblock jarro2783/cxxopts, Feb 2020.
+
+\bibitem{lvandeve_2020}
+Lvandeve.
+\newblock lvandeve/lodepng, Mar 2020.
+
+\end{thebibliography}
