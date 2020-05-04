@@ -283,6 +283,32 @@ In the end, it is important to note that similar work has been done by a few res
 
 
 \section{Portable Network Graphics (PNG)} \label{PNG_Explained_Chapter}
+Portable Network Graphics or PNG for short is a lossless image file format developed in 1996 that was designed to improve and replace the Graphics Interchange Format or GIF\cite{rfc2083}. Similarly to the BMP format, it stores the entire information about the image in the data stream but the big difference between the two is that the image data in the PNG is always in a compressed format. Furthermore, another big improvement is the support for the alpha channel otherwise known as an "opacity" layer, allowing for transparency in the layers that build the image.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm,keepaspectratio]{pics/png_chapter/png_file_example}
+    \caption{Example of a PNG file}
+    \label{png:example}
+\end{figure}
 
+As mentioned before, the alpha channel is one of the most important components of a PNG file. We can see the alpha channel in action in figure \ref{png:example} where there are absolutely no other pixels in the image besides those that compose the penguin (it is not a white background matching the color of the paper, it will be just the penguin regardless of the background color). 
+
+The structure of the PNG file format is simple and straightforward:
+\begin{itemize}
+  \item The magic bytes at the beginning that are unique to the format. Every PNG file will always have these 8 bytes at the beginning or it will be considered straight up corrupted by any rendering software:
+\\0x89 0x50 0x4E 0x47 0x0D 0x0A 0x1A 0x0A\\
+Each byte in this sequence has a meaning but since altering even a single bit will render the file useless it means we will not be able to embed anything within these bytes.
+  \item The rest of the PNG file is composed from a series of so-called chunks which contain both metadata and actual image data. Each chunk has a specific structure presented below.
+	\begin{table}[]
+	\begin{tabular}{|c|c|c|c|}
+	\hline
+	\textbf{Chunk length} & \textbf{Chunk type} & \textbf{Chunk data} & \textbf{CRC} \\ \hline
+	4 bytes & 4 bytes & Chunk Length bytes & 4 bytes \\ \hline
+	\end{tabular}
+	\end{table}
+By changing the chunk length, chunk type or the Cyclic Redundancy Check(CRC) we will only manage to render the PNG file useless and get it flagged as corrupted by any decent renderer so the only logical remaining step is to modify the data found in the chunk data field if we want to embed secret information. However before we discuss that, it is important to note the most used chunk types present in a PNG file, their role and how the chunk data is structured inside them.
+\end{itemize}
+
+% talk about IDAT, IEND, IHDR, bLob, eXIf, tEXt. talk about zlib compression inside IDAT and how to decompress before doing anything. talk about lsb inside IDAt, metadata inside bLob  and writing after IEND. Shouldn't take much
 \end{multicols*}
