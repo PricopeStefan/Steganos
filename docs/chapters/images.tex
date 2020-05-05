@@ -296,19 +296,61 @@ As mentioned before, the alpha channel is one of the most important components o
 
 The structure of the PNG file format is simple and straightforward:
 \begin{itemize}
-  \item The magic bytes at the beginning that are unique to the format. Every PNG file will always have these 8 bytes at the beginning or it will be considered straight up corrupted by any rendering software:
+  \item The magic bytes at the beginning that are unique to the format. Every PNG file will always have these 8 bytes (also called magic bytes) at the beginning or it will be considered straight up corrupted by any rendering software:
 \\0x89 0x50 0x4E 0x47 0x0D 0x0A 0x1A 0x0A\\
 Each byte in this sequence has a meaning but since altering even a single bit will render the file useless it means we will not be able to embed anything within these bytes.
-  \item The rest of the PNG file is composed from a series of so-called chunks which contain both metadata and actual image data. Each chunk has a specific structure presented below.
-	\begin{table}[]
-	\begin{tabular}{|c|c|c|c|}
-	\hline
-	\textbf{Chunk length} & \textbf{Chunk type} & \textbf{Chunk data} & \textbf{CRC} \\ \hline
-	4 bytes & 4 bytes & Chunk Length bytes & 4 bytes \\ \hline
-	\end{tabular}
-	\end{table}
+  \item The rest of the PNG file is composed from a series of so-called chunks which contain both metadata and actual image data. Each chunk has a specific structure presented in the table below.
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Chunk length} & 4 bytes \\ \hline
+\textbf{Chunk type} & 4 bytes \\ \hline
+\textbf{Chunk data} & Chunk\_Length bytes \\ \hline
+\textbf{CRC} & 4 bytes \\ \hline
+\end{tabular}
+\label{png:chunk-structure}
+\end{center}
 By changing the chunk length, chunk type or the Cyclic Redundancy Check(CRC) we will only manage to render the PNG file useless and get it flagged as corrupted by any decent renderer so the only logical remaining step is to modify the data found in the chunk data field if we want to embed secret information. However before we discuss that, it is important to note the most used chunk types present in a PNG file, their role and how the chunk data is structured inside them.
 \end{itemize}
 
-% talk about IDAT, IEND, IHDR, bLob, eXIf, tEXt. talk about zlib compression inside IDAT and how to decompress before doing anything. talk about lsb inside IDAt, metadata inside bLob  and writing after IEND. Shouldn't take much
+The minimum number of chunks in every valid PNG file is 3. There must always be at least an IHDR chunk , an IDAT chunk and an IEND chunk\footnote{There is also the PLTE chunk that must be present in some types of PNGs but it is so rarely found in any normal environment it is not worth being looked into.}. However the standard allows for a lot more types of chunks but they are usually non-vital during the rendering process, therefore getting the name of ancillary chunks. Going through the critical types of chunks we have:
+\begin{itemize}
+	\item \textbf{IEND}, the simplest type of chunk. It is used to mark the end of the image and will always be the last chunk, signaling the renderer software that there is no more relevant information after this chunk. For this chunk the length will always be equal to 0, the type will be equal to the string "IEND" or 0x49454E44, the data field is empty and the CRC is actually calculated but will always be equal to 0xAE426082. Knowing the semnification of this chunk and how all software programs interpret it as the conclusion of the file, we see how easily it can tie into chapter \ref{Unused_Space_Chapter}, the one regarding writing secret messages after the actual file has ended. It is trivial to append bytes to the original file, but it can be harder to know how and where to separate the original data from the message, however having a clear boundary such as the IEND chunk helps considerably.
+	\item \textbf{IHDR}, the header chunk containing critical image metadata. The standard specifies that this chunk must always be the first one in the file after the 8 magic bytes. The chunk always has the length equal to 13 or 0x0000000D, the type equal to the character array "IHDR" or 0x49484452. In the data field of the chunk we have the following structure:
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Width} & 4 bytes \\ \hline
+\textbf{Height} & 4 bytes \\ \hline
+\textbf{Bit depth} & 1 byte \\ \hline
+\textbf{Color type} & 1 byte \\ \hline
+\textbf{Compression method} & 1 byte \\ \hline
+\textbf{Filter method} & 1 byte \\ \hline
+\textbf{Interlace method} & 1 byte \\ \hline
+\end{tabular}
+\end{center}
+And since the information in the data field will vary from file to file, the CRC is not a fixed value. While in theory it is possible to modify some of the aforementioned fields in order to hide something it is not recommended because altering even a single bit can alter the image in a significant way, thus losing the covert factor. Altering the width or the height of the image is even worse because it will cause a total corruption of the image since the software relies on those values to know when to expect the IEND field and if it is too early or too late in the data stream the parsing will most probably fail.
+	\item \textbf{IDAT}, the chunk containing the actual image data. The image data is in a compressed format by default using the DEFLATE compression algorithm\cite{rfc1951} on the stream obtained after applying a prediction method on the raw data of the image. To obtain the raw data needed for the steganographic algorithm we cannot just start writing the LSB of the compressed stream, we will have to decompress it and then reverse the filtering process that was used for each scan line. The first step to obtaining the raw image is to get the chunk data field in its entirety and to reverse the DEFLATE process in order to get the filtered image data stream. There are multiple types of this stream but the standard only defines the default one and marking it as 0 in the Filter method part of the IHDR data chunk. Each scan line of the image also begins with a byte representing the filter sub type indicating how each byte in that scan line is build relative to the surrounding bytes (important to note, the surrounding bytes not the pixels). As of the moment writing this thesis, there are 5 sub types recognized by the standard:
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{\begin{tabular}[c]{@{}c@{}}Filter\\ byte\end{tabular}} & \textbf{Name} & \textbf{Value based On} \\ \hline
+0 & None & Raw byte values \\ \hline
+1 & Sub & The byte to the left \\ \hline
+2 & Up & The byte above \\ \hline
+3 & Average & \begin{tabular}[c]{@{}c@{}}Average of the left \\ and the above bytes\end{tabular} \\ \hline
+4 & Paeth & \begin{tabular}[c]{@{}c@{}}One of the 3: the byte\\ to the left, the \\ above or the\\  top left one\end{tabular} \\ \hline
+\end{tabular}
+\end{center}
+A PNG file uses most of these filters because they are tied up to a scan line, not to the entire file. It is important to be able to reverse any of these filter types if they appear in order to get the raw R, G, and B values out of the stream to modify those. Modifying the stream before reversing the filtering process will only cause corruption to the image and any decoders will either warn that the file is malformed or will render it and any intruders will notice that it has been altered. However after the applying the defiltering method to the scan line and obtaining the raw data it is trivial to apply steganographic algorithms that rely on Least Significant Bit insertion. Since PNG is a lossless format, any modification done to the stream will be saved even after filtering and compressing the stream to save the new image containing embedded information.
+\end{itemize}
+
+Besides the critical chunks, there are also plenty of ancillary chunks that can be placed inside a PNG file without any software decoders complaining or malfunctioning. Users may also define their own types of chunks as long as they follow a simple protocol (having some special bits set or unset inside the 4 bytes associated to the chunk type). But there are already a few interesting chunks defined in the standard that are more than enough for steganography purposes:
+\begin{itemize}
+	\item \textbf{bLob} can contain absolutely any sequence of bytes and it is guaranteed that no parsing software will try to render it so it is absolutely one of the best types of chunks that can be used to embed anything.
+	\item \textbf{eXIf} is an interesting chunk because while defined by the most recent standard as a possible chunk, it does not have a structure defined, so it can contain any sequence of bytes, similar to the bLob chunk. If any software tries to parse it however, it would be interesting for eXIf chunks to contain data that would normally be found be associated with EXIF data such as the location or the time where/when the image was taken but to alter them to hide a meeting location and date.
+	\item \textbf{tEXt} is also a good location for encoding messages, however it is the least covert out of all the aforementioned chunks because some decoders will use it to check for copyright, warning or disclaimers from the author before rendering the image. However since it does not have a maximum length, it can range anywhere from 1 byte to $2^{32}-1$ bytes, making it a viable option for embedding hidden information.
+\end{itemize}
+
+In conclusion, given the fact that PNG is one of the most used carrier formats for digital images today, the ability to understand and hide messages inside this format is considered highly valued.
 \end{multicols*}
