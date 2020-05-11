@@ -5,35 +5,10 @@
 "The main issue with both the aforementioned formats(BMP and PNG) is the space a typical file occupies on disk. Both are lossless formats, meaning that all the pixels of the image are actually specified(not computed) and that absolutely no visual information is lost during transit. This is why the Joint Photographic Experts Group came up with a new image format called JPEG (#insert some history, dates, persons, RFC etc.) (based on the abbreviation of their group name). JPEG is a lossy format, meaning that some pixels are not actually written on the disk in order to save space while still trying to resemble the original picture as much as possible. Due to the fact that this format was invented when computers were really slow and because we live in a society where high speed and a great reduction in used memory are more important factors than a small, unnoticeable to the human eye, quality loss, JPEG became the most popular image format and is now being used everywhere on the internet, even 28 years after it was created."
 -aparent steganos e numele unei metode steganografice, may be fun to mention it :)
 
-global constant BLOCK_SIZE;
 
-procedure embed_subblock(secret, subblock, random_engine)
-	# Generate a permutation from 0 to subblock.width * subblock.height
-	# using the random_engine given. That permutation will be the order
-	# used when writing the secret data into the subblock data
-	writing_order = random_permutation(0, subblock.width * subblock.height, random_engine);
 
-	for each byte_index in writing_order do
-		# Getting the absolute index of the subblock rows 
-		# and columns where we need to write the secret information
-		subblock_row = subblock.starting_line_index + byte_index \div subblock.width;
-		subblock_column = subblock.starting_column_index + byte_index \mod subblock.width;
-		set_least_significant_bit(subblock.data[subblock_row][subblock_column], secret);
-
-		# We move to the next bit of the secret information
-		advance_to_next_secret_bit(secret);
-		
-procedure pseudo_scramble(cover, secret, password)
-	# Creating a new pseudo-random engine with a given seed
-	random_engine $\gets$ new pseudo_random_engine(password);
-
-	for each subblock of cover with max_size \eq BLOCK_SIZE
-		if subblock \eq cover.first_subblock
-			# Used for hiding the size of the secret
-			# into the first subblock of the cover in an order
-			# given by the pseudo-random engine random_engine
-			embed_subblock(secret.size, subblock, random_engine);
-		else
-			# If it's not the first subblock of the cover, just write
-			# the actual secret into the subblock
-			embed_subblock(secret.iterator, subblock, random_engine);
+pt build pe x86 pe windows:
+-Command lineul de la Cross Tools COmmand prompt x86_x64(de la visual studio)
+-comenzi:
+	-   cmake -G "Visual Studio 16 2019" -A Win32 -S \path_to_source\ -B "build32"
+	-   cmake --build build32 --config Release

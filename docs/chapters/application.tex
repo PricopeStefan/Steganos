@@ -46,12 +46,21 @@ CXXOpts is an open-source C++ library that is meant to be a lightweight command 
 \subsection{Lodepng}
 Lodepng is an open source C++ library developed by Lode Vandevenne used for image processing for pictures stored under the PNG format \cite{lvandeve_2020}. It is very useful for decoding the image data before beginning the steganography process, making it easy to modify the data and to encode it back into a PNG file that follows the standard format. Lodepng works on every version of C++, contains only two files(a source file and a header file) and is rated to be one of the fastest libraries for PNG image processing. Steganos uses Lodepng to parse PNG files and to obtain the image data byte stream from the zlib compressed stream in order to be able to work with the implemented steganographic algorithms.
 
-\subsection{MMSSTV Engine for Windows}
+\subsection{Robot36 SSTV Engine}
+\end{multicols*}
 
-\subsection{Robot36 for *NIX based systems}
-
+\begin{multicols}{2}
 \section{Application architecture}
+The Steganos Project is an application that uses the Object Oriented Programming aspects in order to achieve the best performance while maintaining high cohesion and low coupling between the components of the codebase. The project is structured in multiple modules\footnote{To be technically correct they are only different folders because the latest available C++ standard as of the time of writing this thesis is C++17 which does not understand yet the concept of modules. However developers should rejoice over the announcement made by Microsoft to standardize C++ modules starting with the C++20 standard\cite{N4720}.} that were built to be as independent as possible with the goal to provide steganography functions for the supported file formats. The main module contains the source files for the entry point of the application which processes the arguments given via the command line along with the code for some of the utilities, helper function that help convert pixels between different representations(YUV, RGB, BGR, YCbCr) or bit-wise operations such as toggling the last significant bit or building a byte using the LSBs from a byte stream. The algorithm module declares and defines the algorithms that are implemented in the application, all of which have been discussed thoroughly in the earlier chapters of the thesis (LSB insertion, embedding secrets into file metadata, use-after-end encoding). The remaining modules all follow the same design patterns and are responsible for the parsing of the cover files and the encoding or decoding of hidden digital files inside them. 
+\end{multicols}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=17cm,keepaspectratio]{pics/application_chapter/diagrama_module_interface}
+    \caption{Folder structure of a project using CMake}
+\end{figure}
+
+\begin{multicols*}{2}
 \section{Benchmarks}
 
 \section{Further work}

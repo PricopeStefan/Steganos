@@ -22,8 +22,7 @@
 \contentsline {subsection}{\numberline {5.1.2}CMake}{20}%
 \contentsline {subsection}{\numberline {5.1.3}CXXOpts}{21}%
 \contentsline {subsection}{\numberline {5.1.4}Lodepng}{21}%
-\contentsline {subsection}{\numberline {5.1.5}MMSSTV Engine for Windows}{22}%
-\contentsline {subsection}{\numberline {5.1.6}Robot36 for *NIX based systems}{22}%
+\contentsline {subsection}{\numberline {5.1.5}Robot36 SSTV Engine}{21}%
 \contentsline {section}{\numberline {5.2}Application architecture}{22}%
 \contentsline {section}{\numberline {5.3}Benchmarks}{22}%
 \contentsline {section}{\numberline {5.4}Further work}{22}%
