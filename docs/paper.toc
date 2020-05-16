@@ -13,17 +13,17 @@
 \contentsline {chapter}{\numberline {4}Audio file formats and steganography techniques}{19}%
 \contentsline {section}{\numberline {4.1}Introduction}{19}%
 \contentsline {section}{\numberline {4.2}Additional techniques used in audio steganography}{20}%
-\contentsline {subsection}{\numberline {4.2.1}Embedding within certain frequencies}{20}%
-\contentsline {section}{\numberline {4.3}The MPEG-1/2 Audio Layer III (MP3)}{20}%
-\contentsline {section}{\numberline {4.4}Waveform Audio (WAV)}{20}%
-\contentsline {chapter}{\numberline {5}The Steganos Project}{21}%
-\contentsline {section}{\numberline {5.1}Used technologies}{21}%
-\contentsline {subsection}{\numberline {5.1.1}C++}{21}%
-\contentsline {subsection}{\numberline {5.1.2}CMake}{21}%
-\contentsline {subsection}{\numberline {5.1.3}CXXOpts}{22}%
-\contentsline {subsection}{\numberline {5.1.4}Lodepng}{22}%
-\contentsline {subsection}{\numberline {5.1.5}Robot36 SSTV Engine}{22}%
-\contentsline {section}{\numberline {5.2}Application architecture}{23}%
-\contentsline {section}{\numberline {5.3}Benchmarks}{23}%
-\contentsline {section}{\numberline {5.4}Further work}{23}%
-\contentsline {chapter}{\numberline {6}Conclusion}{24}%
+\contentsline {subsection}{\numberline {4.2.1}Frequency domain steganography}{20}%
+\contentsline {section}{\numberline {4.3}The MPEG-1/2 Audio Layer III (MP3)}{21}%
+\contentsline {section}{\numberline {4.4}Waveform Audio (WAV)}{21}%
+\contentsline {chapter}{\numberline {5}The Steganos Project}{22}%
+\contentsline {section}{\numberline {5.1}Used technologies}{22}%
+\contentsline {subsection}{\numberline {5.1.1}C++}{22}%
+\contentsline {subsection}{\numberline {5.1.2}CMake}{22}%
+\contentsline {subsection}{\numberline {5.1.3}CXXOpts}{23}%
+\contentsline {subsection}{\numberline {5.1.4}Lodepng}{23}%
+\contentsline {subsection}{\numberline {5.1.5}Robot36 SSTV Engine}{23}%
+\contentsline {section}{\numberline {5.2}Application architecture}{24}%
+\contentsline {section}{\numberline {5.3}Benchmarks}{24}%
+\contentsline {section}{\numberline {5.4}Further work}{24}%
+\contentsline {chapter}{\numberline {6}Conclusion}{25}%
