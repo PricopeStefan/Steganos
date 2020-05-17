@@ -1,7 +1,7 @@
 
 \chapter{Audio file formats and steganography techniques}
 
-\begin{multicols}{2}
+\begin{multicols*}{2}
 \section{Introduction}
 Sound is the result of a vibration created by a phenomenon that propagates through a transmission environment, ending up getting interpreted by our brain. However since this process happens in the physical world it is entirely analog so it would be impossible to store it on modern day devices which can only understand digital formats. Luckily the fast evolution of computers also brought conversion techniques in order to switch between analog sounds and digital sounds seamlessly, without any noticeable loss to the human ear. Using these methods we have gained the ability to store audio files in a digital format so it was only logical that several different file formats will be created to fit our needs. In this chapter we will discuss in greater detail about how the analog data is actually stored in the digital format and what are the most common extensions used for storing digital audio files.
 
@@ -49,11 +49,41 @@ Furthermore, there is also the option of steganography done within the spectrogr
 \end{figure}
 
 
+\section{Waveform Audio (WAV)}
+The Waveform Audio format commonly known as WAV is a popular file format for storing high quality digital audio files originally built by Microsoft. It bears many similarities to the PNG format in the internal structure/composition of the file: both begin with a very specific sequence of bytes (also known as the magic bytes) that help classification applications identify them, are separated into multiple parts (also known as chunks) that have their purpose and are extremely common in the modern day multimedia. WAV is one of the most common file formats that can be found in the digital world and that makes it a viable candidate for the message carrier role in the steganography domain. Like almost all other formats designed by Microsoft it has a few variations and extensions of the original specifier to accomodate more metadata or higher quality audio, but since they are much rarer than the simple and original standard, we will not focus on those altered versions in this thesis.
+
+In the table below we can see the general structure of almost any WAV file that contains PCM data \footnote{PCM is an abbreviation for Pulse-code modulation which is the most common way of storing digitally the sampled analog audio signals.} which are basically the default option of every digital audio recording software. From the table we can notice how there aren't any metadata fields that are less important which could make for a good initial foothold in the steganography process.
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Chunk field} & \textbf{Field Length} & \textbf{Description} \\ \hline
+Chunk ID & 4 bytes & \begin{tabular}[c]{@{}c@{}}Always equal\\ to "RIFF"\end{tabular} \\ \hline
+Chunk Size & 4 bytes & \begin{tabular}[c]{@{}c@{}}Length in bytes\\ of remaining file\end{tabular} \\ \hline
+Format & 4 bytes & \begin{tabular}[c]{@{}c@{}}Always equal\\ to "WAVE"\end{tabular} \\ \hline
+Subchunk ID & 4 bytes & \begin{tabular}[c]{@{}c@{}}Always equal \\ to "fmt "\end{tabular} \\ \hline
+Subchunk size & 4 bytes & \begin{tabular}[c]{@{}c@{}}Always equal\\ to 16\end{tabular} \\ \hline
+Audio Format & 2 bytes & Equal to 0x0001 \\ \hline
+Nr. of channels & 2 bytes & \begin{tabular}[c]{@{}c@{}}Channel count\\ (1 mono, 2 stereo etc.)\end{tabular} \\ \hline
+Sample Rate & 4 bytes & \begin{tabular}[c]{@{}c@{}}How many samples\\ per second(6000Hz,\\ 44100Hz, etc.)\end{tabular} \\ \hline
+Byte Rate & 4 bytes & \begin{tabular}[c]{@{}c@{}}Product of SampleRate,\\ number of channels and\\ the byte per sample\\ (BitsPerSample/8)\end{tabular} \\ \hline
+Block Align & 2 bytes & \begin{tabular}[c]{@{}c@{}}Actual byte count \\ for a full sample\\ (both channels in a \\ stereo file for example\\ result in 4 bytes for\\ a full sample)\end{tabular} \\ \hline
+Bits Per Sample & 2 bytes & \begin{tabular}[c]{@{}c@{}}How many bits\\ in a sample for\\ a single channel\end{tabular} \\ \hline
+Subchunk ID & 4 bytes & Equal to "data" \\ \hline
+Subchunk size & 4 bytes & Length of actual data \\ \hline
+Data & * & The actual data \\ \hline
+\end{tabular}
+\end{center}
+
+However, we see a great deal of advantages as well based on the file structure:
+\begin{itemize}
+	\item \textbf{Uncompressed data} means that we do not have to go through the process of decompressing it, editing it, and then recompressing it in order to store any information. We are able to go sequentially through each byte and without being careless we can alter it in order  to perform least significant bit insertion and hide the message, making WAV a good carrier for any type of sequential steganography. There are a few issues that could arise, usually samples are stored on two bytes and altering the least significant bit of each byte will alter the associated sample in a much much greater way, so we must keep in mind the bit depth of the samples when inserting the data. Furthermore, we must be careful with the audio channels of the file since modifying only one channel will possibly introduce noise to the audio stream, raising red flags to intruders and blowing the cover of the carrier.
+	\item \textbf{The chunked structure} of the format leads to the ability to insert custom chunks with our data because most parsers will simply ignore them and look for the relevant chunks that they need. There are also a few types of chunks such as INFO or JUNK that could be used for a safer and more covert communication because they are a part of the standard and that means there will be no risk of crashing the parser if they find a chunk they could not identify.
+	\item \textbf{Length is known beforehand} means that we know where the audio data ends just by parsing a few relevant metadata fields. This means that it is very easy to compute the offset where the file ends and we can begin embedding secrets while avoiding breaking the parsers or disturbing the audio data.
+\end{itemize}
+
+In conclusion, WAV is an impressive carrier format worthy of being used in the steganography process due to the fact that it is commonly seen on the Internet, has no compression that can affect the secret message and can easily work with all the algorithms presented over the course of this thesis.
+
 \section{The MPEG-1/2 Audio Layer III (MP3)}
 TO DO: research the MP3 format, how they store the audio samples, headers, compression, why it became so popular etc.
 
-\section{Waveform Audio (WAV)}
-The Waveform Audio format commonly known as WAV is a popular file format for storing high quality digital audio files originally built by Microsoft. It bears many similarities to the PNG format in the internal structure/composition of the file: both begin with a very specific sequence of bytes (also known as the magic bytes) that help classification applications identify them, are separated into multiple parts (also known as chunks) that have their purpose and are extremely common in the modern day multimedia.
-
-TO DO: talk about the structure of the WAV format and the support for the steganography algorithms aforementioned.
-\end{multicols}
+\end{multicols*}
