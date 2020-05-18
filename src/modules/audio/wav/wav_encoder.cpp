@@ -30,7 +30,8 @@ error_code WAVEncoderModule::simple_sequential_embed_handler(const WAVModuleOpti
 	uint32_t secret_data_byte_index = 0;
 	uint8_t bit_index = 0;
 	uint8_t current_byte = secret_data[secret_data_byte_index];
-	//printf("Current byte = %02X\n", current_byte);
+	printf("Secret data size in encoder = %u\n", secret_data_size);
+	printf("First actual secret byte = %02X\n", secret_data[4]);
 
 	//helper lambda function to advance to the next data bit from the secret stream
 	//returns how many bytes there are left to write
@@ -55,13 +56,24 @@ error_code WAVEncoderModule::simple_sequential_embed_handler(const WAVModuleOpti
 		return (secret_data_size - secret_data_byte_index);
 	};
 
-	for (uint32_t current_byte_index = 1; current_byte_index < cover_data_length; current_byte_index += 256) {
-		uint8_t& image_data_byte = cover_data[current_byte_index];
+	//this is the last possible starting byte offset while also taking in considedration the number of channels
+	//and the total bits per sample
+	uint32_t last_starting_offset = cover_data_length - (cover_metadata.bits_per_sample / 8) * cover_metadata.num_channels;
+	//how many bytes to skip with each loop based on the parameter given to the module, the bits per sample and the number of channels
+	uint32_t bytes_to_skip = steg_options.number_of_samples_to_skip * (cover_metadata.bits_per_sample / 8) * cover_metadata.num_channels;
 
-		utils::setLSB(image_data_byte, current_byte & 1);
+	for (uint32_t current_byte_index = 1; current_byte_index < last_starting_offset; current_byte_index += bytes_to_skip) {
+		for (uint16_t channel_index = 0; channel_index < cover_metadata.num_channels; channel_index++) {
+			uint8_t& audio_data_byte = cover_data[current_byte_index + (cover_metadata.bits_per_sample / 8) * channel_index];
 
-		if (advance_to_next_bit() == 0)
-			return error_code::NONE;
+			if (secret_data_byte_index == 4 && bit_index == 0) {
+				printf("First actual byte written starting at %d\n", (int)(current_byte_index + (cover_metadata.bits_per_sample / 8) * channel_index));
+			}
+			utils::setLSB(audio_data_byte, current_byte & 1);
+
+			if (advance_to_next_bit() == 0)
+				return error_code::NONE;
+		}
 	}
 
 	if (successful_written_bytes == 0) {

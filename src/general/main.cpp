@@ -75,9 +75,12 @@ int main(int argc, char *argv[]) {
 	{
 
 		WAVEncoderModule wav_module("D:\\Projects\\Steganos\\test_data\\audio\\Gavotte_en_rondeau_54.wav", "D:\\Projects\\Steganos\\test_data\\secrets\\orar.xlsx");
-		wav_module.launch_steganos();
+		WAVModuleOptions options;
+		options.number_of_samples_to_skip = 2;
+		wav_module.launch_steganos(options);
 
-
+		WAVDecoderModule decoder("D:\\Projects\\Steganos\\out\\build\\x64-Debug\\output.wav");
+		decoder.launch_steganos(options);
 
 		//parse(argc, argv);
 		/* check if -d option is in argv. if its not try and encode*/

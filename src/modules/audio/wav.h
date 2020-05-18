@@ -15,11 +15,15 @@ enum class WAVModuleSupportedAlgorithms {
 	//the classic one = the last bit of each sample is changed to represent a bit of the data
 	SEQUENTIAL,
 	//embed the message into the metadata of the cover file
-	METADATA
+	METADATA,
+	//embed after the audio data has ended
+	AFTER_END
 };
+
 struct WAVModuleOptions {
 	bool encrypt_secret = false;
 	std::string password = "fasf";
+	uint32_t number_of_samples_to_skip = 192; //proven to be the best default by testing
 
 	bool compress_secret = false; //bool indicating whether to compress the secret data or not
 	WAVModuleSupportedAlgorithms algorithm = WAVModuleSupportedAlgorithms::SEQUENTIAL;
@@ -82,3 +86,22 @@ public:
 	error_code launch_steganos(const WAVModuleOptions& steg_options = WAVModuleOptions());
 };
 
+class WAVDecoderModule : public WAVModule {
+private:
+	//pointer to the secret data
+	uint8_t* secret_data = nullptr;
+	//number of bytes that the secret data holds
+	uint32_t secret_data_size = 0;
+
+	error_code write_secret(const char* output_path = "hidden.bin") const;
+
+	error_code parse_secret_metadata(const WAVModuleOptions& steg_options, uint32_t& actual_data_starting_offset);
+	error_code sequential_handler(const WAVModuleOptions& steg_options);
+
+public:
+	WAVDecoderModule(const char* embedded_path);
+	WAVDecoderModule(const char* embedded_path, const WAVModuleOptions steg_options);
+	~WAVDecoderModule();
+
+	error_code launch_steganos(const WAVModuleOptions& steg_options = WAVModuleOptions());
+};
