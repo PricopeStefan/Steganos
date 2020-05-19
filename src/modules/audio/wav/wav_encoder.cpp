@@ -107,7 +107,7 @@ error_code WAVEncoderModule::launch_steganos(const WAVModuleOptions& steg_option
 	}
 
 
-	TRY(write_wav());
+	TRY(write_cover());
 
 	return error_code::NONE;
 }

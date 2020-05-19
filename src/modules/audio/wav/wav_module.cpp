@@ -88,7 +88,7 @@ const WAVMetaStruct& WAVModule::get_metadata() const {
 	return this->cover_metadata;
 }
 
-error_code WAVModule::write_wav(const char* output_path) {
+error_code WAVModule::write_cover(const char* output_path) {
 	//to do : add error codes returns if something failed
 
 	std::ofstream embedded_stream(output_path, std::ios_base::binary);

@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "modules/image/all.h"
-#include <modules/audio/wav.h>
+#include <modules/audio/mp3.h>
 //#include <external/cxxopts/cxxopts.hpp>
 
 #ifdef _WIN32
@@ -73,14 +73,17 @@ error_code decode_run_handler(/* cmdl args */) {
 
 int main(int argc, char *argv[]) {
 	{
+		MP3Module mp3_module("D:\\Projects\\Steganos\\test_data\\audio\\Vivaldi - Spring-l-dYNttdgl0.mp3");
+		//MP3Module mp3_module("D:\\Projects\\Steganos\\test_data\\audio\\Suzanne Vega - Tom's Diner.mp3");
 
-		WAVEncoderModule wav_module("D:\\Projects\\Steganos\\test_data\\audio\\Gavotte_en_rondeau_54.wav", "D:\\Projects\\Steganos\\test_data\\secrets\\orar.xlsx");
-		WAVModuleOptions options;
-		options.number_of_samples_to_skip = 2;
-		wav_module.launch_steganos(options);
 
-		WAVDecoderModule decoder("D:\\Projects\\Steganos\\out\\build\\x64-Debug\\output.wav");
-		decoder.launch_steganos(options);
+		//WAVEncoderModule wav_module("D:\\Projects\\Steganos\\test_data\\audio\\Gavotte_en_rondeau_54.wav", "D:\\Projects\\Steganos\\test_data\\secrets\\orar.xlsx");
+		//WAVModuleOptions options;
+		//options.number_of_samples_to_skip = 2;
+		//wav_module.launch_steganos(options);
+
+		//WAVDecoderModule decoder("D:\\Projects\\Steganos\\out\\build\\x64-Debug\\output.wav");
+		//decoder.launch_steganos(options);
 
 		//parse(argc, argv);
 		/* check if -d option is in argv. if its not try and encode*/

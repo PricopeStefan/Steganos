@@ -75,3 +75,18 @@ uint8_t utils::read_byte_from_lsbs(uint8_t* byte_stream, uint64_t byte_stream_si
 
 	return byte;
 }
+
+uint32_t utils::convert_synchsafe_uint_to_normal_uint(uint32_t synch_safe) {
+	uint8_t bytes[4];
+	bytes[0] = (synch_safe >> 24) & 0xFF;
+	bytes[1] = (synch_safe >> 16) & 0xFF;
+	bytes[2] = (synch_safe >> 8) & 0xFF;
+	bytes[3] = synch_safe & 0xFF;
+
+	uint32_t byte0 = bytes[3];
+	uint32_t byte1 = bytes[2];
+	uint32_t byte2 = bytes[1];
+	uint32_t byte3 = bytes[0];
+
+	return byte0 << 21 | byte1 << 14 | byte2 << 7 | byte3;
+}

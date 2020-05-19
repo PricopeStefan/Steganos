@@ -8,8 +8,14 @@ add_library(
 	"wav/wav_encoder.cpp"
 )
 
+add_library(
+	MP3_MODULE OBJECT
+	"mp3.h"
+	"mp3/mp3_module.cpp"
+)
 
 add_library(
 	AUDIO_MODULE
 	$<TARGET_OBJECTS:WAV_MODULE>
+	$<TARGET_OBJECTS:MP3_MODULE>
 )

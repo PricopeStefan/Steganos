@@ -40,6 +40,7 @@ namespace utils {
 
 	uint8_t read_byte_from_lsbs(uint8_t* byte_stream, uint64_t byte_stream_size);
 
+	uint32_t convert_synchsafe_uint_to_normal_uint(uint32_t synch_safe);
 
 	namespace pixels {
 		//pixels types used in the internal storage of the image data of different file formats

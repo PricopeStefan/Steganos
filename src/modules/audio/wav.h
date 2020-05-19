@@ -3,7 +3,6 @@
 #include <fstream>
 #include <vector>
 #include <general/utils.h>
-#include <general/image_algorithms.h>
 
 //section containing the specific headers ids of wav files as int values
 //found at http://soundfile.sapp.org/doc/WaveFormat/
@@ -23,7 +22,7 @@ enum class WAVModuleSupportedAlgorithms {
 struct WAVModuleOptions {
 	bool encrypt_secret = false;
 	std::string password = "fasf";
-	uint32_t number_of_samples_to_skip = 192; //proven to be the best default by testing
+	uint32_t number_of_samples_to_skip = 96; //proven to be the best default by testing
 
 	bool compress_secret = false; //bool indicating whether to compress the secret data or not
 	WAVModuleSupportedAlgorithms algorithm = WAVModuleSupportedAlgorithms::SEQUENTIAL;
@@ -62,7 +61,7 @@ public:
 
 	const WAVMetaStruct& get_metadata() const;
 
-	error_code write_wav(const char* output_path = "output.wav");
+	error_code write_cover(const char* output_path = "output.wav");
 };
 
 

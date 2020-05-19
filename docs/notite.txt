@@ -12,3 +12,8 @@ pt build pe x86 pe windows:
 -comenzi:
 	-   cmake -G "Visual Studio 16 2019" -A Win32 -S \path_to_source\ -B "build32"
 	-   cmake --build build32 --config Release
+
+
+LA MP3
+-tagul ID3, loc unde se encodeaza metadatele, including album art, artist, song number etc.(good place for metadata steganography), nu e foarte complex dar e useless in rest
+-frame header, chestii generice. formula pt calcul a lungimii audio data pt fiecare frame, chestiile de compresie(e cam insane)
