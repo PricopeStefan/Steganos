@@ -84,6 +84,28 @@ However, we see a great deal of advantages as well based on the file structure:
 In conclusion, WAV is an impressive carrier format worthy of being used in the steganography process due to the fact that it is commonly seen on the Internet, has no compression that can affect the secret message and can easily work with all the algorithms presented over the course of this thesis.
 
 \section{The MPEG-1/2 Audio Layer III (MP3)}
-TO DO: research the MP3 format, how they store the audio samples, headers, compression, why it became so popular etc.
+Moving Pictures Experts Group or MPEG for short has plenty of both official and unofficial standards, multiple versions etc. The focus of this subchapter will be on MPEG Versions 1 and 2 (the only officially accepted standards), or to be more precise, Layer III of these versions. As you can already see, there are tons of variations of what should  be a single and standardized format, but all of them exist for a good reason and have their own use cases, even though they differ in available bit rates or the sampling rate frequencies range. Talking about all of them would be pointless and would easily take hundreds of pages to showcase as they have been the result of many years of research and evolution, so instead we are going to focus on the most common standard that is available in the digital world, which is even more popular than the aforementioned audio file format, and that is MPEG Version 1 Layer 3, hereby known simply as MP3. While technically any version of the MPEG that uses Layer 3 is formally known as MP3, versions 2 and 2.5 are much rarer since they offer smaller bitrates and smaller frequency sampling rates, making them inadequate for audio usage in the modern day.
+
+The biggest reason MP3 has been one of the most popular audio file formats used in the world since its invention back in 1993 is due to its ability to replay high quality audio samples while still keeping a very small disk usage overhead. It takes advantage of the Huffman coding to reduce the total length of the file, making it able to retain the same perceptible audio quality to the human ear while still compressing the final size between 75\% and 95\% of other uncompressed formats, such as WAV\cite{genesis_of_mp3}. However, due to the usage of compression algorithms, the long time the format was in development, the high number of standards and substandards and the inclusion of other formats in the same binary stream as the audio samples for various reasons, make the MP3 an incredibly complex format that need more advanced parsers than the ones found in other trivial formats, such as BMP or WAV.
+
+Before beginning to talk about steganographic algorithms that could be applied to the format, we first need to understand the MP3 binary stream to make sure we do not alter bytes that could mark the file as corrupted, such as checksums or important headers. Nowadays, the structure of most MP3 files consists of two parts:
+\begin{itemize}
+	\item The \textbf{ID3} part, the metadata container where information such as the track artist, album name or even album art is stored.
+	\item The actual \textbf{MP3} audio data, contains the audio samples in a special format.
+\end{itemize}
+
+ID3 is a standard used to store file metadata that is most commonly seen alongside MP3 files, which is why it is important to discuss it because it can offer a few interesting options that can be viable secret message carriers. It is always found at the beginning of the audio file such that any parsers that are not interested in the metadata will need to read only a few bytes in order to get the offset to the actual sound data. Similar to the PNG, it is a chunked structure that may contain multiple chunks (or frames as the standard specifies). We can see in table below the general structure of the ID3v2 header(the most common type of header, the previous versions being flagged as obsolete):
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Chunk type}                                           & \textbf{Chunk size}                                       \\ \hline
+\begin{tabular}[c]{@{}c@{}}Header\\ (REQUIRED)\end{tabular}   & 10 bytes                                                  \\ \hline
+\begin{tabular}[c]{@{}c@{}}Extended Header\\ (OPTIONAL)\end{tabular} & \begin{tabular}[c]{@{}c@{}}Variable\\ Length\end{tabular} \\ \hline
+\begin{tabular}[c]{@{}c@{}}Frames\\ (at least 1)\end{tabular} & \begin{tabular}[c]{@{}c@{}}Variable\\ Length\end{tabular} \\ \hline
+\begin{tabular}[c]{@{}c@{}}Padding\\ (OPTIONAL)\end{tabular}  & \begin{tabular}[c]{@{}c@{}}Variable\\ Length\end{tabular} \\ \hline
+\begin{tabular}[c]{@{}c@{}}FOOTER\\ (OPTIONAL)\end{tabular}   & 10 bytes                                                  \\ \hline
+\end{tabular}
+\end{center}
 
 \end{multicols*}

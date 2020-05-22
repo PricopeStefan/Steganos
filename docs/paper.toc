@@ -16,14 +16,14 @@
 \contentsline {subsection}{\numberline {4.2.1}Frequency domain steganography}{20}%
 \contentsline {section}{\numberline {4.3}Waveform Audio (WAV)}{21}%
 \contentsline {section}{\numberline {4.4}The MPEG-1/2 Audio Layer III (MP3)}{22}%
-\contentsline {chapter}{\numberline {5}The Steganos Project}{23}%
-\contentsline {section}{\numberline {5.1}Used technologies}{23}%
-\contentsline {subsection}{\numberline {5.1.1}C++}{23}%
-\contentsline {subsection}{\numberline {5.1.2}CMake}{23}%
-\contentsline {subsection}{\numberline {5.1.3}CXXOpts}{24}%
-\contentsline {subsection}{\numberline {5.1.4}Lodepng}{24}%
-\contentsline {subsection}{\numberline {5.1.5}Robot36 SSTV Engine}{24}%
-\contentsline {section}{\numberline {5.2}Application architecture}{25}%
-\contentsline {section}{\numberline {5.3}Benchmarks}{25}%
-\contentsline {section}{\numberline {5.4}Further work}{25}%
-\contentsline {chapter}{\numberline {6}Conclusion}{26}%
+\contentsline {chapter}{\numberline {5}The Steganos Project}{24}%
+\contentsline {section}{\numberline {5.1}Used technologies}{24}%
+\contentsline {subsection}{\numberline {5.1.1}C++}{24}%
+\contentsline {subsection}{\numberline {5.1.2}CMake}{24}%
+\contentsline {subsection}{\numberline {5.1.3}CXXOpts}{25}%
+\contentsline {subsection}{\numberline {5.1.4}Lodepng}{25}%
+\contentsline {subsection}{\numberline {5.1.5}Robot36 SSTV Engine}{25}%
+\contentsline {section}{\numberline {5.2}Application architecture}{26}%
+\contentsline {section}{\numberline {5.3}Benchmarks}{26}%
+\contentsline {section}{\numberline {5.4}Further work}{26}%
+\contentsline {chapter}{\numberline {6}Conclusion}{27}%
