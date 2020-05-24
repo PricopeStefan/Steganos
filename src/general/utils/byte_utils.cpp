@@ -90,3 +90,53 @@ uint32_t utils::convert_synchsafe_uint_to_normal_uint(uint32_t synch_safe) {
 
 	return byte0 << 21 | byte1 << 14 | byte2 << 7 | byte3;
 }
+
+uint32_t utils::convert_bytes_to_uint32(uint8_t number_bytes[4]) {
+	uint32_t ret = 0;
+	ret = (number_bytes[3] << 0) | (number_bytes[2] << 8) | (number_bytes[1] << 16) | (number_bytes[0] << 24);
+	return ret;
+}
+
+void utils::convert_uint32_to_bytes(uint32_t nr, uint8_t number_bytes[4]) {
+	number_bytes[3] = nr & 0x000000ff;
+	number_bytes[2] = (nr & 0x0000ff00) >> 8;
+	number_bytes[1] = (nr & 0x00ff0000) >> 16;
+	number_bytes[0] = (nr & 0xff000000) >> 24;
+}
+
+error_code utils::parse_apic_frame(ID3v3Frame& metadata_frame, ID3v3APICFrameData& apic_frame) {
+	if (metadata_frame.frame_identifier[0] != 'A' || metadata_frame.frame_identifier[1] != 'P'
+		|| metadata_frame.frame_identifier[2] != 'I' || metadata_frame.frame_identifier[3] != 'C')
+		return error_code::MISC_ERROR;
+
+	if (utils::convert_bytes_to_uint32(metadata_frame.frame_size) < 4)
+		return error_code::MISC_ERROR;
+
+	uint32_t data_index = 1;
+	std::stringstream ss;
+
+	apic_frame.text_encoding = metadata_frame.frame_data[0];
+	while (metadata_frame.frame_data[data_index] != 0) {
+		ss << metadata_frame.frame_data[data_index++];
+	}
+	apic_frame.MIME_type = ss.str(); ss.str("");
+	apic_frame.picture_type = metadata_frame.frame_data[++data_index];
+	if (apic_frame.text_encoding == 0) {
+		while (metadata_frame.frame_data[data_index] != 0) {
+			ss << metadata_frame.frame_data[data_index++];
+		}
+	}
+	else if (apic_frame.text_encoding == 1) {
+		while (metadata_frame.frame_data[data_index] != 0 || metadata_frame.frame_data[data_index + 1] != 0) {
+			ss << metadata_frame.frame_data[data_index++];
+		}
+		ss << 0;
+		data_index += 2;
+	}
+
+	apic_frame.description = ss.str();
+	apic_frame.image_data = metadata_frame.frame_data + data_index + 1;
+
+
+	return error_code::NONE;
+}

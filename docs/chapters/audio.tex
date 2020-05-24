@@ -108,4 +108,21 @@ ID3 is a standard used to store file metadata that is most commonly seen alongsi
 \end{tabular}
 \end{center}
 
+We can see from the table the similarities to other chunked file formats. Since modifying any of the important bytes from the header/footer or padding can lead to corrupted and unparsable files, we shall stray away from the. However the frames are a perfect environment for our messages since we can have almost any number of them (limited by the 4 bytes or 28 bits that form a synchsafe integer representing the total size of the ID3 header), along with a high range of official frame types that we can pick from that most parsers will probably ignore. We can see in the figure below a frame with the ID equal to APIC (short for attached picture) which is used to usually embed images into the stream that represent album art or covers.
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=8cm,keepaspectratio]{pics/audio_chapter/tool_cover_example.png}
+    \caption{Front cover of the album Fear Inoculum by Tool}
+\end{figure}
+
+Our advantage is that there is no limit of frames with the ID equal to APIC there can be in a file so it is a prime target for metadata steganography when our message is a simple image. By changing a few bits we can mark the image as being the back cover of the song or we can even make it invalid such that it will exist in the binary stream but no renderers will show it. The process of parsing the metadata is simple after reading and understanding the documentation and results in a trivial encoding process. The difficult part is when attempting to write our image since it has to be inserted without breaking any of the other frames. After the entire process is done, we get something like this:
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=8cm,keepaspectratio]{pics/audio_chapter/tool_backcover_example.png}
+    \caption{Back cover which is our hidden image}
+\end{figure}
+
+Unfortunately, since MP3 is a much more complex format than we are accomodated with we will not look into the process of Least Significant Bit insertion as that would entitle too much trouble for such a simple result and since it is by default a compressed format it is not a significant loss because the available domain is smaller and we would not be able to achieve an acceptable performance. This is the reason why metadata and after-end steganography are the only viable methods when dealing with the MP3 file format.
+
+In conclusion, MP3 is one of the best formats for metadata embedding since it has so many types of frames that are impossible to keep track of and that no user will possibly notice if they are not looking specifically for it. 
 \end{multicols*}

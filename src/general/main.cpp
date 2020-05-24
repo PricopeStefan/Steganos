@@ -73,8 +73,14 @@ error_code decode_run_handler(/* cmdl args */) {
 
 int main(int argc, char *argv[]) {
 	{
-		MP3Module mp3_module("D:\\Projects\\Steganos\\test_data\\audio\\Vivaldi - Spring-l-dYNttdgl0.mp3");
-		//MP3Module mp3_module("D:\\Projects\\Steganos\\test_data\\audio\\Suzanne Vega - Tom's Diner.mp3");
+		//MP3Module mp3_module("D:\\Projects\\Steganos\\test_data\\audio\\Vivaldi - Spring-l-dYNttdgl0.mp3");
+		//MP3Module mp3_module("D:\\Projects\\Steganos\\test_data\\audio\\Tool - Invincible.mp3");
+		//MP3Module mp3_module2("D:\\Projects\\Steganos\\out\\build\\x64-Debug\\output.mp3");
+		MP3EncoderModule encoder("D:\\Projects\\Steganos\\test_data\\audio\\Tool - Invincible.mp3",
+				"D:\\Projects\\Steganos\\test_data\\secrets\\sstv_me.bmp");
+		
+		encoder.launch_steganos();
+
 
 
 		//WAVEncoderModule wav_module("D:\\Projects\\Steganos\\test_data\\audio\\Gavotte_en_rondeau_54.wav", "D:\\Projects\\Steganos\\test_data\\secrets\\orar.xlsx");

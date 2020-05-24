@@ -2,7 +2,8 @@
 
 #include <fstream>
 #include <iostream>
-
+#include <string>
+#include <sstream>
 
 
 enum class error_code {
@@ -23,7 +24,22 @@ inline void cool_assert(error_code code, const char* file, int line) {
 	}
 }
 
+#pragma pack(push, 1)
+struct ID3v3Frame {
+	uint8_t frame_identifier[4];
+	uint8_t frame_size[4];
+	uint8_t flags[2];
+	uint8_t* frame_data = nullptr;
+};
+#pragma pack(pop)
 
+struct ID3v3APICFrameData {
+	uint8_t text_encoding;
+	std::string MIME_type;
+	uint8_t picture_type;
+	std::string description;
+	uint8_t* image_data = nullptr;
+};
 
 namespace utils {
 	error_code load_stream(const char* file_path, std::ifstream*& stream, std::ios_base::openmode stream_options = std::ios_base::binary);
@@ -41,6 +57,10 @@ namespace utils {
 	uint8_t read_byte_from_lsbs(uint8_t* byte_stream, uint64_t byte_stream_size);
 
 	uint32_t convert_synchsafe_uint_to_normal_uint(uint32_t synch_safe);
+	uint32_t convert_bytes_to_uint32(uint8_t number_bytes[4]);
+	void convert_uint32_to_bytes(uint32_t, uint8_t number_bytes[4]);
+
+	error_code parse_apic_frame(ID3v3Frame& metadata_frame, ID3v3APICFrameData& apic_frame);
 
 	namespace pixels {
 		//pixels types used in the internal storage of the image data of different file formats

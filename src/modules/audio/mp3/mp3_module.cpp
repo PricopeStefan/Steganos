@@ -13,6 +13,10 @@ MP3Module::~MP3Module() {
 	if (mp3_stream != nullptr)
 		delete mp3_stream;
 
+	for (auto& metadata_frame : metadata_frames)
+		if (metadata_frame.frame_data != nullptr)
+			delete[] metadata_frame.frame_data;
+
 	std::cout << "Deleted audio data and its associated stream" << std::endl;
 }
 
@@ -24,18 +28,41 @@ error_code MP3Module::read_cover_data() {
 		return error_code::COVER_FILE_ERROR;
 
 	printf("Read an MP3, ID3 v2.%d.%d\n", cover_metadata.major_version, cover_metadata.minor_version);
-	printf("Total IDv3 Header Size = %u\n", utils::convert_synchsafe_uint_to_normal_uint(cover_metadata.header_size));
 	actual_data_offset += utils::convert_synchsafe_uint_to_normal_uint(cover_metadata.header_size);
 	bool is_footer_present = (cover_metadata.flags_byte >> 4) % 2;
 	if (is_footer_present)
 		actual_data_offset += 10;
 
 	printf("Actual MP3 data starting from %u\n", actual_data_offset);
-	mp3_stream->ignore(actual_data_offset); // get to the starting bytes of the thingie
-	 
+	uint32_t current_offset = 10;
+	//mp3_stream->ignore(actual_data_offset); // get to the starting bytes of the thingie
+	//so far we have read 10 bytes of the header, we can begin parsing the ID3 frames
+	while (current_offset < actual_data_offset) { 
+		ID3v3Frame metadata_frame;
+		mp3_stream->read((char*)&metadata_frame, sizeof(metadata_frame) - sizeof(uint8_t*));
+		
+		uint32_t frame_size = utils::convert_bytes_to_uint32(metadata_frame.frame_size);
+		uint8_t* frame_data = new uint8_t[frame_size];
+		mp3_stream->read((char*)frame_data, frame_size);
+		metadata_frame.frame_data = frame_data;
+		
+		metadata_frames.push_back(metadata_frame);
+		if (frame_size > 0)
+			printf("Frame Type = %c%c%c%c; Frame size = %u\n", metadata_frame.frame_identifier[0], metadata_frame.frame_identifier[1], metadata_frame.frame_identifier[2], metadata_frame.frame_identifier[3], frame_size);
+		else
+			break;
+
+		current_offset += frame_size;
+	}
+	if (current_offset < actual_data_offset)
+		mp3_stream->seekg(actual_data_offset + sizeof(MP3MetaStruct), std::ios::beg);
+
 	while (true) { //we have absolutely no idea how many bytes/frames the file has
 		uint32_t frame_header = 0;
 		mp3_stream->read((char*)&frame_header, sizeof(frame_header));
+		if (frame_header == 1229406548) //temporary workaround
+			break;
+
 		if (frame_header == 0 || mp3_stream->eof())
 			break;
 
@@ -44,9 +71,10 @@ error_code MP3Module::read_cover_data() {
 		uint32_t frame_size = get_frame_size(actual_frame_header);
 		//printf("ProtectionBit = %02X; BitRate = %u; Frequency = %u; Padding = %02X\n", actual_frame_header.error_protection, get_frame_bitrate(actual_frame_header), get_frame_frequency(actual_frame_header), actual_frame_header.padding_bit);
 		//printf("FrameSize = %u\nOffset = %u\n=================\n", frame_size, actual_data_offset);
+		//actual_data_offset += frame_size;
 		mp3_stream->ignore(frame_size - 4);
-		actual_data_offset += frame_size;
 	}
+	
 
 	return error_code::NONE;
 }
@@ -154,3 +182,25 @@ uint32_t MP3Module::get_frame_frequency(MP3AudioFrameHeader& frame_header) {
 
 	return 0;
 }
+
+
+error_code MP3Module::write_cover(const char* output_path) {
+	for (auto& metadata_frame : metadata_frames) {
+		ID3v3APICFrameData apic_frame;
+		if (utils::parse_apic_frame(metadata_frame, apic_frame) != error_code::NONE)
+			continue;
+
+		//stii ca apic_frame e APIC
+		printf("Text Encoding = %d\nMIME TYPE = %s\n Picture Type = %d\n First 2 bytes %02X %02X\n", (int)apic_frame.text_encoding, apic_frame.MIME_type.c_str(), (int)apic_frame.picture_type, apic_frame.image_data[0], apic_frame.image_data[1]);
+		uint32_t image_size = utils::convert_bytes_to_uint32(metadata_frame.frame_size) - apic_frame.MIME_type.size() - apic_frame.description.size() - 4;
+		printf("Actual image size = %u\n", image_size);
+		
+
+		std::ofstream out("test.jpeg", std::ios_base::binary);
+		out.write((char*)apic_frame.image_data, image_size);
+		out.close();
+	}
+
+	return error_code::NONE;
+}
+

@@ -35,6 +35,8 @@ struct MP3MetaStruct { //aka ID3 header
 };
 #pragma pack(pop)
 
+
+
 //everything that is not a bit is going to be uint8_t because we cant work bit by bit
 //we'll have helper functions that read a uint32_t and converts it to this header and back
 //based on http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
@@ -59,6 +61,7 @@ protected:
 	std::ifstream* mp3_stream = nullptr;
 	//structure responsible for holding the ID3 mp3 metadata
 	MP3MetaStruct cover_metadata;
+	std::vector<ID3v3Frame> metadata_frames;
 	uint32_t cover_data_length = 0;
 	uint8_t* cover_data = nullptr;
 
@@ -75,6 +78,24 @@ public:
 
 	//const WAVMetaStruct& get_metadata() const;
 
-	error_code write_cover(const char* output_path = "output.wav");
+	error_code write_cover(const char* output_path = "output.mp3");
 };
 
+
+
+class MP3EncoderModule : public MP3Module {
+private:
+	std::ifstream* secret_stream = nullptr;
+	uint8_t* secret_data = nullptr;
+	uint32_t secret_data_size = 0;
+
+	error_code image_embed(const MP3ModuleOptions& steg_options);
+
+	error_code splice_apic_frame(ID3v3APICFrameData& apic_custom_frame, ID3v3Frame& custom_frame);
+public:
+	MP3EncoderModule(const char* cover_file_path);
+	MP3EncoderModule(const char* cover_file_path, const char* secret_file_path);
+	~MP3EncoderModule();
+
+	error_code launch_steganos(const MP3ModuleOptions& steg_options = MP3ModuleOptions());
+};

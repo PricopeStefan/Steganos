@@ -12,6 +12,7 @@ add_library(
 	MP3_MODULE OBJECT
 	"mp3.h"
 	"mp3/mp3_module.cpp"
+	"mp3/mp3_encoder.cpp"
 )
 
 add_library(
