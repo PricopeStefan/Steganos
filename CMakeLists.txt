@@ -1,5 +1,5 @@
 ﻿cmake_minimum_required (VERSION 3.8)
-set (CMAKE_CXX_STANDARD 17)
+#set (CMAKE_CXX_STANDARD 17)
 
 project ("Steganos")
 
@@ -20,3 +20,5 @@ target_link_libraries(Steganos IMAGE_MODULE AUDIO_MODULE)
 if (WIN32)
 	target_link_libraries(Steganos wsock32 ws2_32)
 endif()
+
+target_compile_features(Steganos PRIVATE cxx_std_17)
