@@ -1,7 +1,13 @@
 #include <modules/image/png.h>
 
-#if _WIN32
-	#include <WinSock2.h>
+
+
+#ifdef __linux__ 
+#include <arpa/inet.h>
+#include <string.h>
+#include <memory.h>
+#elif _WIN32
+#include <WinSock2.h>
 #endif
 
 PNGModule::PNGModule(const char* png_file_path) {
@@ -20,7 +26,7 @@ PNGModule::PNGModule(const char* png_file_path) {
 
 	image_size = image_data_as_vector.size();
 	image_data = new uint8_t[image_size];
-	memcpy_s(image_data, image_size, &image_data_as_vector[0], image_size);
+	memcpy(image_data, &image_data_as_vector[0], image_size);
 	//we now have our image data as a raw byte stream in memory
 
 }
@@ -117,7 +123,13 @@ const PNGMetadataStruct PNGModule::get_metadata() const {
 		return PNGMetadataStruct(); //no IHDR chunk as the first chunk of the png
 
 	PNGMetadataStruct metadata;
-	std::memcpy(&metadata, (void*)png_chunks.at(0).data, sizeof(PNGMetadataStruct));
+	
+	#ifdef __linux__ 
+		memcpy(&metadata, (void*)png_chunks.at(0).data, sizeof(PNGMetadataStruct));
+	#elif _WIN32
+		std::memcpy(&metadata, (void*)png_chunks.at(0).data, sizeof(PNGMetadataStruct));
+	#endif
+
 	metadata.height = ntohl(metadata.height);
 	metadata.width = ntohl(metadata.width);
 

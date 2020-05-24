@@ -105,7 +105,9 @@ int main(int argc, char *argv[]) {
 		//PNGDecoderModule decoder("output.png");
 		//decoder.launch_steganos(options);
 	}
-	
-	_CrtDumpMemoryLeaks();
+
+	#ifdef _WIN32
+		_CrtDumpMemoryLeaks();
+	#endif
 	return 0;
 }

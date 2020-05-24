@@ -1,5 +1,8 @@
 #include <modules/audio/wav.h>
 #include <string>
+#ifdef __linux__ 
+#include <memory.h>
+#endif
 
 error_code WAVModule::read_cover_metadata() {
 	if (wav_stream == nullptr || !wav_stream->is_open())
@@ -35,10 +38,10 @@ error_code WAVModule::read_cover_metadata() {
 		printf("Ignoring %u bytes to get to the next chunk\n", current_chunk_size);
 		
 		uint8_t individual_bytes[4];
-		memcpy_s(individual_bytes, 4, &next_chunk_id, sizeof(next_chunk_id));
+		memcpy(individual_bytes, &next_chunk_id, sizeof(next_chunk_id));
 		for (uint8_t index = 0; index < 4; index++)
 			additional_cover_metadata.push_back(individual_bytes[index]);
-		memcpy_s(individual_bytes, 4, &current_chunk_size, sizeof(current_chunk_size));
+		memcpy(individual_bytes, &current_chunk_size, sizeof(current_chunk_size));
 		for (uint8_t index = 0; index < 4; index++)
 			additional_cover_metadata.push_back(individual_bytes[index]);
 
