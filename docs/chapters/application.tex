@@ -1,6 +1,6 @@
 
 \chapter{The Steganos Project}
-\begin{multicols*}{2}
+\begin{multicols}{2}
 Steganos is the name of the application that implements the algorithms enumerated in the earlier chapters of this paper and is the direct result of the work done by the authors. In this chapter I will present what modern technologies and frameworks went into creating the application, how it is structured from an Object Oriented point of view, how fast it is and how I hope it will expand into the future.
 
 \section{Used technologies}
@@ -47,11 +47,27 @@ CXXOpts is an open-source C++ library that is meant to be a lightweight command 
 Lodepng is an open source C++ library developed by Lode Vandevenne used for image processing for pictures stored under the PNG format \cite{lvandeve_2020}. It is very useful for decoding the image data before beginning the steganography process, making it easy to modify the data and to encode it back into a PNG file that follows the standard format. Lodepng works on every version of C++, contains only two files(a source file and a header file) and is rated to be one of the fastest libraries for PNG image processing. Steganos uses Lodepng to parse PNG files and to obtain the image data byte stream from the zlib compressed stream in order to be able to work with the implemented steganographic algorithms.
 
 \subsection{Robot36 SSTV Engine}
-\end{multicols*}
+Robot36 is a library created by Ahmet Inan in order to be able to encode and decode images using the Slow Scan Television (also known as SSTV) format, more specifically the Robot36 standard. The library is open-source and is available on github\cite{robot36_git}. By default it supports only color BMP images that are 320 pixels wide and 240 pixels tall and can be compiled using any C compilers only under a Linux system which has the Advanced Linux Sound Architecture (ALSA) libraries installed. Since Steganos is a C++ project that the authors intended to be cross-platform, we have forked the original project and refactorized the code to be buildable and to work on the Windows architecture as well. After some more refactorization is done, we have every intention to release our version of the SSTV Engine and to create a pull request to the original repository.
 
-\begin{multicols}{2}
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=7.5cm,keepaspectratio]{pics/application_chapter/sstv_example_iss}
+    \caption{SSTV Engine decoding transmission from the International Space Station}
+\end{figure}
+
+\subsection{Jenkins}
+Jenkins is one of the biggest open source automation servers that is meant to automate the process of building, deploying, testing etc. any project. Developed in Java, it supports a big range of popular languages and frameworks, either by default configuration or by installing a plugin available on their developer page. We picked Jenkins for Steganos due to previous working experience of the authors with it and since it has the ability to build and release C++ and CMake projects using a single plugin it has proven to be an extremely valuable asset in maintaning a continuous integration and continuous delivery schedule of the project.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=7.5cm,keepaspectratio]{pics/application_chapter/steganos_jenkins_job}
+    \caption{Jenkins management interface of the Steganos job}
+\end{figure}
+
+
 \section{Application architecture}
 The Steganos Project is an application that uses the Object Oriented Programming aspects in order to achieve the best performance while maintaining high cohesion and low coupling between the components of the codebase. The project is structured in multiple modules\footnote{To be technically correct they are only different folders because the latest available C++ standard as of the time of writing this thesis is C++17 which does not understand yet the concept of modules. However developers should rejoice over the announcement made by Microsoft to standardize C++ modules starting with the C++20 standard\cite{N4720}.} that were built to be as independent as possible with the goal to provide steganography functions for the supported file formats. The main module contains the source files for the entry point of the application which processes the arguments given via the command line along with the code for some of the utilities, helper function that help convert pixels between different representations(YUV, RGB, BGR, YCbCr) or bit-wise operations such as toggling the last significant bit or building a byte using the LSBs from a byte stream. The algorithm module declares and defines the algorithms that are implemented in the application, all of which have been discussed thoroughly in the earlier chapters of the thesis (LSB insertion, embedding secrets into file metadata, use-after-end encoding). The remaining modules all follow the same design patterns and are responsible for the parsing of the cover files and the encoding or decoding of hidden digital files inside them. 
+
 \end{multicols}
 
 \begin{figure}[H]
