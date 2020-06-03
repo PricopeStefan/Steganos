@@ -68,16 +68,55 @@ Jenkins is one of the biggest open source automation servers that is meant to au
 \section{Application architecture}
 The Steganos Project is an application that uses the Object Oriented Programming aspects in order to achieve the best performance while maintaining high cohesion and low coupling between the components of the codebase. The project is structured in multiple modules\footnote{To be technically correct they are only different folders because the latest available C++ standard as of the time of writing this thesis is C++17 which does not understand yet the concept of modules. However developers should rejoice over the announcement made by Microsoft to standardize C++ modules starting with the C++20 standard\cite{N4720}.} that were built to be as independent as possible with the goal to provide steganography functions for the supported file formats. The main module contains the source files for the entry point of the application which processes the arguments given via the command line along with the code for some of the utilities, helper function that help convert pixels between different representations(YUV, RGB, BGR, YCbCr) or bit-wise operations such as toggling the last significant bit or building a byte using the LSBs from a byte stream. The algorithm module declares and defines the algorithms that are implemented in the application, all of which have been discussed thoroughly in the earlier chapters of the thesis (LSB insertion, embedding secrets into file metadata, use-after-end encoding). The remaining modules all follow the same design patterns and are responsible for the parsing of the cover files and the encoding or decoding of hidden digital files inside them. 
 
+We can see in figure \ref{module_overview} the overview of the entire application and what each module contains more specifically. This is only a very simplistic rendering of the module deployment, we will delve in for a more in-depth perspective later this chapter.
 \end{multicols}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=17cm,keepaspectratio]{pics/application_chapter/diagrama_module_interface}
-    \caption{Folder structure of a project using CMake}
+    \includegraphics[width=13cm,keepaspectratio]{pics/application_chapter/module_overview}
+    \caption{Overview of the Steganos modules}
+    \label{module_overview}
+\end{figure}
+
+\begin{multicols}{2}
+In figure \ref{cover_module_overview} we can see a class diagram of the general struture of each of the four aforementioned cover submodules (the codebase which deals with parsing the cover files that allow for the steganography algorithms to have the necessary data to work with). 
+\end{multicols}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=16cm,keepaspectratio]{pics/application_chapter/diagrama_module_interface}
+    \caption{Structure of a cover module}
+    \label{cover_module_overview}
+\end{figure}
+
+\begin{multicols}{2}
+After seeing how the project is structured into modules and submodules, what classes, interfaces, methods and attributes we have, it is also very important to understand how the data flows from the moment we launch Steganos to the moment the output file is generated (the output file is either the cover file containing a secret message, either the actual secret message, depending on the option used). In figure \ref{flowchart-code} we can see a flowchart of the application containing the key points of the entire process.
+\end{multicols}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=15cm,keepaspectratio]{pics/application_chapter/flowchart}
+    \caption{Steganos code flowchart}
+    \label{flowchart-code}
+\end{figure}
+
+\begin{multicols}{2}
+To make sure that the project will always be in at least a buildable state after any commit is done we are using Jenkins. It is very important to make sure that the code compiles and that if there are any errors, the authors are aware of them and will have the option to hold back the release until the issues are fixed. On a more related note to the Steganos application, we have the following job configuration for testing each new version before releasing:
+\begin{itemize}
+	\item Maximum number of build to keep is set to 5 to conserve total storage used.
+	\item Each new commit on the master branch will activate the hook trigger to let Jenkins know that a new version is available and that it should try to build it.
+	\item Using the "Unix Makefiles" generator to set up the CMake build files with the build type set to "Release".
+	\item Publish the build result to the project page to keep it up to date to the current release or trigger custom personal alerts to notify in case of failure.
+\end{itemize}
+\end{multicols}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=15cm,keepaspectratio]{pics/application_chapter/jenkins_project_build}
+    \caption{Jenkins log of the Steganos job build}
+    \label{jenkins-log}
 \end{figure}
 
 \begin{multicols*}{2}
-\section{Benchmarks}
+\section{Implementation details}
 
 \section{Further work}
 \end{multicols*}

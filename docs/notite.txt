@@ -19,5 +19,19 @@ LA MP3
 -frame header, chestii generice. formula pt calcul a lungimii audio data pt fiecare frame, chestiile de compresie(e cam insane)
 
 
-24 = 00100100
-64 = 01100100
+===================================================
+De adaugat la architecture:
+X ce packageuri am (image, audio), ce contin fiecare(te legi de CMakeLists.txt pt build, cod sursa cpp pt module)
+X flowchart cu ce se intampla din momentul cand rulezi steganos pana cand este generat fisierul de iesire(fie rezultat al encodingului fie al decodingului)
+X testarea, cum e construit cu jenkins proiectu, cum e published pe github?
+
+
+Detalii de implementare:
+-macroul TRY facut de mine pt operatiile critice ce trebuiesc realizate garantat fara a esua, altfel ies cu exit codeul dat de error_codeul returnat
+-cum fac citirea/scrierea din fisiere(fstreamuri opened in modu binary, copy paste cod?)
+-functiile din namespaceul utils, setLSB, readByteFromLSBs, convert intre RGB si BGR, stuff like that?
+-struct pack pt consecutive byte allocation and no padding added by default, otherwise messes values
+-fisierele all.h folosite pt a include toate submodulele disponibile, more convenient
+
+
+Benchmarks, cat de repede merge aplicatia pe diferite fisiere de test
