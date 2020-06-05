@@ -14,14 +14,14 @@ enum class BMPModuleSupportedAlgorithms {
 	//the order of the writing of the secret data - generate a random permutation containing numbers 1-64
 	//and write the data bits following that permutation
 	PERSONAL_SCRAMBLE, 
-	//TO DO : add more algorithms(metadata enconding at least)
 };
 
 
 //use a map instead of a struct?
 struct BMPModuleOptions {
 	bool encrypt_secret = false;
-	std::string password = "fasf";
+	std::string password = "";
+	std::string output_path = "output.bin";
 
 	bool compress_secret = false; //bool indicating whether to compress the secret data or not
 	BMPModuleSupportedAlgorithms algorithm = BMPModuleSupportedAlgorithms::SEQUENTIAL;

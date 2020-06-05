@@ -68,12 +68,14 @@ uint32_t PNGEncoderModule::crc(uint8_t* buf, int32_t len) {
 }
 
 error_code PNGEncoderModule::simple_sequential_embed_handler(const PNGModuleOptions& steg_options) {
+	uint64_t successfull_written_bytes = 0;
+
 	error_code sequential_result = simple_sequential_embed(
 		image_size,
 		image_data,
 		secret_data_size,
 		secret_data,
-		0
+		successfull_written_bytes
 	);
 
 	auto metadata = get_metadata();

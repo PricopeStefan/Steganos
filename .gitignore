@@ -479,5 +479,4 @@ MigrationBackup/
 
 build/
 out/
-test_data/secrets/orar.xlsx
 CMakeSettings.json

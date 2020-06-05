@@ -32,14 +32,6 @@ error_code BMPModule::read_cover_data() {
 	//TO DO: add checks if stream failed to read
 	bmp_stream->read(reinterpret_cast<char*>(cover_image_data), sizeof(BGRPixel) * get_padded_width() * cover_image_metadata.height);
 	
-	//BMP images store data bottom-up : the bottom line is stored as the first in the byte stream
-	//for (int64_t line_index = cover_image_metadata.height - 1; line_index >= 0; line_index--) {
-	//	//a line of pixels is called a scan line in a BMP file
-	//	BGRPixel* scan_line_pixels = new BGRPixel[padded_width];
-	//	bmp_stream->read(reinterpret_cast<char*>(scan_line_pixels), padded_width * sizeof(BGRPixel));
-
-	//	cover_image_data[line_index] = scan_line_pixels;
-	//}
 
 	return error_code::NONE;
 }

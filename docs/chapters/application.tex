@@ -115,8 +115,57 @@ To make sure that the project will always be in at least a buildable state after
     \label{jenkins-log}
 \end{figure}
 
-\begin{multicols*}{2}
-\section{Implementation details}
 
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\lstset{frame=tb, %configurare listing format pt subcapitolul asta
+  language=C++,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\begin{multicols}{2}
+\section{Implementation details}
+Steganos contains many critical parts that are required to succeed in order to work properly. If any part of code or function call were to fail we would need to know so that we can properly interrupt the process on our terms, free any dynamically allocated memory, log the error messages so that developers are aware of any bugs that may appear or if the application is in a release form, notify the client of what has happened and why the application failed. Since C/C++ is a rather monstrous amalgamation when talking about exceptions raised during runtime execution (at least in the standard libraries, more complex frameworks like Boost do not suffer as much from this), we have preferred to validate the function calls based on a more simple method, the code returned by the function which is basically a glorified integer that has some meaning attached to its values. You can see in listing \ref{lst:try_macro} the exact define macro used in the project and in listing \ref{lst:try_macro_example} an example from one of the encoder module constructors.
+
+\end{multicols}
+\begin{lstlisting}[language=C++, caption=The TRY macro used for any critical operation,label={lst:try_macro}]
+ #define TRY(X) generic_assert((X), __FILE__, __LINE__);
+ inline void generic_assert(error_code code, const char* file, int line) {
+   if (code != error_code::NONE) {
+     printf("[Assert error]Message = %d in file %s at line %d\n", code, file, line);
+     exit(static_cast<int>(code));
+   }
+ }
+\end{lstlisting}
+
+\begin{lstlisting}[language=C++, caption=Usage example of the TRY macro,label={lst:try_macro_example}]
+WAVEncoderModule::WAVEncoderModule(const char* cover_file_path, const char* secret_file_path) : WAVModule(cover_file_path) 
+{
+  TRY(utils::load_stream(secret_file_path, secret_stream));
+  TRY(utils::read_byte_stream(secret_stream, secret_data, secret_data_size));
+}
+\end{lstlisting}
+
+\begin{multicols}{2}
 \section{Further work}
-\end{multicols*}
+Regarding the future of Steganos, I hope that it will be fairly fruitful and worthwhile. The entirety of this thesis we have only laid down the groundwork of the project and have talked about the most basic and essential part of the application. However, the possibilities for extending Steganos are almost endless and during the time while building the application and writing this thesis I have saved some of the more note-worthy ideas that came to my mind (in no particular order):
+\begin{itemize}
+	\item \textbf{Additional file formats support}.
+	\item \textbf{Proxy server and chat application}.
+	\item \textbf{Windows integration for Jenkins}.
+	\item \textbf{Additional algorithms}.
+\end{itemize}
+\end{multicols}

@@ -11,7 +11,7 @@ error_code BMPDecoderModule::write_secret(const char* output_path) const {
 	}
 
 	//TO DO : check if writes succedded
-	embedded_stream.write(reinterpret_cast<char*>(secret_data), secret_data_size - 4); // - 4 because we added 4 bytes for the stream length
+	embedded_stream.write(reinterpret_cast<char*>(secret_data), secret_data_size); 
 	embedded_stream.close();
 
 	return error_code::NONE;
@@ -25,7 +25,7 @@ error_code BMPDecoderModule::sequential_handler(const BMPModuleOptions& steg_opt
 		secret_data
 	));
 
-	TRY(write_secret());
+	TRY(write_secret(steg_options.output_path.c_str()));
 
 	return error_code::NONE;
 }
@@ -41,7 +41,7 @@ error_code BMPDecoderModule::personal_scramble_handler(const BMPModuleOptions& s
 		steg_options.password
 	));
 
-	TRY(write_secret("remade.xlsx"));
+	TRY(write_secret(steg_options.output_path.c_str()));
 
 	return error_code::NONE;
 }

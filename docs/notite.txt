@@ -27,11 +27,11 @@ X testarea, cum e construit cu jenkins proiectu, cum e published pe github?
 
 
 Detalii de implementare:
--macroul TRY facut de mine pt operatiile critice ce trebuiesc realizate garantat fara a esua, altfel ies cu exit codeul dat de error_codeul returnat
+X macroul TRY facut de mine pt operatiile critice ce trebuiesc realizate garantat fara a esua, altfel ies cu exit codeul dat de error_codeul returnat
 -cum fac citirea/scrierea din fisiere(fstreamuri opened in modu binary, copy paste cod?)
 -functiile din namespaceul utils, setLSB, readByteFromLSBs, convert intre RGB si BGR, stuff like that?
 -struct pack pt consecutive byte allocation and no padding added by default, otherwise messes values
 -fisierele all.h folosite pt a include toate submodulele disponibile, more convenient
+-use cases : 2 mari si late - encoding si decoding.
 
-
-Benchmarks, cat de repede merge aplicatia pe diferite fisiere de test
+Further work that would be nice

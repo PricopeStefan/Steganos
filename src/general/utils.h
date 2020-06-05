@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <external/cxxopts/cxxopts.hpp>
 
 
 enum class error_code {
@@ -93,5 +94,19 @@ namespace utils {
 			uint8_t blue = 0;
 			uint8_t alpha = 0;
 		};
+	}
+
+	namespace cli {
+		/* ENCODING HANDLERS */
+		error_code bmp_encode_handler(cxxopts::ParseResult& args);
+		error_code png_encode_handler(cxxopts::ParseResult& args);
+		error_code wav_encode_handler(cxxopts::ParseResult& args);
+		error_code mp3_encode_handler(cxxopts::ParseResult& args);
+
+		/* DECODING HANDLERS */
+		error_code bmp_decode_handler(cxxopts::ParseResult& args);
+		error_code png_decode_handler(cxxopts::ParseResult& args);
+		error_code wav_decode_handler(cxxopts::ParseResult& args);
+		error_code mp3_decode_handler(cxxopts::ParseResult& args);
 	}
 }

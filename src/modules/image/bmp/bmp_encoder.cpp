@@ -85,7 +85,7 @@ error_code BMPEncoderModule::launch_steganos(const BMPModuleOptions& steg_option
 	}
 
 
-	TRY(write_bmp());
+	TRY(write_bmp(steg_options.output_path.c_str()));
 
 	return error_code::NONE;
 }

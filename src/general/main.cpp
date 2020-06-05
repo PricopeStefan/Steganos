@@ -1,8 +1,6 @@
 #include <iostream>
 
-#include "modules/image/all.h"
-#include <modules/audio/mp3.h>
-//#include <external/cxxopts/cxxopts.hpp>
+#include <general/utils.h>
 
 #ifdef _WIN32
 	#define _CRTDBG_MAP_ALLOC
@@ -10,76 +8,91 @@
 	#include <crtdbg.h>
 #endif
 
-error_code encode_run_handler(/* command line args */) {
-	const char* cover_picture = "D:\\Projects\\Steganos\\test_data\\images\\marbles.bmp";
-	const char* secret_message = "D:\\Projects\\Steganos\\test_data\\secrets\\orar.xlsx";
+error_code encode_run_handler(cxxopts::ParseResult args);
+error_code decode_run_handler(cxxopts::ParseResult args);
 
-	BMPEncoderModule steg_module(cover_picture, secret_message);
-	BMPModuleOptions options;
-	options.algorithm = BMPModuleSupportedAlgorithms::PERSONAL_SCRAMBLE;
+void parse(int argc, char* argv[]) {
+	try {
+		cxxopts::Options options("Steganos", "Simple steganography project created as a part of my bachelor's thesis");
 
-	TRY(steg_module.launch_steganos(options));
-	printf("Width = %u; Height = %u\n", steg_module.get_metadata().width, steg_module.get_metadata().height);
+		options.allow_unrecognised_options()
+			.add_options("General")
+			("a,action", "Steganos action.", cxxopts::value<std::string>()->default_value("encode"), "<encode/decode>")
+			("o,output", "Name of the output file", cxxopts::value<std::string>()->default_value("output"), "FILE")
+			("v,verbose", "Verbose output", cxxopts::value<bool>()->default_value("false"))
+			("m,method", "The method to be used when encoding/decoding the message", cxxopts::value<std::string>(), "METHOD")
+			("p,passkey", "The password used to secure the message or to decipher it", cxxopts::value<std::string>()->default_value("password"), "PASSKEY")
+			("h,help", "Prints this help message")
+			;
 
-	return error_code::NONE;
+		options.add_options("Encoding/Decoding")
+			("c,cover", "The file that serves as a cover for the secret message", cxxopts::value<std::string>(), "FILE")
+			("s,secret", "The secret file which will be embedded into the cover file - ENCODING ONLY", cxxopts::value<std::string>(), "FILE")
+			;
+
+		auto result = options.parse(argc, argv);
+		
+		//complete failure cases
+		if (result.count("help"))
+		{
+			std::cout << options.help() << std::endl;
+			exit(0);
+		}
+		if (result.count("a") > 1) {
+			std::cout << "You must specify only one action : encode or decode." << std::endl;
+			std::cout << "Do " << argv[0] << " -h for more information." << std::endl;
+			exit(1);
+		}
+		if (result.count("c") != 1) {
+			std::cout << "You must specify one cover file." << std::endl;
+			std::cout << "Do " << argv[0] << " -h for more information." << std::endl;
+			exit(2);
+		}
+
+		//verbose redirecting the output in case of argument presence
+		std::streambuf* old = std::cout.rdbuf();
+		if (result.count("verbose") == 0) {
+			std::cout.rdbuf(nullptr);
+		}
+
+		//do the code execution
+		if (result["a"].as<std::string>().compare("encode") == 0) {
+			TRY(encode_run_handler(result));
+		}
+		else if (result["a"].as<std::string>().compare("decode") == 0) {
+			TRY(decode_run_handler(result));
+		}
+		else {
+			std::cout << "You must specify a valid action : encode or decode." << std::endl;
+			std::cout << "Do " << argv[0] << " -h for more information." << std::endl;
+			exit(1);
+		}
+
+
+		//restore the output after execution is done
+		if (result.count("verbose") == 0) {
+			std::cout.rdbuf(old);
+		}
+
+		std::cout << "Done" << std::endl;
+	}
+	catch (const cxxopts::OptionException& e)
+	{
+		std::cout << "error parsing options: " << e.what() << std::endl;
+		exit(1);
+	}
+
 }
-error_code decode_run_handler(/* cmdl args */) {
-	BMPDecoderModule desteg_module("D:\\Projects\\Steganos\\out\\build\\x64-Debug\\output.bmp");
-	BMPModuleOptions options;
-	options.algorithm = BMPModuleSupportedAlgorithms::PERSONAL_SCRAMBLE;
-
-	TRY(desteg_module.launch_steganos(options));
-
-	return error_code::NONE;
-}
-
-//void parse(int argc, char* argv[]) {
-//	try {
-//		cxxopts::Options options("Steganos", "Simple steganography project created as a part of my bachelor's thesis");
-//
-//		options.allow_unrecognised_options()
-//			.add_options("General")
-//			("h,help", "Prints this help message")
-//			("o,output", "Name of the output file", cxxopts::value<std::string>(), "BIN")
-//			("v,verbose", "Verbose output", cxxopts::value<bool>()->default_value("false"))
-//			("a,action", "Steganos action.", cxxopts::value<std::string>()->default_value("encode"), "<encode/decode>")
-//			("m,method", "The method to be used when encoding/decoding the message", cxxopts::value<std::string>())
-//			;
-//
-//		options.add_options("Encoding")
-//			("cf", "The file to be used as a cover for the secret message", cxxopts::value<std::string>(), "FILE")
-//			("sf", "The secret file which will be embedded into the cover file", cxxopts::value<std::string>(), "FILE")
-//			;
-//
-//		options.add_options("Decoding")
-//			("if", "The file to be used when decoding", cxxopts::value<std::string>(), "FILE")
-//			;
-//
-//		auto result = options.parse(argc, argv);
-//
-//		if (result.count("help") || result.arguments().size() == 0)
-//		{
-//			std::cout << options.help() << std::endl;
-//			exit(0);
-//		}
-//	}
-//	catch (const cxxopts::OptionException& e)
-//	{
-//		std::cout << "error parsing options: " << e.what() << std::endl;
-//		exit(1);
-//	}
-//
-//}
 
 int main(int argc, char *argv[]) {
 	{
 		//MP3Module mp3_module("D:\\Projects\\Steganos\\test_data\\audio\\Vivaldi - Spring-l-dYNttdgl0.mp3");
 		//MP3Module mp3_module("D:\\Projects\\Steganos\\test_data\\audio\\Tool - Invincible.mp3");
 		//MP3Module mp3_module2("D:\\Projects\\Steganos\\out\\build\\x64-Debug\\output.mp3");
-		MP3EncoderModule encoder("D:\\Projects\\Steganos\\test_data\\audio\\Tool - Invincible.mp3",
-				"D:\\Projects\\Steganos\\test_data\\secrets\\sstv_me.bmp");
-		
-		encoder.launch_steganos();
+		//MP3EncoderModule encoder("D:\\Projects\\Steganos\\test_data\\audio\\Tool - Invincible.mp3",
+		//		"D:\\Projects\\Steganos\\test_data\\secrets\\sstv_me.bmp");
+		//
+		//encoder.launch_steganos();
 
 
 
@@ -91,7 +104,7 @@ int main(int argc, char *argv[]) {
 		//WAVDecoderModule decoder("D:\\Projects\\Steganos\\out\\build\\x64-Debug\\output.wav");
 		//decoder.launch_steganos(options);
 
-		//parse(argc, argv);
+		parse(argc, argv);
 		/* check if -d option is in argv. if its not try and encode*/
 		//encode_run_handler();
 		//decode_run_handler();
@@ -110,4 +123,77 @@ int main(int argc, char *argv[]) {
 		_CrtDumpMemoryLeaks();
 	#endif
 	return 0;
+}
+
+#include <algorithm>
+
+#ifdef __linux__ 
+	#include <experimental/filesystem> 
+	namespace fs = std::experimental::filesystem;
+#elif _WIN32
+	#include <filesystem>
+	namespace fs = std::filesystem;
+#endif
+
+
+
+error_code encode_run_handler(cxxopts::ParseResult args) {
+	if (args.count("s") != 1) {
+		printf("A single secret file must be also provided.\n");
+		printf("Use the -h flag for more information.\n");
+		exit(3);
+	}
+	
+	//get cover extension
+	std::vector<std::string> valid_extensions = { ".mp3", ".bmp", ".wav", ".png" };
+	fs::path cover_path = args["c"].as<std::string>();
+	fs::path secret_path = args["s"].as<std::string>();
+	if (!fs::exists(cover_path)) {
+		printf("Cover file doesn't exist!\n");
+		exit(4);
+	}
+	if (!fs::exists(secret_path)) {
+		printf("Secret file doesn't exist!\n");
+		exit(4);
+	}
+
+	if (std::find(valid_extensions.begin(), valid_extensions.end(), cover_path.extension()) == valid_extensions.end()) {
+		printf("Unsupported cover file extension! Please only use BMP, PNG, WAV or MP3 files.\n");
+		exit(5);
+	}
+
+	if (cover_path.extension().compare(".bmp") == 0)
+		return utils::cli::bmp_encode_handler(args);
+	else if (cover_path.extension().compare(".png") == 0)
+		return utils::cli::png_encode_handler(args);
+	else if (cover_path.extension().compare(".wav") == 0)
+		return utils::cli::wav_encode_handler(args);
+	else if (cover_path.extension().compare(".mp3") == 0)
+		return utils::cli::mp3_encode_handler(args);
+
+	return error_code::MISC_ERROR;
+}
+
+error_code decode_run_handler(cxxopts::ParseResult args) {
+	std::vector<std::string> valid_extensions = { ".mp3", ".bmp", ".wav", ".png" };
+	fs::path cover_path = args["c"].as<std::string>();
+	if (!fs::exists(cover_path)) {
+		printf("Cover file doesn't exist!\n");
+		exit(4);
+	}
+	if (std::find(valid_extensions.begin(), valid_extensions.end(), cover_path.extension()) == valid_extensions.end()) {
+		printf("Unsupported cover file extension! Please only use BMP, PNG, WAV or MP3 files.\n");
+		exit(5);
+	}
+
+	if (cover_path.extension().compare(".bmp") == 0)
+		return utils::cli::bmp_decode_handler(args);
+	else if (cover_path.extension().compare(".png") == 0)
+		return utils::cli::png_decode_handler(args);
+	else if (cover_path.extension().compare(".wav") == 0)
+		return utils::cli::wav_decode_handler(args);
+	else if (cover_path.extension().compare(".mp3") == 0)
+		return utils::cli::mp3_decode_handler(args);
+
+	return error_code::MISC_ERROR;
 }
