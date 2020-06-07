@@ -7,7 +7,7 @@
 
 
 
-pt build pe x86 pe windows:
+pt build pe x86 pe windows
 -Command lineul de la Cross Tools COmmand prompt x86_x64(de la visual studio)
 -comenzi:
 	-   cmake -G "Visual Studio 16 2019" -A Win32 -S \path_to_source\ -B "build32"
@@ -15,8 +15,8 @@ pt build pe x86 pe windows:
 
 
 LA MP3
--tagul ID3, loc unde se encodeaza metadatele, including album art, artist, song number etc.(good place for metadata steganography), nu e foarte complex dar e useless in rest
--frame header, chestii generice. formula pt calcul a lungimii audio data pt fiecare frame, chestiile de compresie(e cam insane)
+X tagul ID3, loc unde se encodeaza metadatele, including album art, artist, song number etc.(good place for metadata steganography), nu e foarte complex dar e useless in rest
+X frame header, chestii generice. formula pt calcul a lungimii audio data pt fiecare frame, chestiile de compresie(e cam insane)
 
 
 ===================================================
@@ -29,9 +29,15 @@ X testarea, cum e construit cu jenkins proiectu, cum e published pe github?
 Detalii de implementare:
 X macroul TRY facut de mine pt operatiile critice ce trebuiesc realizate garantat fara a esua, altfel ies cu exit codeul dat de error_codeul returnat
 -cum fac citirea/scrierea din fisiere(fstreamuri opened in modu binary, copy paste cod?)
--functiile din namespaceul utils, setLSB, readByteFromLSBs, convert intre RGB si BGR, stuff like that?
 -struct pack pt consecutive byte allocation and no padding added by default, otherwise messes values
 -fisierele all.h folosite pt a include toate submodulele disponibile, more convenient
 -use cases : 2 mari si late - encoding si decoding.
 
+Usage examples
+X screenshot cu help menu
+X 2-3 call examples pt encoding/decoding, verbose sau nu, cu metode custom
+
 Further work that would be nice
+X talk more in depth about that stuff
+
+

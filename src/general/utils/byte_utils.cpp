@@ -18,6 +18,9 @@ error_code utils::load_stream(const char* file_path, std::ifstream*& stream, std
 	return error_code::STREAM_ERROR;
 }
 
+#include <iomanip>
+#define HEX( x ) std::setw(2) << std::setfill('0') << std::hex << (int)(x) << " "
+
 error_code utils::read_byte_stream(std::ifstream* stream, uint8_t*& byte_stream, uint32_t& stream_size) {
 	stream->seekg(0, std::ios::end);
 	std::streamsize file_size = stream->tellg();
@@ -31,7 +34,7 @@ error_code utils::read_byte_stream(std::ifstream* stream, uint8_t*& byte_stream,
 		byte_stream[1] = ((uint8_t*)&stream_size)[1];
 		byte_stream[2] = ((uint8_t*)&stream_size)[2];
 		byte_stream[3] = ((uint8_t*)&stream_size)[3];
-		printf("The first 4 bytes are %02x %02x %02x %02x\n", byte_stream[0], byte_stream[1], byte_stream[2], byte_stream[3]);
+		std::cout << "The first 4 bytes are " << HEX(byte_stream[0]) << HEX(byte_stream[1]) << HEX(byte_stream[2]) << HEX(byte_stream[3]) << std::endl;
 		//succesfully read all the secret file bytes
 		return error_code::NONE;
 

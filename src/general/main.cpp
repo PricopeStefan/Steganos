@@ -17,7 +17,6 @@ void parse(int argc, char* argv[]) {
 
 		options.allow_unrecognised_options()
 			.add_options("General")
-			("a,action", "Steganos action.", cxxopts::value<std::string>()->default_value("encode"), "<encode/decode>")
 			("o,output", "Name of the output file", cxxopts::value<std::string>()->default_value("output"), "FILE")
 			("v,verbose", "Verbose output", cxxopts::value<bool>()->default_value("false"))
 			("m,method", "The method to be used when encoding/decoding the message", cxxopts::value<std::string>(), "METHOD")
@@ -36,15 +35,13 @@ void parse(int argc, char* argv[]) {
 		if (result.count("help"))
 		{
 			std::cout << options.help() << std::endl;
+			std::cout << "Example program usages\n";
+			std::cout << "Encoding(must specify both cover and secret file): ./Steganos -c cover.bmp -s secret_message.txt\n";
+			std::cout << "Decoding(must specify only cover file): ./Steganos -c suspicious_looking.bmp\n";
 			exit(0);
 		}
-		if (result.count("a") > 1) {
-			std::cout << "You must specify only one action : encode or decode." << std::endl;
-			std::cout << "Do " << argv[0] << " -h for more information." << std::endl;
-			exit(1);
-		}
 		if (result.count("c") != 1) {
-			std::cout << "You must specify one cover file." << std::endl;
+			std::cout << "You must specify exactly one cover file." << std::endl;
 			std::cout << "Do " << argv[0] << " -h for more information." << std::endl;
 			exit(2);
 		}
@@ -56,15 +53,15 @@ void parse(int argc, char* argv[]) {
 		}
 
 		//do the code execution
-		if (result["a"].as<std::string>().compare("encode") == 0) {
+		if (result["s"].count() == 1) {
 			TRY(encode_run_handler(result));
 		}
-		else if (result["a"].as<std::string>().compare("decode") == 0) {
+		else if (result["s"].count() == 0) {
 			TRY(decode_run_handler(result));
 		}
 		else {
-			std::cout << "You must specify a valid action : encode or decode." << std::endl;
-			std::cout << "Do " << argv[0] << " -h for more information." << std::endl;
+			std::cout << "You must specify only a single secret file." << std::endl;
+			std::cout << "Do " << argv[0] << " -h for more information and common usages." << std::endl;
 			exit(1);
 		}
 

@@ -15,10 +15,16 @@ error_code utils::cli::bmp_encode_handler(cxxopts::ParseResult& args) {
 
 	BMPEncoderModule encoder_module(cover_path.string().c_str(), secret_path.string().c_str());
 
-	if (args.count("m") > 1) {
-		printf("Only one encoding method possible. Please pick one from this list:\n");
-		printf("SEQUENTIAL (default)\n");
-		printf("PERSONAL_SCRAMBLE\n");
+	if (args.count("m") == 0) {
+		std::cout << "Available methods:\n";
+		std::cout << "SEQUENTIAL (default)\n";
+		std::cout << "PERSONAL_SCRAMBLE\n";
+		std::cout << "No encoding method specified! Picking default option.\n";
+	}
+	else if (args.count("m") > 1) {
+		std::cout << "Only one encoding method possible. Please pick one from this list:\n";
+		std::cout << "SEQUENTIAL (default)\n";
+		std::cout << "PERSONAL_SCRAMBLE\n";
 		exit(6);
 	}
 
