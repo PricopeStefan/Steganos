@@ -1,37 +1,53 @@
 \documentclass[notitlepage]{report}
 \usepackage{graphicx, multicol, float}
 \usepackage[margin=1in]{geometry}
+\usepackage{indentfirst}
 \usepackage{titling}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage[normalem]{ulem}
 \usepackage{listings}
+\usepackage{subcaption}
 \usepackage{xcolor}
 \useunder{\uline}{\ul}{}
 \begin{document}
 
-\pretitle{\begin{center}\Huge\bfseries\vspace*{5em}}
-\posttitle{\par\end{center}\vskip 0.5em}
-\postdate{\end{center}\vspace*{7em}}
 
-\title{Steganography in digital media}
+\begin{center}
+        \vspace*{1cm}
+        
+        \LARGE
+        \textbf{UNIVERSITATEA BABEȘ-BOLYAI CLUJ-NAPOCA \\ FACULTATEA DE MATEMATICĂ ȘI INFORMATICĂ \\ SPECIALIZAREA: INFORMATICĂ ROMÂNĂ}
+        \vspace{1cm}\\
 
-\author{
-	Pricope Stefan-Cristian\\
-	\texttt{psir2384@scs.ubbcluj.ro}
-  	\and
-  	Dr. Suciu Mihai\\
-  	\texttt{mihai-suciu@cs.ubbcluj.ro}
-}
-\date{\vspace{-6ex}}
-\maketitle
-\thispagestyle{empty}
+        \vfill
+        \LARGE
+        \textbf{LUCRARE DE LICENȚĂ} \\
+	  \Large
+	  \textbf{Steganografie în mediul digital}
+        \vspace{1cm}
 
+        
+        \vfill
+        
+        \textbf{Absolvent: Pricope Ștefan-Cristian}
+        \vspace{0.1cm}
+
+        \textbf{Coordonator: Dr. Suciu Mihai, Conferențiar Universitar}\\
+        \vspace{0.1cm}        
+
+	  \Large
+	  \textbf{2020}
+        \vspace{1cm}
+\end{center}
+
+
+\clearpage
 %Abstract - small description of the paper
 \begin{abstract}
 Steganography is the science of concealing a piece of information within another piece of information without affecting the latter in a noticeable way and therefore alerting any intruders of the existence of the former. 
-This paper presents both existing and new ways of embedding computer files and data into different digital multimedia formats as covert as possible while still allowing the encoded information to be retrieved at a later time without any significant losses.
+This thesis presents both existing and new ways of embedding computer files and data into different digital multimedia formats as covert as possible while still allowing the encoded information to be retrieved at a later time without any significant losses. It also       presents the structure of some of the most common multimedia files that are used in the modern day digital world and are viable candidates for the role of the cover file in the steganographic process.
 \end{abstract}
 
 

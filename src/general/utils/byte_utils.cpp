@@ -37,9 +37,6 @@ error_code utils::read_byte_stream(std::ifstream* stream, uint8_t*& byte_stream,
 		std::cout << "The first 4 bytes are " << HEX(byte_stream[0]) << HEX(byte_stream[1]) << HEX(byte_stream[2]) << HEX(byte_stream[3]) << std::endl;
 		//succesfully read all the secret file bytes
 		return error_code::NONE;
-
-		//TO DO : add some statistics that can tell if there is enough space 
-		//to write all the secret data into the cover file or not
 	}
 
 	delete byte_stream;

@@ -32,7 +32,7 @@ void parse(int argc, char* argv[]) {
 		auto result = options.parse(argc, argv);
 		
 		//complete failure cases
-		if (result.count("help"))
+		if (result.count("help") && result.count("cover") == 0) //only show this for the general help menu
 		{
 			std::cout << options.help() << std::endl;
 			std::cout << "Example program usages\n";

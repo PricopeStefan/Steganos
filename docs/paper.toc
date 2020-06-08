@@ -1,31 +1,31 @@
-\contentsline {chapter}{\numberline {1}Introduction to computer steganography}{3}%
-\contentsline {chapter}{\numberline {2}Steganography methods}{4}%
-\contentsline {section}{\numberline {2.1}Least Significant Bit(LSB) Insertion}{4}%
-\contentsline {subsection}{\numberline {2.1.1}Sequential}{4}%
-\contentsline {subsection}{\numberline {2.1.2}Scrambling}{5}%
-\contentsline {section}{\numberline {2.2}Metadata encoding}{6}%
-\contentsline {section}{\numberline {2.3}Unused space embedding}{7}%
-\contentsline {chapter}{\numberline {3}Image file formats and steganography techniques}{9}%
-\contentsline {section}{\numberline {3.1}Introduction}{9}%
-\contentsline {section}{\numberline {3.2}BitMap Picture (BMP)}{10}%
-\contentsline {subsection}{\numberline {3.2.1}Image sub-block scrambling using the BMP format}{11}%
-\contentsline {section}{\numberline {3.3}Portable Network Graphics (PNG)}{16}%
-\contentsline {chapter}{\numberline {4}Audio file formats and steganography techniques}{19}%
-\contentsline {section}{\numberline {4.1}Introduction}{19}%
-\contentsline {section}{\numberline {4.2}Additional techniques used in audio steganography}{20}%
-\contentsline {subsection}{\numberline {4.2.1}Frequency domain steganography}{20}%
-\contentsline {section}{\numberline {4.3}Waveform Audio (WAV)}{21}%
-\contentsline {section}{\numberline {4.4}The MPEG-1/2 Audio Layer III (MP3)}{22}%
-\contentsline {chapter}{\numberline {5}The Steganos Project}{24}%
-\contentsline {section}{\numberline {5.1}Used technologies}{24}%
-\contentsline {subsection}{\numberline {5.1.1}C++}{24}%
-\contentsline {subsection}{\numberline {5.1.2}CMake}{24}%
-\contentsline {subsection}{\numberline {5.1.3}CXXOpts}{25}%
-\contentsline {subsection}{\numberline {5.1.4}Lodepng}{25}%
-\contentsline {subsection}{\numberline {5.1.5}Robot36 SSTV Engine}{26}%
-\contentsline {subsection}{\numberline {5.1.6}Jenkins}{26}%
-\contentsline {section}{\numberline {5.2}Application architecture}{26}%
-\contentsline {section}{\numberline {5.3}Implementation details}{29}%
-\contentsline {section}{\numberline {5.4}Using the application}{30}%
-\contentsline {section}{\numberline {5.5}Further work}{31}%
-\contentsline {chapter}{\numberline {6}Conclusion}{33}%
+\contentsline {chapter}{\numberline {1}Introduction to computer steganography}{4}%
+\contentsline {chapter}{\numberline {2}Steganography methods}{5}%
+\contentsline {section}{\numberline {2.1}Least Significant Bit(LSB) Insertion}{5}%
+\contentsline {subsection}{\numberline {2.1.1}Sequential}{5}%
+\contentsline {subsection}{\numberline {2.1.2}Scrambling}{6}%
+\contentsline {section}{\numberline {2.2}Metadata encoding}{7}%
+\contentsline {section}{\numberline {2.3}Unused space embedding}{9}%
+\contentsline {chapter}{\numberline {3}Image file formats and steganography techniques}{11}%
+\contentsline {section}{\numberline {3.1}Introduction}{11}%
+\contentsline {section}{\numberline {3.2}BitMap Picture (BMP)}{12}%
+\contentsline {subsection}{\numberline {3.2.1}Image sub-block scrambling using the BMP format}{15}%
+\contentsline {section}{\numberline {3.3}Portable Network Graphics (PNG)}{21}%
+\contentsline {chapter}{\numberline {4}Audio file formats and steganography techniques}{25}%
+\contentsline {section}{\numberline {4.1}Introduction}{25}%
+\contentsline {section}{\numberline {4.2}Additional techniques used in audio steganography}{26}%
+\contentsline {subsection}{\numberline {4.2.1}Frequency domain steganography}{26}%
+\contentsline {section}{\numberline {4.3}Waveform Audio (WAV)}{27}%
+\contentsline {section}{\numberline {4.4}The MPEG-1/2 Audio Layer III (MP3)}{28}%
+\contentsline {chapter}{\numberline {5}The Steganos Project}{31}%
+\contentsline {section}{\numberline {5.1}Used technologies}{31}%
+\contentsline {subsection}{\numberline {5.1.1}C++}{31}%
+\contentsline {subsection}{\numberline {5.1.2}CMake}{32}%
+\contentsline {subsection}{\numberline {5.1.3}CXXOpts}{33}%
+\contentsline {subsection}{\numberline {5.1.4}Lodepng}{33}%
+\contentsline {subsection}{\numberline {5.1.5}Robot36 SSTV Engine}{33}%
+\contentsline {subsection}{\numberline {5.1.6}Jenkins}{34}%
+\contentsline {section}{\numberline {5.2}Application architecture}{34}%
+\contentsline {section}{\numberline {5.3}Implementation details}{37}%
+\contentsline {section}{\numberline {5.4}Using the application}{39}%
+\contentsline {section}{\numberline {5.5}Further work}{40}%
+\contentsline {chapter}{\numberline {6}Conclusion}{42}%

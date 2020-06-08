@@ -1,7 +1,6 @@
 
 \chapter{Audio file formats and steganography techniques}
 
-\begin{multicols*}{2}
 \section{Introduction}
 Sound is the result of a vibration created by a phenomenon that propagates through a transmission environment, ending up getting interpreted by our brain. However since this process happens in the physical world it is entirely analog so it would be impossible to store it on modern day devices which can only understand digital formats. Luckily the fast evolution of computers also brought conversion techniques in order to switch between analog sounds and digital sounds seamlessly, without any noticeable loss to the human ear. Using these methods we have gained the ability to store audio files in a digital format so it was only logical that several different file formats will be created to fit our needs. In this chapter we will discuss in greater detail about how the analog data is actually stored in the digital format and what are the most common extensions used for storing digital audio files.
 
@@ -9,7 +8,7 @@ We mentioned earlier that it is impossible to store analog signals in a digital 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=7.7cm,keepaspectratio]{pics/Sampling-of-audio-signal.png}
+    \includegraphics[width=9cm,keepaspectratio]{pics/Sampling-of-audio-signal.png}
     \caption{Converting a continuous signal into a discrete one\cite{real_time_audio_steganography}.}
     \label{sampling-graphic-example}
 \end{figure}
@@ -17,7 +16,7 @@ We mentioned earlier that it is impossible to store analog signals in a digital 
 The sampling process can be observed in figure \ref{sampling-graphic-example}. We can now introduce some new terms that we will use throughout the rest of the chapter:
 \begin{itemize}
 	\item \textbf{Sampling rate} is the number of samples taken per second, or in other terms, how many discrete values we store for each second of the audio signal. The measurement unit for sampling rate is Hertz (Hz for short) and some of the most common values are 44100, 48000 and some of their multiples.
-	\item \textbf{Bit depth} is the number of bits used to store a single sample after having it converted to a discrete value. The most common bit depths are 8, 16, and 24 which allow for 256, 65536, and 16777216 different values. 
+	\item \textbf{Bit depth} is the number of bits used to store a single sample after having it converted to a discrete value. The most common bit depths are 8, 16, and 24 which allow for 256, 65.536, and 16.777.216 different values. 
 	\item \textbf{Audio channel} is the term used to describe the sequence of bytes that represent sampled audio signals. An audio file can have multiple channels to better simulate the sound accuracy and origin in a limited environment. Files with one audio channel are called mono, with two they become stereo and any more channels makes them surround. However, no matter the number of channels, usually all of them are equal in length and the samples from each channel are played simultaneously.
 \end{itemize}
 
@@ -30,7 +29,7 @@ So far in this thesis we have talked about what can only be classified as spatia
 In figure \ref{time_vs_frequency_comparison} we can see the differences between the time domain and the frequency domain: the former evolves over time and is highly irregular in most cases(in real world there will never be a perfect sinusoidal signal and will be more similar to the last example), while the latter is easier to manipulate and identify, and through the aforementioned transform functions can be converted back into the time domain.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=7.7cm,keepaspectratio]{pics/audio_chapter/time_vs_frequency_domains.png}
+    \includegraphics[width=10cm,keepaspectratio]{pics/audio_chapter/time_vs_frequency_domains.png}
     \caption{Time domain vs. frequency domain.}
     \label{time_vs_frequency_comparison}
 \end{figure}
@@ -43,7 +42,7 @@ Furthermore, there is also the option of steganography done within the spectrogr
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=7.7cm,keepaspectratio]{pics/audio_chapter/spectrogram_encoding.jpg}
+    \includegraphics[width=11cm,keepaspectratio]{pics/audio_chapter/spectrogram_encoding.jpg}
     \caption{Message within the spectrogram viewed using Audacity.}
     \label{battlefield_spectrogram_easter_egg}
 \end{figure}
@@ -57,17 +56,17 @@ In the table below we can see the general structure of almost any WAV file that 
 \begin{tabular}{|c|c|c|}
 \hline
 \textbf{Chunk field} & \textbf{Field Length} & \textbf{Description} \\ \hline
-Chunk ID & 4 bytes & \begin{tabular}[c]{@{}c@{}}Always equal\\ to "RIFF"\end{tabular} \\ \hline
-Chunk Size & 4 bytes & \begin{tabular}[c]{@{}c@{}}Length in bytes\\ of remaining file\end{tabular} \\ \hline
-Format & 4 bytes & \begin{tabular}[c]{@{}c@{}}Always equal\\ to "WAVE"\end{tabular} \\ \hline
-Subchunk ID & 4 bytes & \begin{tabular}[c]{@{}c@{}}Always equal \\ to "fmt "\end{tabular} \\ \hline
-Subchunk size & 4 bytes & \begin{tabular}[c]{@{}c@{}}Always equal\\ to 16\end{tabular} \\ \hline
+Chunk ID & 4 bytes & \begin{tabular}[c]{@{}c@{}}Always equal to "RIFF"\end{tabular} \\ \hline
+Chunk Size & 4 bytes & \begin{tabular}[c]{@{}c@{}}Length in bytes of remaining file\end{tabular} \\ \hline
+Format & 4 bytes & \begin{tabular}[c]{@{}c@{}}Always equal to "WAVE"\end{tabular} \\ \hline
+Subchunk ID & 4 bytes & \begin{tabular}[c]{@{}c@{}}Always equal  to "fmt "\end{tabular} \\ \hline
+Subchunk size & 4 bytes & \begin{tabular}[c]{@{}c@{}}Always equal to 16\end{tabular} \\ \hline
 Audio Format & 2 bytes & Equal to 0x0001 \\ \hline
-Nr. of channels & 2 bytes & \begin{tabular}[c]{@{}c@{}}Channel count\\ (1 mono, 2 stereo etc.)\end{tabular} \\ \hline
-Sample Rate & 4 bytes & \begin{tabular}[c]{@{}c@{}}How many samples\\ per second(6000Hz,\\ 44100Hz, etc.)\end{tabular} \\ \hline
-Byte Rate & 4 bytes & \begin{tabular}[c]{@{}c@{}}Product of SampleRate,\\ number of channels and\\ the byte per sample\\ (BitsPerSample/8)\end{tabular} \\ \hline
-Block Align & 2 bytes & \begin{tabular}[c]{@{}c@{}}Actual byte count \\ for a full sample\\ (both channels in a \\ stereo file for example\\ result in 4 bytes for\\ a full sample)\end{tabular} \\ \hline
-Bits Per Sample & 2 bytes & \begin{tabular}[c]{@{}c@{}}How many bits\\ in a sample for\\ a single channel\end{tabular} \\ \hline
+Nr. of channels & 2 bytes & \begin{tabular}[c]{@{}c@{}}Channel count (1 mono, 2 stereo etc.)\end{tabular} \\ \hline
+Sample Rate & 4 bytes & \begin{tabular}[c]{@{}c@{}}How many samples per second(6000Hz, 44100Hz, etc.)\end{tabular} \\ \hline
+Byte Rate & 4 bytes & \begin{tabular}[c]{@{}c@{}}Product of SampleRate, number of channels and\\ the byte per sample (BitsPerSample/8)\end{tabular} \\ \hline
+Block Align & 2 bytes & \begin{tabular}[c]{@{}c@{}}Actual byte count for a full sample (both channel\\ in a  stereo file for example result\\ in 4 bytes for a full sample)\end{tabular} \\ \hline
+Bits Per Sample & 2 bytes & \begin{tabular}[c]{@{}c@{}}How many bits in a sample for a single channel\end{tabular} \\ \hline
 Subchunk ID & 4 bytes & Equal to "data" \\ \hline
 Subchunk size & 4 bytes & Length of actual data \\ \hline
 Data & * & The actual data \\ \hline
@@ -100,29 +99,35 @@ ID3 is a standard used to store file metadata that is most commonly seen alongsi
 \begin{tabular}{|c|c|}
 \hline
 \textbf{Chunk type}                                           & \textbf{Chunk size}                                       \\ \hline
-\begin{tabular}[c]{@{}c@{}}Header\\ (REQUIRED)\end{tabular}   & 10 bytes                                                  \\ \hline
-\begin{tabular}[c]{@{}c@{}}Extended Header\\ (OPTIONAL)\end{tabular} & \begin{tabular}[c]{@{}c@{}}Variable\\ Length\end{tabular} \\ \hline
-\begin{tabular}[c]{@{}c@{}}Frames\\ (at least 1)\end{tabular} & \begin{tabular}[c]{@{}c@{}}Variable\\ Length\end{tabular} \\ \hline
-\begin{tabular}[c]{@{}c@{}}Padding\\ (OPTIONAL)\end{tabular}  & \begin{tabular}[c]{@{}c@{}}Variable\\ Length\end{tabular} \\ \hline
+\begin{tabular}[c]{@{}c@{}}Header (REQUIRED)\end{tabular}   & 10 bytes                                                  \\ \hline
+\begin{tabular}[c]{@{}c@{}}Extended Header (OPTIONAL)\end{tabular} & \begin{tabular}[c]{@{}c@{}}Variable\\ Length\end{tabular} \\ \hline
+\begin{tabular}[c]{@{}c@{}}Frames (at least 1)\end{tabular} & \begin{tabular}[c]{@{}c@{}}Variable\\ Length\end{tabular} \\ \hline
+\begin{tabular}[c]{@{}c@{}}Padding (OPTIONAL)\end{tabular}  & \begin{tabular}[c]{@{}c@{}}Variable\\ Length\end{tabular} \\ \hline
 \begin{tabular}[c]{@{}c@{}}FOOTER\\ (OPTIONAL)\end{tabular}   & 10 bytes                                                  \\ \hline
 \end{tabular}
 \end{center}
 
-We can see from the table the similarities to other chunked file formats. Since modifying any of the important bytes from the header/footer or padding can lead to corrupted and unparsable files, we shall stray away from the. However the frames are a perfect environment for our messages since we can have almost any number of them (limited by the 4 bytes or 28 bits that form a synchsafe integer representing the total size of the ID3 header), along with a high range of official frame types that we can pick from that most parsers will probably ignore. We can see in the figure below a frame with the ID equal to APIC (short for attached picture) which is used to usually embed images into the stream that represent album art or covers.
-\begin{figure}[H]
-    \centering
-    \includegraphics[height=8cm,keepaspectratio]{pics/audio_chapter/tool_cover_example.png}
-    \caption{Front cover of the album Fear Inoculum by Tool}
-\end{figure}
+We can see from the table the similarities to other chunked file formats. Since modifying any of the important bytes from the header/footer or padding can lead to corrupted and unparsable files, we shall stray away from the. However the frames are a perfect environment for our messages since we can have almost any number of them (limited by the 4 bytes or 28 bits that form a synchsafe integer representing the total size of the ID3 header), along with a high range of official frame types that we can pick from that most parsers will probably ignore. We can see in the figure below a frame with the ID equal to APIC (short for attached picture) which is used to usually embed images into the stream that represent album art or covers. Such an example can be seen in figure \ref{tool_normal_cover_pic}
 
-Our advantage is that there is no limit of frames with the ID equal to APIC there can be in a file so it is a prime target for metadata steganography when our message is a simple image. By changing a few bits we can mark the image as being the back cover of the song or we can even make it invalid such that it will exist in the binary stream but no renderers will show it. The process of parsing the metadata is simple after reading and understanding the documentation and results in a trivial encoding process. The difficult part is when attempting to write our image since it has to be inserted without breaking any of the other frames. After the entire process is done, we get something like this:
+Our advantage is that there is no limit of frames with the ID equal to APIC there can be in a file so it is a prime target for metadata steganography when our message is a simple image. By changing a few bits we can mark the image as being the back cover of the song or we can even make it invalid such that it will exist in the binary stream but no renderers will show it. The process of parsing the metadata is simple after reading and understanding the documentation and results in a trivial encoding process. The difficult part is when attempting to write our image since it has to be inserted without breaking any of the other frames. After the entire process is done, we get the result in figure \ref{me_irl_backcover}.
+
 \begin{figure}[H]
+\centering
+\begin{subfigure}{.5\textwidth}
     \centering
-    \includegraphics[height=8cm,keepaspectratio]{pics/audio_chapter/tool_backcover_example.png}
-    \caption{Back cover which is our hidden image}
+    \includegraphics[height=10cm,keepaspectratio]{pics/audio_chapter/tool_cover_example.png}
+    \caption{Front cover of the album\\ Fear Inoculum by Tool}
+    \label{tool_normal_cover_pic}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[height=10cm,keepaspectratio]{pics/audio_chapter/tool_backcover_example.png}
+    \caption{Back cover containing our hidden image}
+    \label{me_irl_backcover}
+\end{subfigure}
+\caption{Hiding images inside album art covers}
 \end{figure}
 
 Unfortunately, since MP3 is a much more complex format than we are accomodated with we will not look into the process of Least Significant Bit insertion as that would entitle too much trouble for such a simple result and since it is by default a compressed format it is not a significant loss because the available domain is smaller and we would not be able to achieve an acceptable performance. This is the reason why metadata and after-end steganography are the only viable methods when dealing with the MP3 file format.
 
 In conclusion, MP3 is one of the best formats for metadata embedding since it has so many types of frames that are impossible to keep track of and that no user will possibly notice if they are not looking specifically for it. 
-\end{multicols*}

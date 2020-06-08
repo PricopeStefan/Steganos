@@ -137,6 +137,7 @@ error_code personal_scramble_decode(utils::pixels::types pixel_type,
 									std::string password) 
 {
 	TRY(decode_metadata(pixel_type, width, image_data, secret_byte_stream_size));
+	secret_byte_stream_size = secret_byte_stream_size - 4;
 
 	secret_byte_stream = new uint8_t[secret_byte_stream_size];
 	uint8_t secret_byte = 0;

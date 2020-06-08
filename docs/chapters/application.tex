@@ -1,6 +1,5 @@
 
 \chapter{The Steganos Project}
-\begin{multicols}{2}
 Steganos is the name of the application that implements the algorithms enumerated in the earlier chapters of this paper and is the direct result of the work done by the authors. In this chapter I will present what modern technologies and frameworks went into creating the application, how it is structured from an Object Oriented point of view, how fast it is and how I hope it will expand into the future.
 
 \section{Used technologies}
@@ -51,7 +50,7 @@ Robot36 is a library created by Ahmet Inan in order to be able to encode and dec
 
 \begin{figure}[H]
     \centering
-    \includegraphics[height=7.5cm,keepaspectratio]{pics/application_chapter/sstv_example_iss}
+    \includegraphics[height=9cm,keepaspectratio]{pics/application_chapter/sstv_example_iss}
     \caption{SSTV Engine decoding transmission from the International Space Station}
 \end{figure}
 
@@ -60,7 +59,7 @@ Jenkins is one of the biggest open source automation servers that is meant to au
 
 \begin{figure}[H]
     \centering
-    \includegraphics[height=7.5cm,keepaspectratio]{pics/application_chapter/steganos_jenkins_job}
+    \includegraphics[height=10cm,keepaspectratio]{pics/application_chapter/steganos_jenkins_job}
     \caption{Jenkins management interface of the Steganos job}
 \end{figure}
 
@@ -69,7 +68,6 @@ Jenkins is one of the biggest open source automation servers that is meant to au
 The Steganos Project is an application that uses the Object Oriented Programming aspects in order to achieve the best performance while maintaining high cohesion and low coupling between the components of the codebase. The project is structured in multiple modules\footnote{To be technically correct they are only different folders because the latest available C++ standard as of the time of writing this thesis is C++17 which does not understand yet the concept of modules. However developers should rejoice over the announcement made by Microsoft to standardize C++ modules starting with the C++20 standard\cite{N4720}.} that were built to be as independent as possible with the goal to provide steganography functions for the supported file formats. The main module contains the source files for the entry point of the application which processes the arguments given via the command line along with the code for some of the utilities, helper function that help convert pixels between different representations(YUV, RGB, BGR, YCbCr) or bit-wise operations such as toggling the last significant bit or building a byte using the LSBs from a byte stream. The algorithm module declares and defines the algorithms that are implemented in the application, all of which have been discussed thoroughly in the earlier chapters of the thesis (LSB insertion, embedding secrets into file metadata, use-after-end encoding). The remaining modules all follow the same design patterns and are responsible for the parsing of the cover files and the encoding or decoding of hidden digital files inside them. 
 
 We can see in figure \ref{module_overview} the overview of the entire application and what each module contains more specifically. This is only a very simplistic rendering of the module deployment, we will delve in for a more in-depth perspective later this chapter.
-\end{multicols}
 
 \begin{figure}[H]
     \centering
@@ -78,9 +76,8 @@ We can see in figure \ref{module_overview} the overview of the entire applicatio
     \label{module_overview}
 \end{figure}
 
-\begin{multicols}{2}
 In figure \ref{cover_module_overview} we can see a class diagram of the general struture of each of the four aforementioned cover submodules (the codebase which deals with parsing the cover files that allow for the steganography algorithms to have the necessary data to work with). 
-\end{multicols}
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=16cm,keepaspectratio]{pics/application_chapter/diagrama_module_interface}
@@ -88,9 +85,8 @@ In figure \ref{cover_module_overview} we can see a class diagram of the general 
     \label{cover_module_overview}
 \end{figure}
 
-\begin{multicols}{2}
 After seeing how the project is structured into modules and submodules, what classes, interfaces, methods and attributes we have, it is also very important to understand how the data flows from the moment we launch Steganos to the moment the output file is generated (the output file is either the cover file containing a secret message, either the actual secret message, depending on the option used). In figure \ref{flowchart-code} we can see a flowchart of the application containing the key points of the entire process.
-\end{multicols}
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=15cm,keepaspectratio]{pics/application_chapter/flowchart}
@@ -98,7 +94,7 @@ After seeing how the project is structured into modules and submodules, what cla
     \label{flowchart-code}
 \end{figure}
 
-\begin{multicols}{2}
+
 To make sure that the project will always be in at least a buildable state after any commit is done we are using Jenkins. It is very important to make sure that the code compiles and that if there are any errors, the authors are aware of them and will have the option to hold back the release until the issues are fixed. On a more related note to the Steganos application, we have the following job configuration for testing each new version before releasing:
 \begin{itemize}
 	\item Maximum number of build to keep is set to 5 to conserve total storage used.
@@ -106,7 +102,6 @@ To make sure that the project will always be in at least a buildable state after
 	\item Using the "Unix Makefiles" generator to set up the CMake build files with the build type set to "Release".
 	\item Publish the build result to the project page to keep it up to date to the current release or trigger custom personal alerts to notify in case of failure.
 \end{itemize}
-\end{multicols}
 
 \begin{figure}[H]
     \centering
@@ -136,11 +131,9 @@ To make sure that the project will always be in at least a buildable state after
   tabsize=3
 }
 
-\begin{multicols}{2}
 \section{Implementation details}
 Steganos contains many critical parts that are required to succeed in order to work properly. If any part of code or function call were to fail we would need to know so that we can properly interrupt the process on our terms, free any dynamically allocated memory, log the error messages so that developers are aware of any bugs that may appear or if the application is in a release form, notify the client of what has happened and why the application failed. Since C/C++ is a rather monstrous amalgamation when talking about exceptions raised during runtime execution (at least in the standard libraries, more complex frameworks like Boost do not suffer as much from this), we have preferred to validate the function calls based on a more simple method, the code returned by the function which is basically a glorified integer that has some meaning attached to its values. You can see in listing \ref{lst:try_macro} the exact define macro used in the project and in listing \ref{lst:try_macro_example} an example from one of the encoder module constructors.
 
-\end{multicols}
 \begin{lstlisting}[language=C++, caption=The TRY macro used for any critical operation,label={lst:try_macro}]
  #define TRY(X) generic_assert((X), __FILE__, __LINE__);
  inline void generic_assert(error_code code, const char* file, int line) {
@@ -159,11 +152,57 @@ WAVEncoderModule::WAVEncoderModule(const char* cover_file_path, const char* secr
 }
 \end{lstlisting}
 
+Now that we know the macro that used to ensure the success of the critical operations, we can begin looking at some of those functions that can't fail. The first functions that we will be looking into will be those that perform Input-Output (shortened to IO) operations, such as reading or writing the raw bytes of a file. We can see in listing \ref{open_file_code_ex} how we open the stream to the file and then in listing \ref{read_file_code_ex} how the function that actually reads the contents of the file looks like. We can see that 
 
-\begin{multicols}{2}
+\begin{lstlisting}[language=C++, caption=The TRY macro used for any critical operation,label={lst:open_file_code_ex}]
+error_code utils::load_stream(const char* file_path, std::ifstream*& stream, std::ios_base::openmode stream_options) {
+	if (stream != nullptr) {
+		//stream is already open
+		return error_code::STREAM_ERROR;
+	}
+
+	stream = new std::ifstream(file_path, stream_options);
+	if (stream->is_open()) {
+		return error_code::NONE;
+	}
+
+	//the opening of the stream failed, deleting it
+	delete stream;
+	stream = nullptr;
+
+	return error_code::STREAM_ERROR;
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=C++, caption=The TRY macro used for any critical operation,label={lst:read_file_code_ex}]
+error_code utils::read_byte_stream(std::ifstream* stream, uint8_t*& byte_stream, uint32_t& stream_size) {
+	stream->seekg(0, std::ios::end);
+	std::streamsize file_size = stream->tellg();
+	stream->seekg(0, std::ios::beg);
+
+	byte_stream = new uint8_t[file_size + 4];
+	if (stream->read(reinterpret_cast<char*>(byte_stream + 4), file_size)) {
+		stream_size = (uint32_t)(file_size + 4);
+		//adding the stream size info to the byte stream as the first 4 bytes
+		byte_stream[0] = ((uint8_t*)&stream_size)[0];
+		byte_stream[1] = ((uint8_t*)&stream_size)[1];
+		byte_stream[2] = ((uint8_t*)&stream_size)[2];
+		byte_stream[3] = ((uint8_t*)&stream_size)[3];
+		//succesfully read all the secret file bytes
+		return error_code::NONE;
+	}
+
+	delete byte_stream;
+	stream_size = 0;
+	return error_code::STREAM_ERROR;
+}
+\end{lstlisting}
+
+
+
+%USING THE APPLICATION SECTION
 \section{Using the application}
 Steganos was designed to be a very simple command line tool that is fast, reliable and portable. Using Cxxopts we have tried to implement an intuitive way of passing the arguments to the program, such that they all make sense and that any of the available configurations and command executions are easy to understand. You can see from the program output below that it is very easy to learn the options available to the end user by adding the -h flag and see what is supported and what not.
-\end{multicols}
 \begin{verbatim}
 D:\Projects\Steganos\out\build\x64-Debug>Steganos.exe
 You must specify one cover file.
@@ -189,25 +228,20 @@ Usage:
   -h, --help                    Prints this help message
 \end{verbatim}
 
-\begin{multicols}{2}
+%EXAMPLE RUNS
 Based on the information above, it is almost trivial to come up with working command examples based on the help menu we displayed earlier. We can begin looking at some examples to see how Steganos works. Let's assume that we want to encode a secret message stored in a txt file within a BMP file. All we would need to type is the path to the secret file and the path to the cover file. The output can be seen below.
-\end{multicols}
 \begin{verbatim}
 D:\Projects\Steganos\out\build\x64-Debug>Steganos.exe --cover marbles.bmp --secret secret.txt
 Done
 \end{verbatim}
 
-\begin{multicols}{2}
 That's all there is to it. However to some the need to type so many characters without any autocomplete (because option autocomplete is not commonly available in most shells) could be an annoyance so Steganos also offers the option for shortened option names to make the process quicker.
-\end{multicols}
 \begin{verbatim}
 D:\Projects\Steganos\out\build\x64-Debug>Steganos.exe -c marbles.bmp -s secret.txt
 Done
 \end{verbatim}
 
-\begin{multicols}{2}
 We also have the option to enable verbose output to see debugging information in real time during the Steganos process and see exactly what it is doing. We can also specify the name of the output file to be whatever we would like it to be.
-\end{multicols}
 \begin{verbatim}
 D:\Projects\Steganos\out\build\x64-Debug>Steganos.exe -c marbles.bmp -s secret.txt 
                                       \\ -o super_secret_marbles.bmp -v
@@ -221,7 +255,22 @@ Deleted image data and its associated stream
 Done
 \end{verbatim}
 
-\begin{multicols}{2}
+If the user is confused as to what options are available for a given file/file combo during either of the embedding or the decoding processes, he can always add the -h flag to get the valid accepted methods.
+\begin{verbatim}
+D:\Projects\Steganos\out\build\x64-Debug>Steganos.exe -c marbles.bmp -s sstv_me.ppm -h
+Available steganography methods when using BMP files as cover:
+SEQUENTIAL (DEFAULT)
+PERSONAL_SCRAMBLE
+Special option because secret file is .ppm : SSTV
+
+Example program usages:
+Encoding(must specify both cover and secret file):
+         ./Steganos -c cover.bmp -s secret_message.txt -m personal_scramble
+Decoding(must specify only cover file):
+         ./Steganos -c suspicious_looking.bmp -o what_were_you_hiding.txt
+\end{verbatim}
+
+% FURTHER WORK
 \section{Further work}
 Regarding the future of Steganos, I hope that it will be fairly fruitful and worthwhile. The entirety of this thesis we have only laid down the groundwork of the project and have talked about the most basic and essential part of the application. However, the possibilities for extending Steganos are almost endless and during the time while building the application and writing this thesis I have saved some of the more note-worthy ideas that came to my mind (in no particular order):
 \begin{itemize}
@@ -230,5 +279,5 @@ Regarding the future of Steganos, I hope that it will be fairly fruitful and wor
 	\item \textbf{Windows integration for Jenkins}. At the moment of writing this, there is only one deployed instance of Jenkins running the Steganos job and it is based on Linux. That means that the only types of files that are automatically generated and tested are only the Linux binaries since there is no easy way of also building the Windows binaries. Some research has revealed that there is the option of adding a Windows based Jenkins instance in a master-slave configuration that would technically allow the full building and testing of the executables but we have not yet managed to implement this. 
 	\item \textbf{Additional algorithms}. Most algorithms described in this paper are implemented in the Steganos project but there are plenty viable ones (especially those that rely on scrambling the data) that have not seen yet the light of day. It would certainly be interesting to add them and compare them to existent implementations or to the other methods.
 	\item \textbf{Encrypting the secret}. Even though the option is specified in the help menu, it is not yet possible to encrypt the actual secret, mainly because I could not decide on which encryption methods to make available and because I also would rather focus on building the core codebase and to implement the steganography algorithms first. However, it is almost mandatory that the option of encrypting the secret before the embedding process is added in a future release to increase the security of the contents.
+	\item \textbf{Validating the decoding result}. Right now Steganos only spits out
 \end{itemize}
-\end{multicols}

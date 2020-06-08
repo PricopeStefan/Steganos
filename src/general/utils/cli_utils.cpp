@@ -11,7 +11,19 @@ namespace fs = std::filesystem;
 
 error_code utils::cli::bmp_encode_handler(cxxopts::ParseResult& args) {
 	fs::path cover_path = args["c"].as<std::string>();
-	fs::path secret_path = args["s"].as<std::string>();
+	fs::path secret_path = args["s"].as<std::string>(); 
+	
+	if (args.count("help")) {
+		printf("Available steganography methods when using BMP files as cover:\n");
+		printf("SEQUENTIAL (DEFAULT)\n");
+		printf("PERSONAL_SCRAMBLE\n");
+		if (secret_path.extension().compare(".ppm") == 0)
+			printf("Special option because secret file is .ppm : SSTV\n");
+		printf("\nExample program usages:\n");
+		printf("Encoding(must specify both cover and secret file):\n\t ./Steganos -c cover.bmp -s secret_message.txt -m personal_scramble\n");
+		printf("Decoding(must specify only cover file):\n\t ./Steganos -c suspicious_looking.bmp -o what_were_you_hiding.txt\n");
+		exit(0);
+	}
 
 	BMPEncoderModule encoder_module(cover_path.string().c_str(), secret_path.string().c_str());
 
@@ -19,22 +31,30 @@ error_code utils::cli::bmp_encode_handler(cxxopts::ParseResult& args) {
 		std::cout << "Available methods:\n";
 		std::cout << "SEQUENTIAL (default)\n";
 		std::cout << "PERSONAL_SCRAMBLE\n";
+		if (secret_path.extension().compare(".ppm") == 0)
+			std::cout << "Special option because secret file is .ppm : SSTV\n";
 		std::cout << "No encoding method specified! Picking default option.\n";
 	}
 	else if (args.count("m") > 1) {
-		std::cout << "Only one encoding method possible. Please pick one from this list:\n";
-		std::cout << "SEQUENTIAL (default)\n";
-		std::cout << "PERSONAL_SCRAMBLE\n";
+		printf("Only one encoding method possible. Please pick one from this list:\n");
+		printf("SEQUENTIAL (default)\n");
+		printf("PERSONAL_SCRAMBLE\n");
+		if (secret_path.extension().compare(".ppm") == 0)
+			printf("Special option because secret file is .ppm : SSTV\n");
 		exit(6);
 	}
 
 	BMPModuleOptions options;
 	options.password = args["p"].as<std::string>();
-
+	
 	if (args.count("m") == 0 || args["m"].as<std::string>().compare("sequential") == 0)
 		options.algorithm = BMPModuleSupportedAlgorithms::SEQUENTIAL;
-	else
+	else if (args["m"].as<std::string>().compare("personal_scramble") == 0)
 		options.algorithm = BMPModuleSupportedAlgorithms::PERSONAL_SCRAMBLE;
+	else {
+		printf("Invalid method given! Exiting.\n");
+		exit(7);
+	}
 
 	options.output_path = args["o"].as<std::string>();
 	if (args.count("o") == 0)
@@ -62,6 +82,16 @@ error_code utils::cli::mp3_encode_handler(cxxopts::ParseResult& args) {
 /* DECODE HANDLERS DEFINITIONS */
 
 error_code utils::cli::bmp_decode_handler(cxxopts::ParseResult& args) {
+	if (args.count("help")) {
+		printf("Available steganography methods when using BMP files as cover:\n");
+		printf("SEQUENTIAL (DEFAULT)\n");
+		printf("PERSONAL_SCRAMBLE\n\n");
+		printf("Example program usages:\n");
+		printf("Encoding(must specify both cover and secret file):\n\t ./Steganos -c cover.bmp -s secret_message.txt -m personal_scramble\n");
+		printf("Decoding(must specify only cover file):\n\t ./Steganos -c suspicious_looking.bmp -o what_were_you_hiding.txt\n");
+		exit(0);
+	}
+
 	fs::path cover_path = args["c"].as<std::string>();
 	BMPDecoderModule decoder_module(cover_path.string().c_str());
 
@@ -72,13 +102,18 @@ error_code utils::cli::bmp_decode_handler(cxxopts::ParseResult& args) {
 		exit(6);
 	}
 
+
 	BMPModuleOptions options;
 	options.password = args["p"].as<std::string>();
 
 	if (args.count("m") == 0 || args["m"].as<std::string>().compare("sequential") == 0)
 		options.algorithm = BMPModuleSupportedAlgorithms::SEQUENTIAL;
-	else
+	else if (args["m"].as<std::string>().compare("personal_scramble") == 0)
 		options.algorithm = BMPModuleSupportedAlgorithms::PERSONAL_SCRAMBLE;
+	else {
+		printf("Invalid method given! Exiting.\n");
+		exit(7);
+	}
 
 	options.output_path = args["o"].as<std::string>();
 

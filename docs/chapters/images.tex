@@ -2,14 +2,11 @@
 \chapter{Image file formats and steganography techniques}
 
 \section{Introduction}
-
-\setlength\columnsep{20pt}
-\begin{multicols}{2}
 An image is a two-dimensional representation depicting any possible subject conceivable by human imagination, captured using an optical device (such as a camera or a telescope) or a natural object (human eyes). The image can then be rendered and displayed for other people to see either manually (by painting, carving etc.) or automatically (by using a computer). In this chapter we will focus on images captured using digital optical devices that are rendered automatically. The correct term for them is digital images, but throughout the rest of the paper they will be reffered to as images for convenience.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=5cm,height=5cm,keepaspectratio]{pics/lenna}
+    \includegraphics[width=4.7cm,keepaspectratio]{pics/lenna}
     \caption{Lenna - Classic example of a digital image}
     \label{Lenna}
 \end{figure}
@@ -18,7 +15,7 @@ Computers are programmed to do operations in a clear sequential way and this rul
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=8cm,height=2.15cm,keepaspectratio]{pics/how_a_pixel_works}
+    \includegraphics[width=12.5cm,keepaspectratio]{pics/how_a_pixel_works}
     \caption{How 3 colors channels build the pixel}
     \label{Pixel Creation}
 \end{figure}
@@ -27,14 +24,13 @@ By merging multiple pixels over a two-dimensional space, they will eventually st
 
 It is important to note that most of these developments have been done in a time where the maximum storage was extremely limited and not very fast, very different from what it is today. In order to save some space they looked into different compression algorithms to apply to the byte streams and today they fall into two distinict categories: the lossless algorithms are the ones that compress all the original information without destroying any of it, while on the other hand there are the lossy algorithms which are able to identify which information is useless and delete it accordingly. This concept also applies to file formats and we will see in later chapters more concrete examples. 
 
-With all of this information in mind, we can now procede to discussing the most commonly formats commonly used in today's.
+With all of this information in mind, we can now procede to discussing the most commonly formats commonly used in modern day multimedia.
 
 \section{BitMap Picture (BMP)} \label{BMP_Explained_Chapter}
 
 The BMP file format, also known as the device independent bitmap file format(DIB), bitmap image file or just bitmap, is a lossless\footnote{It is true that the format specification standards supports compression but further research reveals that currently it only supports lossless types of compression, such as the Huffman or Run Length Encoding algorithms.} image file format originally designed by Microsoft back in 1986 in order to store two-dimensional digital images on their Windows operating system. Over the years it has developed plenty of variations and extensions that were based on the original specification but this paper will focus only on the most common available ones, no extended versions that are looking to improve the format since they do not add anything interesting or new to the way the format stores the data thus affecting the steganography algorithms.
 
 As with almost every file format, the final BMP byte stream can be seen as a result of the merge between the BMP header which contains metadata about the file and the BMP data which is the actual pixel information. As we can see from table \ref{BMP_Header_Table}, the BMP header stores a lot of important information about the image that is useful for any rendering software while making sure to allocate enough memory to be able to display the picture on the screen and other essential steps. It is also important to note that all the structures seen in the BMP header use the little-endian format for representation and are usually more troublesome on the systems that have the default set as big-endian.
-\end{multicols}
 
  \begin{center}
 	\begin{tabular}{|l|l|l|l|}
@@ -59,7 +55,7 @@ As with almost every file format, the final BMP byte stream can be seen as a res
 	\label{BMP_Header_Table}
  \end{center}
 
-\begin{multicols}{2}
+
 Analyzing the obligatory BMP header fields we realise that most of them are useless for any steganographic purposes mainly because they can't be altered without having major consequences on the renderer software but there are still a few interesting ones left:
 \begin{itemize}
   \item The 4 bytes that are reserved and unused could be very well put to use by using the methods presented in chapter \ref{Unused_Space_Chapter}, so we can use either this space to send parts of a message over multiple BMP files, or we can store the secret message size in these 4 bytes and write the secret after the actual image data has ended.
@@ -68,7 +64,7 @@ Analyzing the obligatory BMP header fields we realise that most of them are usel
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=4cm,keepaspectratio]{pics/height_modification_steganography_cut}
+    \includegraphics[width=6cm,keepaspectratio]{pics/height_modification_steganography_cut}
     \caption{Incomplete sun image}
     \label{Sun_Missing_Part}
 \end{figure}
@@ -77,7 +73,7 @@ However if we adjust by trial and error the height of the image to see if there 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=4cm,keepaspectratio]{pics/height_modification_steganography_original}
+    \includegraphics[width=6cm,keepaspectratio]{pics/height_modification_steganography_original}
     \caption{Complete sun including the hidden message}
     \label{Sun_Original}
 \end{figure}
@@ -87,7 +83,7 @@ Moving on from the metadata block of the BMP format to the actual data byte stre
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=7cm,keepaspectratio]{pics/assembling_bmp_image}
+    \includegraphics[width=9cm,keepaspectratio]{pics/assembling_bmp_image}
     \caption{How the BMP image is rendered}
     \label{bmp_how_to_render}
 \end{figure}
@@ -105,8 +101,6 @@ MMS = [CDS \ / \ 8] \ bytes
   \item The algorithm needs a password to work with in order to use it as a seed when generating a permutation. Each block calls a helper method to obtain the given permutation for itself based on its own width and height. That permutation is the order in which the data will be written.
   \item The first block is reserved for writing the metadata about the message(such as the length of the secret) and the other blocks are for writing the actual contents of the message.
 \end{itemize}
-
-\end{multicols}
 
 \definecolor{lightergray}{rgb}{0.92,0.92,0.92}
 \lstset{escapeinside={<@}{@>},
@@ -151,7 +145,6 @@ MMS = [CDS \ / \ 8] \ bytes
 
 \end{lstlisting}
 
-\begin{multicols*}{2}
 It is much easier to explain the algorithm using a simple example, so let's begin with the image represented in figure \ref{scramble_example_original_image}. It is BMP image with a resolution of 10x6 pixels (10 pixels wide, 6 pixels tall). Furthermore, let's also create the parameters needed by the algorithm in order to embed a message:
 \begin{itemize}
   \item The secret message we want to hide in the cover file is "Hello World", no quotes.
@@ -162,7 +155,7 @@ It is much easier to explain the algorithm using a simple example, so let's begi
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=7cm,keepaspectratio]{pics/bmp_scrambling/original_image}
+    \includegraphics[width=9cm,keepaspectratio]{pics/bmp_scrambling/original_image}
     \caption{Original BMP cover image}
     \label{scramble_example_original_image}
 \end{figure}
@@ -174,8 +167,8 @@ Since our total message length is smaller than $MMS$, we know that we will not b
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=7cm,keepaspectratio]{pics/bmp_scrambling/image_broken_subblocks}
-    \caption{Sub-blocks of the original image}
+    \includegraphics[width=9cm,keepaspectratio]{pics/bmp_scrambling/image_broken_subblocks}
+    \caption{Sub-blocks division of the original image}
     \label{scramble_example_subblocks}
 \end{figure}
 
@@ -203,7 +196,7 @@ A visual representation of the order based on the given permutation can be found
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=5cm,keepaspectratio]{pics/bmp_scrambling/first_block_marked}
+    \includegraphics[width=7cm,keepaspectratio]{pics/bmp_scrambling/first_block_marked}
     \caption{Order of writing into the first block}
     \label{scramble_example_first_block}
 \end{figure}
@@ -228,7 +221,7 @@ Using the binary conversion of our message, we begin by taking 3 bits each time 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=6cm,keepaspectratio]{pics/bmp_scrambling/second_block_marked}
+    \includegraphics[width=7cm,keepaspectratio]{pics/bmp_scrambling/second_block_marked}
     \caption{Order of writing the actual message into the second block}
     \label{scramble_example_second_block}
 \end{figure}
@@ -239,7 +232,7 @@ By going through the same process as with the previous block we get the result t
 
 \begin{figure}[H]
     \centering
-    \includegraphics[height=5cm,keepaspectratio]{pics/bmp_scrambling/third_block_marked}
+    \includegraphics[height=7cm,keepaspectratio]{pics/bmp_scrambling/third_block_marked}
     \caption{Order of writing into the third block}
     \label{scramble_example_third_block}
 \end{figure}
@@ -250,22 +243,25 @@ And by going again through the steps described above we manage to hide the last 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=5cm,keepaspectratio]{pics/bmp_scrambling/fourth_block_marked}
+    \includegraphics[width=7cm,keepaspectratio]{pics/bmp_scrambling/fourth_block_marked}
     \caption{Writing the actual message into the fourth block}
 \end{figure}
 
 After the algorithm finishes and the modified cover image is saved, there is absolutely no difference to the human eye between the two pictures. This is the power of Least Significant Bit insertion when using digital images as the carrier format. The only difference between the two files is at a bit level, making it one of the safest and most covert ways of sending secrets over an untrusted environment.
 
 \begin{figure}[H]
+\centering
+\begin{subfigure}{.5\textwidth}
     \centering
-    \includegraphics[width=5cm,keepaspectratio]{pics/bmp_scrambling/original_image}
+    \includegraphics[width=6cm,keepaspectratio]{pics/bmp_scrambling/original_image}
     \caption{The original image}
-\end{figure}
-
-\begin{figure}[H]
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
     \centering
-    \includegraphics[width=5cm,keepaspectratio]{pics/bmp_scrambling/altered_image}
-    \caption{The altered image containing the message "Hello world"}
+    \includegraphics[width=6cm,keepaspectratio]{pics/bmp_scrambling/altered_image}
+    \caption{The altered image containing "Hello world"}
+\end{subfigure}
+\caption{Comparison between the original and modified cover images}
 \end{figure}
 
 Like any other steganography algorithm, this method also has advantages and disadvantages. The main benefits of this algorithm are:
@@ -353,4 +349,3 @@ Besides the critical chunks, there are also plenty of ancillary chunks that can 
 \end{itemize}
 
 In conclusion, given the fact that PNG is one of the most used carrier formats for digital images today, the ability to understand and hide messages inside this format is considered highly valued.
-\end{multicols*}
