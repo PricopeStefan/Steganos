@@ -478,5 +478,6 @@ MigrationBackup/
 # End of https://www.gitignore.io/api/c,c++,cmake,windows,visualstudio,visualstudiocode
 
 build/
+build_windows/
 out/
 CMakeSettings.json

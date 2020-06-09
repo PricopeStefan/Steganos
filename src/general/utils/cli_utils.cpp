@@ -18,7 +18,7 @@ error_code utils::cli::bmp_encode_handler(cxxopts::ParseResult& args) {
 		printf("SEQUENTIAL (DEFAULT)\n");
 		printf("PERSONAL_SCRAMBLE\n");
 		if (secret_path.extension().compare(".ppm") == 0)
-			printf("Special option because secret file is .ppm : SSTV\n");
+			printf("Special option because secret file is .ppm : SSTV(and decoded via SEQUENTIAL)\n");
 		printf("\nExample program usages:\n");
 		printf("Encoding(must specify both cover and secret file):\n\t ./Steganos -c cover.bmp -s secret_message.txt -m personal_scramble\n");
 		printf("Decoding(must specify only cover file):\n\t ./Steganos -c suspicious_looking.bmp -o what_were_you_hiding.txt\n");
@@ -32,7 +32,7 @@ error_code utils::cli::bmp_encode_handler(cxxopts::ParseResult& args) {
 		std::cout << "SEQUENTIAL (default)\n";
 		std::cout << "PERSONAL_SCRAMBLE\n";
 		if (secret_path.extension().compare(".ppm") == 0)
-			std::cout << "Special option because secret file is .ppm : SSTV\n";
+			std::cout << "Special option because secret file is .ppm : SSTV(and decoded via SEQUENTIAL)\n";
 		std::cout << "No encoding method specified! Picking default option.\n";
 	}
 	else if (args.count("m") > 1) {
@@ -40,7 +40,7 @@ error_code utils::cli::bmp_encode_handler(cxxopts::ParseResult& args) {
 		printf("SEQUENTIAL (default)\n");
 		printf("PERSONAL_SCRAMBLE\n");
 		if (secret_path.extension().compare(".ppm") == 0)
-			printf("Special option because secret file is .ppm : SSTV\n");
+			printf("Special option because secret file is .ppm : SSTV(and decoded via SEQUENTIAL)\n");
 		exit(6);
 	}
 

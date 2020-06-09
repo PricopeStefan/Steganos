@@ -134,6 +134,7 @@ To make sure that the project will always be in at least a buildable state after
 \section{Implementation details}
 Steganos contains many critical parts that are required to succeed in order to work properly. If any part of code or function call were to fail we would need to know so that we can properly interrupt the process on our terms, free any dynamically allocated memory, log the error messages so that developers are aware of any bugs that may appear or if the application is in a release form, notify the client of what has happened and why the application failed. Since C/C++ is a rather monstrous amalgamation when talking about exceptions raised during runtime execution (at least in the standard libraries, more complex frameworks like Boost do not suffer as much from this), we have preferred to validate the function calls based on a more simple method, the code returned by the function which is basically a glorified integer that has some meaning attached to its values. You can see in listing \ref{lst:try_macro} the exact define macro used in the project and in listing \ref{lst:try_macro_example} an example from one of the encoder module constructors.
 
+\vspace{1cm}
 \begin{lstlisting}[language=C++, caption=The TRY macro used for any critical operation,label={lst:try_macro}]
  #define TRY(X) generic_assert((X), __FILE__, __LINE__);
  inline void generic_assert(error_code code, const char* file, int line) {
@@ -143,7 +144,7 @@ Steganos contains many critical parts that are required to succeed in order to w
    }
  }
 \end{lstlisting}
-
+\clearpage
 \begin{lstlisting}[language=C++, caption=Usage example of the TRY macro,label={lst:try_macro_example}]
 WAVEncoderModule::WAVEncoderModule(const char* cover_file_path, const char* secret_file_path) : WAVModule(cover_file_path) 
 {
@@ -152,7 +153,7 @@ WAVEncoderModule::WAVEncoderModule(const char* cover_file_path, const char* secr
 }
 \end{lstlisting}
 
-Now that we know the macro that used to ensure the success of the critical operations, we can begin looking at some of those functions that can't fail. The first functions that we will be looking into will be those that perform Input-Output (shortened to IO) operations, such as reading or writing the raw bytes of a file. We can see in listing \ref{open_file_code_ex} how we open the stream to the file and then in listing \ref{read_file_code_ex} how the function that actually reads the contents of the file looks like. We can see that 
+Now that we know the macro that used to ensure the success of the critical operations, we can begin looking at some of those functions that can't fail. The first functions that we will be looking into will be those that perform Input-Output (shortened to IO) operations, such as reading or writing the raw bytes of a file. We can see in listing \ref{lst:open_file_code_ex} how we open the stream to the file and then in listing \ref{lst:read_file_code_ex} how the function that actually reads the contents of the file looks like. It is important to have as many checks as possible to ensure that any issues that may arise are dealt with and the execution of the program is not interrupted. 
 
 \begin{lstlisting}[language=C++, caption=The TRY macro used for any critical operation,label={lst:open_file_code_ex}]
 error_code utils::load_stream(const char* file_path, std::ifstream*& stream, std::ios_base::openmode stream_options) {
@@ -160,12 +161,10 @@ error_code utils::load_stream(const char* file_path, std::ifstream*& stream, std
 		//stream is already open
 		return error_code::STREAM_ERROR;
 	}
-
 	stream = new std::ifstream(file_path, stream_options);
 	if (stream->is_open()) {
 		return error_code::NONE;
 	}
-
 	//the opening of the stream failed, deleting it
 	delete stream;
 	stream = nullptr;
@@ -174,7 +173,7 @@ error_code utils::load_stream(const char* file_path, std::ifstream*& stream, std
 }
 \end{lstlisting}
 
-\begin{lstlisting}[language=C++, caption=The TRY macro used for any critical operation,label={lst:read_file_code_ex}]
+\begin{lstlisting}[language=C++,caption=The TRY macro used for any critical operation,label={lst:read_file_code_ex}]
 error_code utils::read_byte_stream(std::ifstream* stream, uint8_t*& byte_stream, uint32_t& stream_size) {
 	stream->seekg(0, std::ios::end);
 	std::streamsize file_size = stream->tellg();
@@ -199,16 +198,81 @@ error_code utils::read_byte_stream(std::ifstream* stream, uint8_t*& byte_stream,
 \end{lstlisting}
 
 
+After we are done with the IO outputs, it is time to actually perform some reads as well. One of the first steps is to parse the metadata which is generally available as the first bytes of the file. However, there are 2 major issues that may arise: that structure is not respected, either because the file is using an extended version of the standard that adds other fields or simply because the file is corrupted, and secondly, the compiler is actively working against us because we are not doing something most programmers do, like misaligning the stack. The second problem usually happens when trying to read multiple bytes at once and then trying to map that memory to a structure. In listings \ref{lst:cppstruct1} and \ref{lst:cppstruct2} we see how to declare those structs such that any of the aforementioned problems are not an issue, and in listing \ref{cppstruct_reading_ex} we see how exactly the reading and parsing is done in the code.
+
+\begin{minipage}{.35\textwidth}
+\begin{lstlisting}[language=C++,caption=BMP header structure,frame=tlrb,label=lst:cppstruct1]{Name}
+#pragma pack(push, 1)
+struct BMPMetaStruct {
+	//generic file header
+	uint16_t signature;
+	uint32_t file_size;
+	uint32_t reserved;
+	uint32_t data_offset;
+	//image info header
+	uint32_t size;
+	uint32_t width;
+	uint32_t height;
+	uint16_t planes;
+	uint16_t bits_per_pixel;
+	uint32_t compression;
+	uint32_t image_size;
+	uint32_t x_pixels_per_meter;
+	uint32_t y_pixels_per_meter;
+	uint32_t colors_used;
+	uint32_t important_colors;
+};
+#pragma pack(pop)
+\end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}{.35\textwidth}
+\begin{lstlisting}[language=C++,caption=WAV metadata struct,frame=tlrb,label=lst:cppstruct2]{Name}
+#pragma pack(push, 1)
+struct WAVMetaStruct {
+	uint32_t chunk_id;
+	uint32_t chunk_size;
+	uint32_t format;
+	uint32_t subchunk_1_id;
+	uint32_t subchunk_1_size;
+	uint16_t audio_format;
+	uint16_t num_channels;
+	uint32_t sample_rate;
+	uint32_t byte_rate;
+	uint16_t block_align;
+	uint16_t bits_per_sample;
+};
+#pragma pack(pop)
+\end{lstlisting}
+\end{minipage}
+
+\begin{lstlisting}[language=C++,caption=Reading file data directly into custom structure,label={cppstruct_reading_ex}]
+	//declaring the variables
+	std::ifstream* wav_stream = nullptr;
+	WAVMetaStruct cover_metadata;
+	...
+	//opening the stream
+	TRY(utils::load_stream(wav_file_path, wav_stream));
+	...
+	//actually reading the metadata into the struct
+	wav_stream->read((char*)&cover_metadata, sizeof(WAVMetaStruct));
+\end{lstlisting}
+
+
+\vspace{0.7cm}
+All of the code presented will eventually have to go through the compilation process. We mentioned in the used technologies section that we are using CMake specifically for this purpose. Using few lines of code can help us build static or shared libraries, interfaces, objects and executables. This is what the code below does. It is the root level CMakeLists.txt that builds the main executable of the project, adds the subdirectories containing other CMakeLists.txt files to build the other modules as well, and links the needed libraries together in order to make the final executable work.
+\clearpage
+\begin{figure}[H]
+    \includegraphics[width=12cm,keepaspectratio]{pics/application_chapter/cmake_code_example}
+\end{figure}
 
 %USING THE APPLICATION SECTION
 \section{Using the application}
 Steganos was designed to be a very simple command line tool that is fast, reliable and portable. Using Cxxopts we have tried to implement an intuitive way of passing the arguments to the program, such that they all make sense and that any of the available configurations and command executions are easy to understand. You can see from the program output below that it is very easy to learn the options available to the end user by adding the -h flag and see what is supported and what not.
 \begin{verbatim}
-D:\Projects\Steganos\out\build\x64-Debug>Steganos.exe
+D:\Projects\Steganos>Steganos.exe
 You must specify one cover file.
 Do Steganos.exe -h for more information.
-
-D:\Projects\Steganos\out\build\x64-Debug>Steganos.exe -h
+D:\Projects\Steganos>Steganos.exe -h
 Simple steganography project created as a part of my bachelor's thesis
 Usage:
   Steganos [OPTION...]
@@ -217,7 +281,6 @@ Usage:
   -c, --cover FILE   The file that serves as a cover for the secret message
   -s, --secret FILE  The secret file which will be embedded into the cover
                      file - ENCODING ONLY
-
  General options:
   -o, --output FILE             Name of the output file (default: output)
   -v, --verbose                 Verbose output
@@ -231,20 +294,19 @@ Usage:
 %EXAMPLE RUNS
 Based on the information above, it is almost trivial to come up with working command examples based on the help menu we displayed earlier. We can begin looking at some examples to see how Steganos works. Let's assume that we want to encode a secret message stored in a txt file within a BMP file. All we would need to type is the path to the secret file and the path to the cover file. The output can be seen below.
 \begin{verbatim}
-D:\Projects\Steganos\out\build\x64-Debug>Steganos.exe --cover marbles.bmp --secret secret.txt
+D:\Projects\Steganos>Steganos.exe --cover marbles.bmp --secret secret.txt
 Done
 \end{verbatim}
 
 That's all there is to it. However to some the need to type so many characters without any autocomplete (because option autocomplete is not commonly available in most shells) could be an annoyance so Steganos also offers the option for shortened option names to make the process quicker.
 \begin{verbatim}
-D:\Projects\Steganos\out\build\x64-Debug>Steganos.exe -c marbles.bmp -s secret.txt
+D:\Projects\Steganos>Steganos.exe -c marbles.bmp -s secret.txt
 Done
 \end{verbatim}
 
-We also have the option to enable verbose output to see debugging information in real time during the Steganos process and see exactly what it is doing. We can also specify the name of the output file to be whatever we would like it to be.
+We also have the option to enable verbose output to see debugging information in real time during the Steganos process and see exactly what it is doing. Furthermore, we can specify the name of the output file to be whatever we would like it to be.
 \begin{verbatim}
-D:\Projects\Steganos\out\build\x64-Debug>Steganos.exe -c marbles.bmp -s secret.txt 
-                                      \\ -o super_secret_marbles.bmp -v
+D:\Projects\Steganos>Steganos.exe -c marbles.bmp -s secret.txt  -o secret_marbles.bmp -v
 BMP Image data is found beginning at 54
 Ignoring 0 bytes to get to the actual image data
 Available methods:
@@ -257,7 +319,7 @@ Done
 
 If the user is confused as to what options are available for a given file/file combo during either of the embedding or the decoding processes, he can always add the -h flag to get the valid accepted methods.
 \begin{verbatim}
-D:\Projects\Steganos\out\build\x64-Debug>Steganos.exe -c marbles.bmp -s sstv_me.ppm -h
+D:\Projects\Steganos>Steganos.exe -c marbles.bmp -s sstv_me.ppm -h
 Available steganography methods when using BMP files as cover:
 SEQUENTIAL (DEFAULT)
 PERSONAL_SCRAMBLE
@@ -279,5 +341,5 @@ Regarding the future of Steganos, I hope that it will be fairly fruitful and wor
 	\item \textbf{Windows integration for Jenkins}. At the moment of writing this, there is only one deployed instance of Jenkins running the Steganos job and it is based on Linux. That means that the only types of files that are automatically generated and tested are only the Linux binaries since there is no easy way of also building the Windows binaries. Some research has revealed that there is the option of adding a Windows based Jenkins instance in a master-slave configuration that would technically allow the full building and testing of the executables but we have not yet managed to implement this. 
 	\item \textbf{Additional algorithms}. Most algorithms described in this paper are implemented in the Steganos project but there are plenty viable ones (especially those that rely on scrambling the data) that have not seen yet the light of day. It would certainly be interesting to add them and compare them to existent implementations or to the other methods.
 	\item \textbf{Encrypting the secret}. Even though the option is specified in the help menu, it is not yet possible to encrypt the actual secret, mainly because I could not decide on which encryption methods to make available and because I also would rather focus on building the core codebase and to implement the steganography algorithms first. However, it is almost mandatory that the option of encrypting the secret before the embedding process is added in a future release to increase the security of the contents.
-	\item \textbf{Validating the decoding result}. Right now Steganos only spits out
+	\item \textbf{Validating the decoding result}. Right now Steganos only spits out the binary stream that it finds embedded within the cover file but does not perform any kinds of validation to see if it actually extracted the right secret file or not. There are multiple fixes for this problem, however in my opinion the best solution is to also include a hash of the file in the cover as well (alongside the length of the secret file) and to check after extraction if the embedded hash and the hash of the result are equal. It may sound trivial but in reality it could be difficult to implement due to some constraints caused by C++ and due to the fact that it also reduces the total space available for hiding.
 \end{itemize}

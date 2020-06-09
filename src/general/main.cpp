@@ -8,9 +8,9 @@
 	#include <crtdbg.h>
 #endif
 
+
 error_code encode_run_handler(cxxopts::ParseResult args);
 error_code decode_run_handler(cxxopts::ParseResult args);
-
 void parse(int argc, char* argv[]) {
 	try {
 		cxxopts::Options options("Steganos", "Simple steganography project created as a part of my bachelor's thesis");
@@ -83,37 +83,7 @@ void parse(int argc, char* argv[]) {
 
 int main(int argc, char *argv[]) {
 	{
-		//MP3Module mp3_module("D:\\Projects\\Steganos\\test_data\\audio\\Vivaldi - Spring-l-dYNttdgl0.mp3");
-		//MP3Module mp3_module("D:\\Projects\\Steganos\\test_data\\audio\\Tool - Invincible.mp3");
-		//MP3Module mp3_module2("D:\\Projects\\Steganos\\out\\build\\x64-Debug\\output.mp3");
-		//MP3EncoderModule encoder("D:\\Projects\\Steganos\\test_data\\audio\\Tool - Invincible.mp3",
-		//		"D:\\Projects\\Steganos\\test_data\\secrets\\sstv_me.bmp");
-		//
-		//encoder.launch_steganos();
-
-
-
-		//WAVEncoderModule wav_module("D:\\Projects\\Steganos\\test_data\\audio\\Gavotte_en_rondeau_54.wav", "D:\\Projects\\Steganos\\test_data\\secrets\\orar.xlsx");
-		//WAVModuleOptions options;
-		//options.number_of_samples_to_skip = 2;
-		//wav_module.launch_steganos(options);
-
-		//WAVDecoderModule decoder("D:\\Projects\\Steganos\\out\\build\\x64-Debug\\output.wav");
-		//decoder.launch_steganos(options);
-
 		parse(argc, argv);
-		/* check if -d option is in argv. if its not try and encode*/
-		//encode_run_handler();
-		//decode_run_handler();
-		//PNGEncoderModule encoder("D:\\Projects\\Steganos\\test_data\\images\\star_field.png", "D:\\Projects\\Steganos\\test_data\\secrets\\orar.xlsx");
-		//auto metadata = encoder.get_metadata();
-		//printf("Width = %u ; Height = %u; Bit Depth = %d; Color Type = %d; Compression = %d; Filter = %d\n", metadata.width, metadata.height, (int)metadata.bit_depth, (int)metadata.color_type, (int)metadata.compression_method, (int)metadata.filter_method);
-		//PNGModuleOptions options;
-		//options.algorithm = PNGModuleSupportedAlgorithms::SEQUENTIAL;
-		//encoder.launch_steganos(options);
-
-		//PNGDecoderModule decoder("output.png");
-		//decoder.launch_steganos(options);
 	}
 
 	#ifdef _WIN32
