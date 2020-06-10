@@ -13,11 +13,15 @@ add_executable (
 	${PROJECT_SOURCE_DIR}/src/general/utils/cli_utils.cpp
 )
 
-
-
+add_subdirectory(src/external/robot36)
 add_subdirectory(src/modules/image)
 add_subdirectory(src/modules/audio)
-target_link_libraries(Steganos IMAGE_MODULE AUDIO_MODULE)
+target_link_libraries(
+	Steganos 
+	IMAGE_MODULE 
+	AUDIO_MODULE
+	robot36
+)
 
 if (WIN32)
 	target_link_libraries(Steganos wsock32 ws2_32)

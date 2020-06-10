@@ -20,7 +20,7 @@ enum class PNGModuleSupportedAlgorithms {
 };
 
 struct PNGModuleOptions {
-	std::string output_filename = "output";
+	std::string output_path = "output.bin";
 
 	bool encrypt_secret = false;
 	std::string password = "png_password";

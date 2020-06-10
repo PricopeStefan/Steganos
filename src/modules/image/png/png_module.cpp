@@ -80,7 +80,8 @@ error_code PNGModule::read_cover_data() {
 		png_stream->read(reinterpret_cast<char*>(&chunk_crc), sizeof(chunk_crc));
 		chunk_crc = ntohl(chunk_crc);
 
-		printf("[Chunk %u] Type = %c%c%c%c ; length = %u; CRC = %u\n", index, bytes[0], bytes[1], bytes[2], bytes[3], chunk_length, chunk_crc);
+		std::cout << "[Chunk " << index << "] Type = " << bytes[0] << bytes[1] << bytes[2] << bytes[3];
+		std::cout << "; Length = " << chunk_length << "; CRC = " << chunk_crc << std::endl;
 
 		png_chunks.push_back(PNGChunkStruct(chunk_length, chunk_type, chunk_data, chunk_crc));
 		if (strncmp(bytes, "IEND", 4) == 0)

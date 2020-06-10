@@ -25,7 +25,7 @@ error_code PNGDecoderModule::sequential_handler(const PNGModuleOptions& steg_opt
 		secret_data
 	));
 
-	TRY(write_secret());
+	TRY(write_secret(steg_options.output_path.c_str()));
 
 	return error_code::NONE;
 }

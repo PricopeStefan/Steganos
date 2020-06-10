@@ -69,7 +69,7 @@ error_code simple_sequential_decode(int64_t image_data_size,
 	uint8_t byte1 = utils::read_byte_from_lsbs(image_data + image_data_index, image_data_size - image_data_index); image_data_index += 8;
 	secret_data_size = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
 
-	if (secret_data_size < 4)
+	if (secret_data_size < 4 || secret_data_size > image_data_size)
 		return error_code::COVER_FILE_ERROR;
 	//the size included the first 4 bytes which were used as size info
 	secret_data_size -= 4;

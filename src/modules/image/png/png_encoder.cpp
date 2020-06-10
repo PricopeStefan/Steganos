@@ -2,7 +2,7 @@
 
 PNGEncoderModule::PNGEncoderModule(const char* cover_file_path) : PNGModule(cover_file_path) {
 	//do nothing if there is no secret provided, just load the BMP into memory
-	printf("Created new PNGEncoderModule\n");
+	std::cout << "Created new PNGEncoderModule\n";
 	
 	make_crc_table();
 }
@@ -80,7 +80,7 @@ error_code PNGEncoderModule::simple_sequential_embed_handler(const PNGModuleOpti
 
 	auto metadata = get_metadata();
 	std::vector<uint8_t> image_copy(image_data, image_data + image_size);
-	unsigned error = lodepng::encode(steg_options.output_filename + ".png", image_copy, metadata.width, metadata.height);
+	unsigned error = lodepng::encode(steg_options.output_path, image_copy, metadata.width, metadata.height);
 	if (error)
 		return error_code::STREAM_ERROR;
 

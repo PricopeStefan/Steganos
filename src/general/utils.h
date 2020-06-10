@@ -20,7 +20,8 @@ enum class error_code {
 #define TRY(X) cool_assert((X), __FILE__, __LINE__);
 inline void cool_assert(error_code code, const char* file, int line) {
 	if (code != error_code::NONE) {
-		printf("[Assert error]Message = %d in file %s at line %d\n", code, file, line);
+		std::cout <<"[Assert error]Message = " << static_cast<int>(code) << " in file " << file << " at line " << line << std::endl;
+		printf("Steganos error code %d\n", static_cast<int>(code));
 		exit(static_cast<int>(code));
 	}
 }
