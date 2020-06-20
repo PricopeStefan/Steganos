@@ -1,9 +1,10 @@
 #include <modules/audio/mp3.h>
 
 
+
 MP3Module::MP3Module(const char* mp3_file_path) {
 	TRY(utils::load_stream(mp3_file_path, mp3_stream));
-
+	this->cover_size_filesystem = utils::get_file_size(mp3_file_path);
 	TRY(read_cover_data());
 }
 MP3Module::~MP3Module() {

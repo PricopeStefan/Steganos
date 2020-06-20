@@ -80,11 +80,11 @@ error_code utils::cli::png_encode_handler(cxxopts::ParseResult& args) {
 	fs::path secret_path = args["s"].as<std::string>();
 
 	if (args.count("help")) {
-		printf("Available steganography methods when using BMP files as cover:\n");
+		printf("Available steganography methods when using PNG files as cover:\n");
 		printf("SEQUENTIAL (DEFAULT)\n");
 		printf("Special option if secret file is .ppm : SSTV(and decoded via SEQUENTIAL as a WAV)\n");
 		printf("\nExample program usages:\n");
-		printf("Encoding(must specify both cover and secret file):\n\t ./Steganos -c cover.png -s secret_message.sstv -m sstv\n");
+		printf("Encoding(must specify both cover and secret file):\n\t ./Steganos -c cover.png -s secret_message.ppm -m sstv\n");
 		printf("Decoding(must specify only cover file):\n\t ./Steganos -c suspicious_looking.png -o what_were_you_hiding.wav\n");
 		exit(0);
 	}
@@ -133,15 +133,108 @@ error_code utils::cli::png_encode_handler(cxxopts::ParseResult& args) {
 		options.output_path = options.output_path + ".png";
 
 	return encoder_module.launch_steganos(options);
-	return error_code::NONE;
 }
 
 error_code utils::cli::wav_encode_handler(cxxopts::ParseResult& args) {
-	return error_code::NONE;
+	fs::path cover_path = args["c"].as<std::string>();
+	fs::path secret_path = args["s"].as<std::string>();
+
+	if (args.count("help")) {
+		printf("Available steganography methods when using WAV files as cover:\n");
+		printf("SEQUENTIAL (DEFAULT)\n");
+		printf("Special option if secret file is .ppm : SSTV(and decoded via SEQUENTIAL as a WAV)\n");
+		printf("\nExample program usages:\n");
+		printf("Encoding(must specify both cover and secret file):\n\t ./Steganos -c cover.wav -s secret_message.ppm -m sstv\n");
+		printf("Decoding(must specify only cover file):\n\t ./Steganos -c suspicious_looking.wav -o what_were_you_hiding.wav\n");
+		exit(0);
+	}
+
+
+	if (args.count("m") == 0) {
+		std::cout << "Available methods:\n";
+		std::cout << "SEQUENTIAL (default)\n";
+		std::cout << "Special option if secret file is .ppm : SSTV(and decoded via SEQUENTIAL as a WAV)\n";
+		std::cout << "No encoding method specified! Picking default option.\n";
+	}
+	else if (args.count("m") > 1) {
+		printf("Only one encoding method possible. Please pick one from this list:\n");
+		printf("SEQUENTIAL (default)\n");
+		printf("Special option if secret file is .ppm : SSTV(and decoded via SEQUENTIAL as a WAV)\n");
+		exit(6);
+	}
+
+	WAVModuleOptions options;
+	options.password = args["p"].as<std::string>();
+
+	if (args.count("m") == 0 || args["m"].as<std::string>().compare("sequential") == 0)
+		options.algorithm = WAVModuleSupportedAlgorithms::SEQUENTIAL;
+	else if (args["m"].as<std::string>().compare("sstv") == 0 && secret_path.extension().compare(".ppm") == 0) {
+		std::string ppm_path_str = secret_path.string();
+		char* ppm_path = const_cast<char*>(ppm_path_str.c_str());
+
+		secret_path = fs::temp_directory_path(); secret_path /= "tmp.wav";
+		std::string tmp_wav_path_str = secret_path.string();
+		char* tmp_wav_path = const_cast<char*>(tmp_wav_path_str.c_str());
+
+		auto sstv_encode_rc = robot36::sstv_encode(ppm_path, tmp_wav_path);
+		if (sstv_encode_rc) {
+			printf(" Something went wrong with converting to SSTV signal. SSTV RC = %d\n", sstv_encode_rc);
+			exit(-1);
+		}
+	}
+	else {
+		printf("Invalid method given! Exiting.\n");
+		exit(7);
+	}
+
+	WAVEncoderModule encoder_module(cover_path.string().c_str(), secret_path.string().c_str());
+	options.output_path = args["o"].as<std::string>();
+	if (args.count("o") == 0)
+		options.output_path = options.output_path + ".wav";
+
+	return encoder_module.launch_steganos(options);
 }
 
 error_code utils::cli::mp3_encode_handler(cxxopts::ParseResult& args) {
-	return error_code::NONE;
+	fs::path cover_path = args["c"].as<std::string>();
+	fs::path secret_path = args["s"].as<std::string>();
+
+	if (args.count("help")) {
+		printf("Available steganography methods when using MP3 files as cover:\n");
+		printf("METADATA IMAGE COVER(DEFAULT)\n");
+		printf("\nExample program usages:\n");
+		printf("Encoding(must specify both cover and secret file):\n\t ./Steganos -c cover.mp3 -s secret_message.ppm -m sstv\n");
+		exit(0);
+	}
+
+
+	if (args.count("m") == 0) {
+		std::cout << "Available methods:\n";
+		std::cout << "METADATA IMAGE COVER (default)\n";
+		std::cout << "No encoding method specified! Picking default option.\n";
+	}
+	else if (args.count("m") > 1) {
+		printf("Only one encoding method possible. Please pick one from this list:\n");
+		printf("METADATA IMAGE COVER (default)\n");
+		exit(6);
+	}
+
+	MP3ModuleOptions options;
+	options.password = args["p"].as<std::string>();
+
+	if (args.count("m") == 0 || args["m"].as<std::string>().compare("metadata") == 0)
+		options.algorithm = MP3ModuleSupportedAlgorithms::METADATA;
+	else {
+		printf("Invalid method given! Exiting.\n");
+		exit(7);
+	}
+
+	MP3EncoderModule encoder_module(cover_path.string().c_str(), secret_path.string().c_str());
+	options.output_path = args["o"].as<std::string>();
+	if (args.count("o") == 0)
+		options.output_path = options.output_path + ".mp3";
+
+	return encoder_module.launch_steganos(options);
 }
 
 
@@ -192,11 +285,11 @@ error_code utils::cli::bmp_decode_handler(cxxopts::ParseResult& args) {
 
 error_code utils::cli::png_decode_handler(cxxopts::ParseResult& args) {
 	if (args.count("help")) {
-		printf("Available steganography methods when using BMP files as cover:\n");
+		printf("Available steganography methods when using PNG files as cover:\n");
 		printf("SEQUENTIAL (DEFAULT)\n");
 		printf("Example program usages:\n");
 		printf("Encoding(must specify both cover and secret file):\n\t ./Steganos -c cover.png -s secret_message.txt -m sequential\n");
-		printf("Decoding(must specify only cover file):\n\t ./Steganos -c suspicious_looking.bmp -o what_were_you_hiding.txt\n");
+		printf("Decoding(must specify only cover file):\n\t ./Steganos -c suspicious_looking.png -o what_were_you_hiding.txt\n");
 		exit(0);
 	}
 
@@ -223,13 +316,41 @@ error_code utils::cli::png_decode_handler(cxxopts::ParseResult& args) {
 	options.output_path = args["o"].as<std::string>();
 
 	return decoder_module.launch_steganos(options);
-
 }
 
 
 error_code utils::cli::wav_decode_handler(cxxopts::ParseResult& args) {
-	return error_code::NONE;
+	if (args.count("help")) {
+		printf("Available steganography methods when using WAV files as cover:\n");
+		printf("SEQUENTIAL (DEFAULT)\n");
+		printf("Example program usages:\n");
+		printf("Encoding(must specify both cover and secret file):\n\t ./Steganos -c cover.png -s secret_message.txt -m sequential\n");
+		printf("Decoding(must specify only cover file):\n\t ./Steganos -c suspicious_looking.bmp -o what_were_you_hiding.txt\n");
+		exit(0);
+	}
 
+	fs::path cover_path = args["c"].as<std::string>();
+	WAVDecoderModule decoder_module(cover_path.string().c_str());
+
+	if (args.count("m") > 1) {
+		printf("Only one encoding method possible. Please pick one from this list:\n");
+		printf("SEQUENTIAL (default)\n");
+		exit(6);
+	}
+
+	WAVModuleOptions options;
+	options.password = args["p"].as<std::string>();
+
+	if (args.count("m") == 0 || args["m"].as<std::string>().compare("sequential") == 0)
+		options.algorithm = WAVModuleSupportedAlgorithms::SEQUENTIAL;
+	else {
+		printf("Invalid method given! Exiting.\n");
+		exit(7);
+	}
+
+	options.output_path = args["o"].as<std::string>();
+
+	return decoder_module.launch_steganos(options);
 }
 
 

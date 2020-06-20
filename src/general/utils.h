@@ -26,6 +26,9 @@ inline void cool_assert(error_code code, const char* file, int line) {
 	}
 }
 
+#include <iomanip>
+#define HEX( x ) std::setw(2) << std::setfill('0') << std::hex << (int)(x) << " "
+
 #pragma pack(push, 1)
 struct ID3v3Frame {
 	uint8_t frame_identifier[4];
@@ -50,6 +53,7 @@ namespace utils {
 	//reads the byte array and returns how many bytes were read
 	error_code read_byte_stream(std::ifstream* stream, uint8_t*& byte_stream, uint32_t& stream_size);
 
+	size_t get_file_size(const char* file_path);
 	int32_t compress_data(uint8_t*& data_bytes);
 
 	void setLSB(uint8_t& value, const bool& bit);

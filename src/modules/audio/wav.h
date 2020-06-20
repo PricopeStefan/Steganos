@@ -21,9 +21,9 @@ enum class WAVModuleSupportedAlgorithms {
 
 struct WAVModuleOptions {
 	bool encrypt_secret = false;
-	std::string password = "fasf";
-	uint32_t number_of_samples_to_skip = 96; //proven to be the best default by testing
-
+	std::string password = "password";
+	uint32_t number_of_samples_to_skip = 2; //acceptable noise to space ratio
+	std::string output_path = "output.bin";
 	bool compress_secret = false; //bool indicating whether to compress the secret data or not
 	WAVModuleSupportedAlgorithms algorithm = WAVModuleSupportedAlgorithms::SEQUENTIAL;
 };

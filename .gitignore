@@ -481,3 +481,4 @@ build/
 build_windows/
 out/
 CMakeSettings.json
+Steganos.zip

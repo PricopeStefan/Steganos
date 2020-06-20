@@ -1,4 +1,11 @@
 #include <general/utils.h>
+#ifdef __linux__ 
+#include <experimental/filesystem> 
+namespace fs = std::experimental::filesystem;
+#elif _WIN32
+#include <filesystem>
+namespace fs = std::filesystem;
+#endif
 
 error_code utils::load_stream(const char* file_path, std::ifstream*& stream, std::ios_base::openmode stream_options) {
 	if (stream != nullptr) {
@@ -18,8 +25,10 @@ error_code utils::load_stream(const char* file_path, std::ifstream*& stream, std
 	return error_code::STREAM_ERROR;
 }
 
-#include <iomanip>
-#define HEX( x ) std::setw(2) << std::setfill('0') << std::hex << (int)(x) << " "
+size_t utils::get_file_size(const char* path) {
+	fs::path fs_path(path);
+	return fs::file_size(fs_path);
+}
 
 error_code utils::read_byte_stream(std::ifstream* stream, uint8_t*& byte_stream, uint32_t& stream_size) {
 	stream->seekg(0, std::ios::end);

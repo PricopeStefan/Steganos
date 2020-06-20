@@ -105,7 +105,7 @@ error_code WAVDecoderModule::launch_steganos(const WAVModuleOptions& steg_option
 	{
 	case WAVModuleSupportedAlgorithms::SEQUENTIAL:
 		TRY(sequential_handler(steg_options));
-		write_secret();
+		write_secret(steg_options.output_path.c_str());
 		break;
 	default:
 		std::cout << "Algorithm not yet implemented, its on my TO DO\n";

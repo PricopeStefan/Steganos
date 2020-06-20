@@ -36,30 +36,31 @@ error_code MP3EncoderModule::image_embed(const MP3ModuleOptions& steg_options) {
 	custom_frame.flags[0] = 0; custom_frame.flags[1] = 0; 
 	custom_frame.frame_data = (uint8_t*)&apic_custom_frame;
 
-	splice_apic_frame(apic_custom_frame, custom_frame);
+	splice_apic_frame(apic_custom_frame, custom_frame, steg_options);
 
 	return error_code::NONE;
 }
 
 error_code MP3EncoderModule::launch_steganos(const MP3ModuleOptions& steg_options) {
-	image_embed(steg_options);
+	TRY(image_embed(steg_options));
 
 	return error_code::NONE;
 }
 
 
-error_code MP3EncoderModule::splice_apic_frame(ID3v3APICFrameData& apic_custom_frame, ID3v3Frame& custom_frame) {
+error_code MP3EncoderModule::splice_apic_frame(ID3v3APICFrameData& apic_custom_frame, ID3v3Frame& custom_frame, const MP3ModuleOptions& options) {
 	mp3_stream->seekg(0, std::ios_base::end);
-	size_t length = mp3_stream->tellg();
+	size_t length = this->cover_size_filesystem;
+	printf("Lengthh is %u\n", length);
 	mp3_stream->seekg(0, std::ios_base::beg);
 	std::vector<char> buff;
 	buff.reserve(length);
-	std::copy(std::istreambuf_iterator<char>(*mp3_stream),
+	std::copy(std::istreambuf_iterator<char>(*this->mp3_stream),
 		std::istreambuf_iterator<char>(),
 		std::back_inserter(buff));
 	
 	//writing the first 10 bytes for the ID3 header
-	std::ofstream g("output.mp3", std::ios_base::binary);
+	std::ofstream g(options.output_path, std::ios_base::binary);
 	uint32_t current_id3_tag_size = utils::convert_synchsafe_uint_to_normal_uint(cover_metadata.header_size);
 	current_id3_tag_size += 24 + secret_data_size;
 	uint8_t a, b, c, d;

@@ -17,9 +17,9 @@ enum class MP3ModuleSupportedAlgorithms {
 
 struct MP3ModuleOptions {
 	bool encrypt_secret = false;
-	std::string password = "fasf";
-	uint32_t number_of_samples_to_skip = 48; //proven to be the best default by testing
-
+	std::string password = "password";
+	uint32_t number_of_samples_to_skip = 16;
+	std::string output_path = "output.bin";
 	bool compress_secret = false; //bool indicating whether to compress the secret data or not
 	MP3ModuleSupportedAlgorithms algorithm = MP3ModuleSupportedAlgorithms::SEQUENTIAL;
 };
@@ -64,6 +64,7 @@ protected:
 	std::vector<ID3v3Frame> metadata_frames;
 	uint32_t cover_data_length = 0;
 	uint8_t* cover_data = nullptr;
+	size_t cover_size_filesystem = 0;
 
 	MP3AudioFrameHeader convert_binary_to_frame_header(uint32_t frame_header_binary);
 	uint32_t convert_frame_header_to_binary(MP3AudioFrameHeader frame_header_structure);
@@ -91,7 +92,7 @@ private:
 
 	error_code image_embed(const MP3ModuleOptions& steg_options);
 
-	error_code splice_apic_frame(ID3v3APICFrameData& apic_custom_frame, ID3v3Frame& custom_frame);
+	error_code splice_apic_frame(ID3v3APICFrameData& apic_custom_frame, ID3v3Frame& custom_frame, const MP3ModuleOptions& options);
 public:
 	MP3EncoderModule(const char* cover_file_path);
 	MP3EncoderModule(const char* cover_file_path, const char* secret_file_path);

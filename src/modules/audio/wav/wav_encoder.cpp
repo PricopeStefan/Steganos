@@ -30,8 +30,8 @@ error_code WAVEncoderModule::simple_sequential_embed_handler(const WAVModuleOpti
 	uint32_t secret_data_byte_index = 0;
 	uint8_t bit_index = 0;
 	uint8_t current_byte = secret_data[secret_data_byte_index];
-	printf("Secret data size in encoder = %u\n", secret_data_size);
-	printf("First actual secret byte = %02X\n", secret_data[4]);
+	std::cout << "Secret data size in encoder = " << secret_data_size << std::endl;
+	std::cout <<  "First actual secret byte = " << HEX(secret_data[4]) << std::endl;
 
 	//helper lambda function to advance to the next data bit from the secret stream
 	//returns how many bytes there are left to write
@@ -77,7 +77,7 @@ error_code WAVEncoderModule::simple_sequential_embed_handler(const WAVModuleOpti
 	}
 
 	if (successful_written_bytes == 0) {
-		printf("There was an error while writing to the file\n");
+		std::cerr << "There was an error while writing to the file" << std::endl;
 		return error_code::COVER_FILE_ERROR;
 	}
 
@@ -107,7 +107,7 @@ error_code WAVEncoderModule::launch_steganos(const WAVModuleOptions& steg_option
 	}
 
 
-	TRY(write_cover());
+	TRY(write_cover(steg_options.output_path.c_str()));
 
 	return error_code::NONE;
 }
