@@ -18,13 +18,20 @@ if (WIN32)
 		${LIBRARY_FILES}
 		"mman.cpp"
 	)
+
+	add_library(
+		robot36 OBJECT
+		${LIBRARY_FILES}
+	)
 endif()
 
-add_library(
-	robot36 OBJECT
-	${LIBRARY_FILES}
-)
+
 
 if (UNIX)
-	target_link_libraries(robot36 m)
+	add_library(
+		robot36 STATIC
+		${LIBRARY_FILES}
+	)
+
+	target_link_libraries(robot36 PRIVATE m stdc++ c)
 endif ()
