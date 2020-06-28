@@ -1,0 +1,6 @@
+
+Encoding
+Steganos -c star_field.png -s me.ppm -m sstv -v -o sstv_star.png
+
+Decoding
+Steganos -c sstv_star.png -o sstv.wav

@@ -29,4 +29,3 @@
 \contentsline {section}{\numberline {5.4}Using the application}{40}%
 \contentsline {section}{\numberline {5.5}Further work}{41}%
 \contentsline {chapter}{\numberline {6}Conclusion}{43}%
-\contentsline {chapter}{Bibliography}{43}%

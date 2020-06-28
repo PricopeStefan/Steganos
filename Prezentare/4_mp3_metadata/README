@@ -1,0 +1,5 @@
+Encoding new back cover art
+
+Steganos -c "Tool - Invincible.mp3" -s 1.jpg -o 1.mp3 -v
+Steganos -c "Tool - Invincible.mp3" -s 2.png -o 2.mp3 -v 
+Steganos -c "Tool - Invincible.mp3" -s 3.bmp -o 3.mp3 -v

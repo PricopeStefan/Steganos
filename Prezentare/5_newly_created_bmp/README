@@ -1,0 +1,9 @@
+
+Cover file = Orice fisier BMP salvat din Paint
+Secret file = penguin.png
+
+Encoding
+Steganos -c new.bmp -s penguin.png -m personal_scramble -v -o secret.bmp
+
+Decoding
+Steganos -c secret.bmp -o secret_penguin.png -v

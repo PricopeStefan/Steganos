@@ -1,0 +1,6 @@
+
+	Pentru LSB insertion secvential
+Steganos -c marbles.bmp -s secret_1.txt -o 1_marbles.bmp
+
+	Pentru PersonalScramble LSB Insertion
+Steganos -c marbles.bmp -s secret_2.xlsx -m personal_scramble -o 2_marbles.bmp -v

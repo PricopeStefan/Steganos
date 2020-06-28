@@ -1,0 +1,6 @@
+
+	Pentru WAV encoding 
+Steganos -c Gavotte_en_rondeau_54.wav -s rubberneckin.ogg -o secret_classical.wav
+
+	Pentru decoding
+Steganos -c secret_classical.wav -o secret_presley.ogg -v
